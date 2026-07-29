@@ -1,0 +1,123 @@
+# GitRAM template — N stateless cells + all-or-nothing fan-in.
+# Modeled 1:1 on the origin lane (.github/workflows/pais-omega-floor1-gitram.yml,
+# HYPER-BECHS--the-third-set PR #42). Replace the UPPERCASE placeholders.
+#
+# Laws this template encodes:
+#   - cells are stateless and self-contained (checkout + compile from in-repo source)
+#   - every cell proves its own PASS marker and uploads one self-contained artifact
+#   - fan-in requires ALL N checkpoints, verifies checksums, does NO duplicate work
+#   - cancel-in-progress: false — a new push must never kill a seal in flight
+#   - size the fan-in timeout for ~N x per-cell verify time (lesson of run 29415341620)
+
+name: GitRAM lane (N cells)
+
+on:
+  pull_request:
+    paths:
+      - 'WORK_ROOT/**'
+      - '.github/workflows/THIS_FILE.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gitram-lane-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ROOT: WORK_ROOT                    # e.g. research/my-floor-v1
+  MANIFEST: WORK_ROOT/CORPUS.hbp     # SHA-pinned input manifest
+  CONTRACT: WORK_ROOT/CONTRACT.hbp   # floor contract (bounds + gates)
+
+jobs:
+  cell:
+    name: Cell ${{ matrix.cell }}
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        # one entry per RAM cell — origin lane used 27
+        cell: [1, 2, 3, 4, 5, 6, 7, 8]
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile the dependency-free tool from in-repo source
+        run: |
+          set -euo pipefail
+          rustc --edition=2021 -O "$ROOT/TRAINER.rs" -o "$ROOT/trainer"
+
+      - name: Do this cell's one unit of work, gated on its own PASS marker
+        run: |
+          set -euo pipefail
+          rm -rf "$ROOT/shard"
+          "$ROOT/trainer" shard \
+            --manifest "$MANIFEST" \
+            --contract "$CONTRACT" \
+            --output "$ROOT/shard" \
+            --cell "${{ matrix.cell }}" | tee "$ROOT/shard.log"
+          grep -q 'GITRAM_SHARD_PASS' "$ROOT/shard.log"
+
+      - name: Upload the self-contained cell checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cell-${{ matrix.cell }}
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ env.ROOT }}/shard/cell-*
+            ${{ env.ROOT }}/shard.log
+
+  fan-in:
+    name: Verify ALL checkpoints and seal one result
+    needs: cell
+    if: always()
+    runs-on: ubuntu-latest
+    # LESSON (run 29415341620): fan-in walks every checkpoint sequentially.
+    # Budget ~N x per-cell verify time; the origin 27-cube fan-in needed ~40 min.
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: cell-*
+          path: WORK_ROOT/fan-in
+          merge-multiple: true
+
+      - name: Require ALL returned checkpoints (all-or-nothing)
+        run: |
+          set -euo pipefail
+          count="$(find "$ROOT/fan-in" -name CELL-META.hbp -type f | wc -l)"
+          test "$count" -eq 8   # must equal the matrix size
+
+      - name: Compile the independent fan-in executable
+        run: |
+          set -euo pipefail
+          rustc --edition=2021 -O "$ROOT/TRAINER.rs" -o "$ROOT/trainer"
+
+      - name: Resume from all checkpoints and seal (no duplicate work)
+        run: |
+          set -euo pipefail
+          "$ROOT/trainer" train \
+            --manifest "$MANIFEST" \
+            --contract "$CONTRACT" \
+            --output "$ROOT/fan-in" \
+            --workers 1 | tee "$ROOT/fan-in.log"
+          grep -q 'FLOOR_PASS' "$ROOT/fan-in.log"
+          (cd "$ROOT/fan-in" && sha256sum -c SHA256SUMS)
+
+      - name: Upload the sealed result + receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sealed-floor
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            ${{ env.ROOT }}/fan-in/**
+            ${{ env.ROOT }}/fan-in.log
+            ${{ env.ROOT }}/CONTRACT.hbp

@@ -1,0 +1,17 @@
+RECEIPT|name=LIRIS-PUBLIC-SCAFFOLD|date=2026-07-29|seat=LIRIS|json=0|version=1
+REPOSITORY|name=FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS|visibility_target=public|git_state=local_uncommitted
+OPERATOR|class=OPERATOR_CANON|law=FOLLOW_THE_IS_NOT_THE_WILL_AND_WAS|identity_exchange=0
+OPERATOR|class=OPERATOR_CANON|statement=JESSE_BROWN_SPHERE|geometry=SPHERICAL_AROUND|axes=0,1,BROWN
+PHOTO|class=MEASURED|surface=LIRIS_LOCAL|path=knowledge/operator-evidence/IS-photo-2026-07-27.jpeg|codec=mjpeg|width=3024|height=4032|bytes=821531|sha256=a87ebb6c2bcde3f6e93c983d588a19afeb441af1fd4c40ef22c63955dc3528ca
+UPSTREAM|class=MEASURED|name=GitRAM|commit=be83ffb8bc13cb3995b52ce7a5fe6bdb9c5fcfa9|embedded_files=2
+UPSTREAM|class=MEASURED|name=NEST|commit=d37ee2f4cd21a2b55d5b2c6d8d0429acf3d9d753|embedded_files=1
+UPSTREAM|class=MEASURED|name=Algorithms-of-Asolaria|commit=a94abccd93b9bd42724840eaf26924a3db683d2a|embedded_source_files=2|embedded_license_files=1
+DEPENDENCY|public_decoder=1|REQUIRED_HIDDEN_DEPENDENCIES=0|account_credentials_required=0
+PUBLICATION|source_video_bytes=0|derived_color_state_allowed=1|source_pointer_required=1|source_hash_required=1
+SECURITY|secrets_published=0|private_keys_published=0|health_identifiers_published=0
+TEST|class=MEASURED|name=public_repo_verify|pass=1|pinned=7|receipts=2|source_video_bytes=0|secret_findings=0|hidden_dependencies=0
+TEST|class=MEASURED|name=nest_depth7|pass=1|nodes=255|total_pids=510|tamper_levels_caught=7/7|workdir=C:/tmp/follow-is-nest-test-20260729
+TEST|class=MEASURED|name=sgram_python_syntax|pass=1|runtime=python_3.12
+TEST|class=MEASURED|name=vc65_rust_compile|pass=1|runtime=rustc_1.96.1|warnings=2|binary_published=0
+BOUNDARY|class=UNVERIFIED|surface=fabric_canon|system_affirmed=0|detail=public_repo_slice_is_not_live_runtime_authority
+VERDICT|scaffold_bytes_sealed=1|tests_passed=4|commit_created=0|push_performed=0

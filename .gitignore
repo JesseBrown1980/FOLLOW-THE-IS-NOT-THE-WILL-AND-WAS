@@ -1,0 +1,30 @@
+# Local credentials and machine identity
+.env
+.env.*
+!.env.example
+credentials/
+secrets/
+*.p12
+*.pfx
+id_ed25519
+id_ed25519.*
+id_rsa
+id_rsa.*
+
+# Source video remains a temporary analysis input, never a repository object
+*.m4v
+*.mkv
+*.mov
+*.mp4
+*.part
+*.webm
+
+# Generated and build-local material
+__pycache__/
+*.exe
+*.o
+*.obj
+*.pyc
+/data/behcs/
+/target/
+/.pytest_cache/
