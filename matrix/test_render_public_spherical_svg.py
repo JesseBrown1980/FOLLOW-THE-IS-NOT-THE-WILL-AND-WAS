@@ -121,6 +121,53 @@ class PublicSphericalSVGTests(unittest.TestCase):
         for color in expected_colors:
             self.assertIn(f'fill="{color}"', svg)
 
+    def test_exact_thin_triple_rainbow_free_0_then_reveal_four(self) -> None:
+        body = projection_bytes()
+        svg = renderer.render_svg(body, hashlib.sha256(body).hexdigest())
+        root = ET.fromstring(svg)
+        elements = list(root.iter())
+        arcs = [
+            item
+            for item in elements
+            if item.attrib.get("class") == "thin-triple-rainbow-arc"
+        ]
+        self.assertEqual(renderer.THIN_ARCS, 3)
+        self.assertEqual(renderer.FREE_0_CYCLES, 3)
+        self.assertEqual(renderer.REVEAL_STAGE, 4)
+        self.assertEqual(len(arcs), 3)
+        self.assertEqual(
+            [item.attrib["id"] for item in arcs],
+            [
+                "thin-triple-rainbow-arc-1",
+                "thin-triple-rainbow-arc-2",
+                "thin-triple-rainbow-arc-3",
+            ],
+        )
+        self.assertEqual(
+            [item.attrib["data-free-0-cycle"] for item in arcs],
+            ["1", "2", "3"],
+        )
+        for arc in arcs:
+            bands = [
+                child
+                for child in list(arc)
+                if "rainbow-band" in child.attrib.get("class", "").split()
+            ]
+            self.assertEqual(len(bands), 7)
+            self.assertTrue(all(child.attrib["stroke-width"] == "1.4" for child in bands))
+        reveal = next(item for item in elements if item.attrib.get("id") == "reveal-stage-4")
+        self.assertEqual(reveal.attrib["data-stage"], "4")
+        self.assertEqual(reveal.attrib["data-after-free-0-cycles"], "3")
+        self.assertLess(max(elements.index(item) for item in arcs), elements.index(reveal))
+        metadata = next(
+            item.text or "" for item in elements if item.tag.endswith("metadata")
+        )
+        self.assertIn("thin_arcs=3", metadata)
+        self.assertIn("free_0_cycles=3", metadata)
+        self.assertIn("reveal_stage=4", metadata)
+        self.assertIn("atmospheric_optics_claim=0", metadata)
+        self.assertIn("clinical_claim=0", metadata)
+
     def test_sidecar_and_structural_tampering_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)

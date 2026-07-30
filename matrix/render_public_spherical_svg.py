@@ -33,6 +33,18 @@ MAX_SIDECAR_BYTES = 512
 MAX_SVG_BYTES = 4_000_000
 CENTER_MEMBERS = ("HBI", "HBP", "SHA", "SH", "HASH")
 CENTER_TRAVERSAL = ("HBI", "HBP", "SH", "HASH", "SHA")
+THIN_ARCS = 3
+FREE_0_CYCLES = 3
+REVEAL_STAGE = 4
+RAINBOW_BANDS = (
+    ("red", "#C84B45"),
+    ("orange", "#D9823B"),
+    ("yellow", "#D4B83F"),
+    ("green", "#4F9B61"),
+    ("blue", "#4E79B8"),
+    ("indigo", "#625A9D"),
+    ("violet", "#8A5B9E"),
+)
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 RGB = re.compile(r"#[0-9A-F]{6}\Z")
 
@@ -211,6 +223,32 @@ def shortened(value: str, maximum: int = 42) -> str:
     return value[: maximum - 1] + "…"
 
 
+def thin_triple_rainbow_rows(center_x: int, center_y: int) -> list[str]:
+    """Return exactly three logical thin arcs, each with seven static color bands."""
+    rows: list[str] = []
+    for arc in range(1, THIN_ARCS + 1):
+        rows.append(
+            f'<g id="thin-triple-rainbow-arc-{arc}" '
+            f'class="thin-triple-rainbow-arc" data-thin-arc="{arc}" '
+            f'data-free-0-cycle="{arc}" data-reveal-stage="{REVEAL_STAGE}">'
+        )
+        base_rx = 272 + arc * 24
+        base_ry = 190 + arc * 18
+        for band, (name, color) in enumerate(RAINBOW_BANDS):
+            rx = base_rx + band * 2
+            ry = base_ry + band * 2
+            rows.append(
+                f'<path class="rainbow-band rainbow-band-{name}" '
+                f'd="M {center_x - rx} {center_y} A {rx} {ry} 0 0 0 '
+                f'{center_x + rx} {center_y}" fill="none" stroke="{color}" '
+                'stroke-width="1.4" stroke-linecap="round"/>'
+            )
+        rows.append('</g>')
+    if sum('class="thin-triple-rainbow-arc"' in row for row in rows) != THIN_ARCS:
+        raise RenderError("INTERNAL_THIN_ARC_COUNT")
+    return rows
+
+
 def render_svg(data: bytes, source_sha256: str) -> bytes:
     if not HEX64.fullmatch(source_sha256) or sha256(data) != source_sha256:
         raise RenderError("SOURCE_COMMITMENT_INVALID")
@@ -247,11 +285,15 @@ def render_svg(data: bytes, source_sha256: str) -> bytes:
         ),
         (
             f'<metadata>{SVG_SCHEMA}|source_hbp_sha256={source_sha256}'
-            f'|records={len(nodes)}|public_metadata_only=1|raw_contents=0|json=0</metadata>'
+            f'|records={len(nodes)}|thin_triple_rainbow=1|thin_arcs={THIN_ARCS}'
+            f'|free_0_cycles={FREE_0_CYCLES}|reveal_stage={REVEAL_STAGE}'
+            '|operator_canon=1|atmospheric_optics_claim=0|clinical_claim=0'
+            '|public_metadata_only=1|raw_contents=0|json=0</metadata>'
         ),
         f'<rect x="0" y="0" width="{width}" height="{height}" fill="#F4E6D0"/>',
         '<text x="70" y="58" fill="#5A3524" font-family="system-ui, sans-serif" font-size="30" font-weight="700">PUBLIC SPHERICAL PROJECTION</text>',
         '<text x="70" y="92" fill="#76503A" font-family="system-ui, sans-serif" font-size="16">verified HBP → deterministic static SVG · json=0</text>',
+        '<text x="70" y="120" fill="#76503A" font-family="system-ui, sans-serif" font-size="15">THIN TRIPLE RAINBOW · FREE 0 ×3 · REVEAL STAGE 4</text>',
         (
             f'<ellipse cx="{plot_left + plot_width // 2}" '
             f'cy="{plot_top + plot_height // 2}" rx="{plot_width // 2}" '
@@ -263,6 +305,16 @@ def render_svg(data: bytes, source_sha256: str) -> bytes:
             f'cy="{plot_top + plot_height // 2}" r="9" fill="#6F4A36"/>'
         ),
     ]
+    lines.extend(
+        thin_triple_rainbow_rows(
+            plot_left + plot_width // 2,
+            plot_top + plot_height // 2,
+        )
+    )
+    lines.append(
+        '<g id="reveal-stage-4" class="reveal-stage" data-stage="4" '
+        'data-after-free-0-cycles="3">'
+    )
     for item in nodes:
         if item.parent_word_id == "ROOT":
             continue
@@ -291,6 +343,7 @@ def render_svg(data: bytes, source_sha256: str) -> bytes:
                 '</g>',
             ]
         )
+    lines.append('</g>')
     lines.extend(
         [
             '<rect x="960" y="130" width="570" height="110" rx="18" fill="#C08A5A" stroke="#5A3524" stroke-width="2"/>',
@@ -325,7 +378,7 @@ def render_svg(data: bytes, source_sha256: str) -> bytes:
         )
     lines.extend(
         [
-            f'<text x="70" y="{height - 38}" fill="#76503A" font-family="ui-monospace, monospace" font-size="13">{SVG_SCHEMA} · records={len(nodes)} · script=0 · external_refs=0 · raw_contents=0 · json=0</text>',
+            f'<text x="70" y="{height - 38}" fill="#76503A" font-family="ui-monospace, monospace" font-size="13">{SVG_SCHEMA} · records={len(nodes)} · thin_arcs=3 · free_0_cycles=3 · reveal_stage=4 · script=0 · external_refs=0 · raw_contents=0 · json=0</text>',
             '</svg>',
         ]
     )

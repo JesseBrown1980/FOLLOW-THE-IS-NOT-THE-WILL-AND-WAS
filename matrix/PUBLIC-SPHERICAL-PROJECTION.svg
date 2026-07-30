@@ -2,12 +2,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2274" viewBox="0 0 1600 2274" role="img" aria-labelledby="title description">
 <title id="title">Verified Public Spherical Repository Projection</title>
 <desc id="description">Static script-free view of verified public repository nodes, their derived colors, the unordered center membership, and the distinct ordered traversal.</desc>
-<metadata>PUBLIC-SPHERICAL-STATIC-SVG-V1|source_hbp_sha256=fc96d9ed96b021324365ea3327140df6a9e26c29f2452e771496e8d0c24db6a6|records=147|public_metadata_only=1|raw_contents=0|json=0</metadata>
+<metadata>PUBLIC-SPHERICAL-STATIC-SVG-V1|source_hbp_sha256=fc96d9ed96b021324365ea3327140df6a9e26c29f2452e771496e8d0c24db6a6|records=147|thin_triple_rainbow=1|thin_arcs=3|free_0_cycles=3|reveal_stage=4|operator_canon=1|atmospheric_optics_claim=0|clinical_claim=0|public_metadata_only=1|raw_contents=0|json=0</metadata>
 <rect x="0" y="0" width="1600" height="2274" fill="#F4E6D0"/>
 <text x="70" y="58" fill="#5A3524" font-family="system-ui, sans-serif" font-size="30" font-weight="700">PUBLIC SPHERICAL PROJECTION</text>
 <text x="70" y="92" fill="#76503A" font-family="system-ui, sans-serif" font-size="16">verified HBP → deterministic static SVG · json=0</text>
+<text x="70" y="120" fill="#76503A" font-family="system-ui, sans-serif" font-size="15">THIN TRIPLE RAINBOW · FREE 0 ×3 · REVEAL STAGE 4</text>
 <ellipse cx="480" cy="500" rx="410" ry="350" fill="#D8B58B" stroke="#70452F" stroke-width="3" opacity="0.72"/>
 <circle cx="480" cy="500" r="9" fill="#6F4A36"/>
+<g id="thin-triple-rainbow-arc-1" class="thin-triple-rainbow-arc" data-thin-arc="1" data-free-0-cycle="1" data-reveal-stage="4">
+<path class="rainbow-band rainbow-band-red" d="M 184 500 A 296 208 0 0 0 776 500" fill="none" stroke="#C84B45" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-orange" d="M 182 500 A 298 210 0 0 0 778 500" fill="none" stroke="#D9823B" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-yellow" d="M 180 500 A 300 212 0 0 0 780 500" fill="none" stroke="#D4B83F" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-green" d="M 178 500 A 302 214 0 0 0 782 500" fill="none" stroke="#4F9B61" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-blue" d="M 176 500 A 304 216 0 0 0 784 500" fill="none" stroke="#4E79B8" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-indigo" d="M 174 500 A 306 218 0 0 0 786 500" fill="none" stroke="#625A9D" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-violet" d="M 172 500 A 308 220 0 0 0 788 500" fill="none" stroke="#8A5B9E" stroke-width="1.4" stroke-linecap="round"/>
+</g>
+<g id="thin-triple-rainbow-arc-2" class="thin-triple-rainbow-arc" data-thin-arc="2" data-free-0-cycle="2" data-reveal-stage="4">
+<path class="rainbow-band rainbow-band-red" d="M 160 500 A 320 226 0 0 0 800 500" fill="none" stroke="#C84B45" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-orange" d="M 158 500 A 322 228 0 0 0 802 500" fill="none" stroke="#D9823B" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-yellow" d="M 156 500 A 324 230 0 0 0 804 500" fill="none" stroke="#D4B83F" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-green" d="M 154 500 A 326 232 0 0 0 806 500" fill="none" stroke="#4F9B61" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-blue" d="M 152 500 A 328 234 0 0 0 808 500" fill="none" stroke="#4E79B8" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-indigo" d="M 150 500 A 330 236 0 0 0 810 500" fill="none" stroke="#625A9D" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-violet" d="M 148 500 A 332 238 0 0 0 812 500" fill="none" stroke="#8A5B9E" stroke-width="1.4" stroke-linecap="round"/>
+</g>
+<g id="thin-triple-rainbow-arc-3" class="thin-triple-rainbow-arc" data-thin-arc="3" data-free-0-cycle="3" data-reveal-stage="4">
+<path class="rainbow-band rainbow-band-red" d="M 136 500 A 344 244 0 0 0 824 500" fill="none" stroke="#C84B45" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-orange" d="M 134 500 A 346 246 0 0 0 826 500" fill="none" stroke="#D9823B" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-yellow" d="M 132 500 A 348 248 0 0 0 828 500" fill="none" stroke="#D4B83F" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-green" d="M 130 500 A 350 250 0 0 0 830 500" fill="none" stroke="#4F9B61" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-blue" d="M 128 500 A 352 252 0 0 0 832 500" fill="none" stroke="#4E79B8" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-indigo" d="M 126 500 A 354 254 0 0 0 834 500" fill="none" stroke="#625A9D" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-violet" d="M 124 500 A 356 256 0 0 0 836 500" fill="none" stroke="#8A5B9E" stroke-width="1.4" stroke-linecap="round"/>
+</g>
+<g id="reveal-stage-4" class="reveal-stage" data-stage="4" data-after-free-0-cycles="3">
 <g>
 <title>gh.public.r0.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
 <circle cx="346" cy="426" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
@@ -595,6 +624,7 @@
 <g>
 <title>gh.public.r99.e82cfc88582d4d72 · repo.root · THRUTH · #685C7C</title>
 <circle cx="379" cy="690" r="7" fill="#685C7C" stroke="#5A3524" stroke-width="2"/>
+</g>
 </g>
 <rect x="960" y="130" width="570" height="110" rx="18" fill="#C08A5A" stroke="#5A3524" stroke-width="2"/>
 <text x="990" y="166" fill="#3E251A" font-family="system-ui, sans-serif" font-size="18" font-weight="700">UNORDERED CENTER MEMBERSHIP · NULLSPACE 0</text>
@@ -1338,5 +1368,5 @@
 <circle cx="1252" cy="2312" r="7" fill="#685C7C" stroke="#5A3524" stroke-width="1"/>
 <text x="1267" y="2317" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r99.e82cfc88582d4d72</text>
 </g>
-<text x="70" y="2236" fill="#76503A" font-family="ui-monospace, monospace" font-size="13">PUBLIC-SPHERICAL-STATIC-SVG-V1 · records=147 · script=0 · external_refs=0 · raw_contents=0 · json=0</text>
+<text x="70" y="2236" fill="#76503A" font-family="ui-monospace, monospace" font-size="13">PUBLIC-SPHERICAL-STATIC-SVG-V1 · records=147 · thin_arcs=3 · free_0_cycles=3 · reveal_stage=4 · script=0 · external_refs=0 · raw_contents=0 · json=0</text>
 </svg>

@@ -85,6 +85,11 @@ level reflects at most 60 existing commitments forward and backward. Calming-OIL
 terms such as `BROWN.NEAR.ONE` are symbolic routing labels, not physical or clinical
 instructions.
 
+The static public map also carries the V13 visual sequence:
+`THIN_TRIPLE_RAINBOW` with three thin arc groups, `FREE_0 × 3`, followed by
+`REVEAL_STAGE = 4`. It is sealed as operator-canon software visualization, separate
+from measured atmospheric optics.
+
 ## Why JSON appears
 
 GitHub REST acquisition and held-out fixtures may use JSON as a cold compatibility

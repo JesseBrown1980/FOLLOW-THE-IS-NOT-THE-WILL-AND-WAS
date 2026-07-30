@@ -9,7 +9,7 @@ authenticated public-only owner census
   -> sealed OWNER3D HBP + HBI + SHA-256 sidecars
   -> PUBLIC2D adapter
   -> spherical 2D -> 3D -> signed-2D projection
-  -> deterministic static SVG
+  -> deterministic static SVG with THIN_TRIPLE_RAINBOW / FREE_0 x3 / REVEAL 4
   -> monotonic timed GGUF monitor
 ```
 
