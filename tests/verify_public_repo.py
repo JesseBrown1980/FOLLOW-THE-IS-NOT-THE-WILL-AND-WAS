@@ -29,8 +29,8 @@ EXPECTED = {
 }
 
 TEXT_SUFFIXES = {
-    ".cjs", ".hbi", ".hbp", ".json", ".md", ".py", ".rs", ".sha256",
-    ".svg", ".txt", ".yml", ".yaml",
+    ".cjs", ".hbi", ".hbp", ".json", ".lock", ".md", ".py", ".rs",
+    ".sha256", ".svg", ".toml", ".txt", ".yml", ".yaml",
 }
 VIDEO_SUFFIXES = {".m4v", ".mkv", ".mov", ".mp4", ".webm"}
 SECRET_PATTERNS = {
@@ -83,10 +83,18 @@ MATRIX_PRIMARY = (
     "matrix/PUBLIC-OWNER-3D-TREE.hbp",
     "matrix/PUBLIC-OWNER-3D-TREE.hbi",
     "matrix/PUBLIC-OWNER-2D.hbp",
+    "matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp",
+    "matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg",
     "matrix/PUBLIC-SPHERICAL-PROJECTION.hbp",
     "matrix/PUBLIC-SPHERICAL-PROJECTION.svg",
     "matrix/README.md",
     "matrix/render_public_spherical_svg.py",
+    "matrix/rust-qprism-181/Cargo.lock",
+    "matrix/rust-qprism-181/Cargo.toml",
+    "matrix/rust-qprism-181/README.md",
+    "matrix/rust-qprism-181/rust-toolchain.toml",
+    "matrix/rust-qprism-181/src/lib.rs",
+    "matrix/rust-qprism-181/src/main.rs",
     "matrix/spherical_public_projection.py",
     "matrix/SPHERICAL-PUBLIC-PROJECTION.md",
     "matrix/test_owner3d_to_public2d.py",
@@ -174,6 +182,15 @@ def main() -> None:
         fail("workflow_action_pin_count_mismatch")
     if dict(action_uses) != WORKFLOW_ACTION_PINS:
         fail("workflow_action_pin_mismatch")
+    for rust_binding in (
+        "rustup toolchain install 1.81.0 --profile minimal --component clippy,rustfmt",
+        'rustc +1.81.0 --version)" = "rustc 1.81.0 (eeb90cda1 2024-09-04)',
+        'cargo +1.81.0 --version)" = "cargo 1.81.0 (2dbb1af80 2024-08-20)',
+        "-D clippy::float_arithmetic",
+        "PUBLIC-QPRISM-COLOR-LEAVES.svg",
+    ):
+        if rust_binding not in workflow_text:
+            fail("workflow_rust_181_binding_missing")
 
     for relative in MATRIX_PRIMARY:
         path = ROOT / relative
@@ -228,6 +245,155 @@ def main() -> None:
     ):
         fail("matrix_svg_active_content")
 
+    qprism_path = ROOT / "matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp"
+    qprism_lines = qprism_path.read_text(encoding="utf-8").splitlines()
+    if len(qprism_lines) != 447:
+        fail("qprism_row_count")
+    if any("|json=0" not in line for line in qprism_lines):
+        fail("qprism_json0_missing")
+
+    def tuple_fields(line: str, expected_kind: str) -> dict[str, str]:
+        pieces = line.split("|")
+        if pieces[0] != expected_kind:
+            fail("qprism_kind:" + expected_kind)
+        result: dict[str, str] = {}
+        for piece in pieces[1:]:
+            if "=" not in piece:
+                fail("qprism_field_shape")
+            key, value = piece.split("=", 1)
+            if not key or not value or key in result:
+                fail("qprism_field_duplicate")
+            result[key] = value
+        return result
+
+    qprism_header = tuple_fields(qprism_lines[0], "QPRISMHDR")
+    required_qprism_header = {
+        "schema": "PUBLIC-QPRISM-COLOR-LEAVES-RUST-181-V1",
+        "rust_version": "1.81.0",
+        "source_sha256": sha256(ROOT / "matrix/PUBLIC-OWNER-2D.hbp"),
+        "observed_records": "147",
+        "leaf_count": "441",
+        "families_per_record": "3",
+        "n_level_open": "1",
+        "reflection_window": "60",
+        "system_affirmed": "0",
+        "public_metadata_only": "1",
+        "raw_contents": "0",
+        "json": "0",
+    }
+    if any(qprism_header.get(key) != value for key, value in required_qprism_header.items()):
+        fail("qprism_header_contract")
+    if qprism_lines[1] != (
+        "CENTER|membership=HBI,HBP,SHA,SH,HASH|"
+        "traversal=HBI-%3EHBP-%3ESH-%3EHASH-%3ESHA|json=0"
+    ):
+        fail("qprism_center_contract")
+    if qprism_lines[2:5] != [
+        "STAGE|order=1|name=2D_INPUT|integer_only=1|json=0",
+        "STAGE|order=2|name=3D_QPRISM|checked_i128=1|float_coordinates=0|json=0",
+        "STAGE|order=3|name=SIGNED_2D_PROJECTION|depth_sorted=1|identity_exchange=0|json=0",
+    ]:
+        fail("qprism_stage_contract")
+
+    qprism_leaves = [tuple_fields(line, "LEAF") for line in qprism_lines[5:-1]]
+    if len(qprism_leaves) != 441:
+        fail("qprism_leaf_population")
+    leaf_ids = {leaf.get("leaf_id") for leaf in qprism_leaves}
+    if None in leaf_ids or len(leaf_ids) != 441:
+        fail("qprism_leaf_identity")
+    if [int(leaf["order"]) for leaf in qprism_leaves] != list(range(441)):
+        fail("qprism_leaf_order")
+    family_counts = {
+        family: sum(leaf.get("family") == family for leaf in qprism_leaves)
+        for family in ("BROWN", "ANTI_BROWN", "ANTI_ANTI_BROWN")
+    }
+    if family_counts != {
+        "BROWN": 147,
+        "ANTI_BROWN": 147,
+        "ANTI_ANTI_BROWN": 147,
+    }:
+        fail("qprism_leaf_families")
+    sources: dict[str, set[str]] = {}
+    for leaf in qprism_leaves:
+        if (
+            leaf.get("input_u") != leaf.get("recovered_u")
+            or leaf.get("input_v") != leaf.get("recovered_v")
+            or leaf.get("input_u") != leaf.get("view_x")
+            or leaf.get("input_v") != leaf.get("view_y")
+            or leaf.get("immutable_source_record") != "1"
+            or leaf.get("identity_exchange") != "0"
+            or leaf.get("tetra_determinant") != "-16"
+        ):
+            fail("qprism_leaf_exactness")
+        sources.setdefault(leaf["source_identity_sha256"], set()).add(leaf["family"])
+    if len(sources) != 147 or any(
+        families != {"BROWN", "ANTI_BROWN", "ANTI_ANTI_BROWN"}
+        for families in sources.values()
+    ):
+        fail("qprism_parent_leaf_relation")
+    if len({leaf["view_z"] for leaf in qprism_leaves}) != 441:
+        fail("qprism_view_z_flattened")
+    if len({leaf["orb_depth_scaled"] for leaf in qprism_leaves}) <= 100:
+        fail("qprism_orb_depth_flattened")
+    qprism_footer = tuple_fields(qprism_lines[-1], "QPRISMFTR")
+    qprism_body = ("\n".join(qprism_lines[:-1]) + "\n").encode("utf-8")
+    if (
+        qprism_footer.get("body_sha256") != hashlib.sha256(qprism_body).hexdigest()
+        or qprism_footer.get("rows") != str(len(qprism_lines))
+        or qprism_footer.get("json") != "0"
+    ):
+        fail("qprism_footer_commitment")
+
+    qprism_svg = (ROOT / "matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg").read_text(
+        encoding="utf-8"
+    )
+    if qprism_svg.count('class="qprism-leaf"') != 441:
+        fail("qprism_svg_leaf_population")
+    for token in (
+        'data-stage="2D_INPUT"',
+        'data-stage="3D_QPRISM"',
+        'data-stage="SIGNED_2D_PROJECTION"',
+        "rust_version=1.81.0",
+        "integer_only=1",
+        "float_coordinates=0",
+        "n_level_open=1",
+        "reflection_window=60",
+    ):
+        if token not in qprism_svg:
+            fail("qprism_svg_contract")
+    if any(
+        token in qprism_svg.lower()
+        for token in (
+            "<table", "<circle", "<script", "<image", "<foreignobject",
+            " href=", "url(", "<a ", "@import", "file:",
+        )
+    ):
+        fail("qprism_svg_active_or_flat_content")
+    svg_leaf_ids = set(re.findall(r'id="leaf-([0-9a-f]{64})"', qprism_svg))
+    if svg_leaf_ids != leaf_ids:
+        fail("qprism_svg_identity_mismatch")
+
+    cargo_text = (ROOT / "matrix/rust-qprism-181/Cargo.toml").read_text(encoding="utf-8")
+    toolchain_text = (ROOT / "matrix/rust-qprism-181/rust-toolchain.toml").read_text(
+        encoding="utf-8"
+    )
+    rust_source = "\n".join(
+        (ROOT / relative).read_text(encoding="utf-8")
+        for relative in (
+            "matrix/rust-qprism-181/src/lib.rs",
+            "matrix/rust-qprism-181/src/main.rs",
+        )
+    )
+    if 'rust-version = "1.81"' not in cargo_text or '[dependencies]\n\n' not in cargo_text:
+        fail("qprism_cargo_contract")
+    if 'channel = "1.81.0"' not in toolchain_text:
+        fail("qprism_toolchain_contract")
+    if "#![forbid(unsafe_code)]" not in rust_source or re.search(r"\b(?:f32|f64)\b", rust_source):
+        fail("qprism_rust_integer_contract")
+    rust_without_strings = re.sub(r'"(?:\\.|[^"\\])*"', '""', rust_source)
+    if re.search(r"(?<![A-Za-z0-9_])\d+\.\d", rust_without_strings):
+        fail("qprism_rust_float_literal")
+
     video_paths = [
         path.relative_to(ROOT).as_posix()
         for path in files
@@ -246,6 +412,23 @@ def main() -> None:
                 secret_hits.append(f"{name}:{path.relative_to(ROOT).as_posix()}")
     if secret_hits:
         fail("secret_signature:" + ",".join(secret_hits))
+
+    private_github_metadata_hits = []
+    private_github_metadata_tokens = (
+        b"owner_visible_" + b"repositories=",
+        b"private_" + b"repositories=",
+    )
+    for path in files:
+        if path.stat().st_size > 2_000_000:
+            continue
+        data = path.read_bytes()
+        if any(token in data for token in private_github_metadata_tokens):
+            private_github_metadata_hits.append(path.relative_to(ROOT).as_posix())
+    if private_github_metadata_hits:
+        fail(
+            "private_github_metadata:"
+            + ",".join(private_github_metadata_hits)
+        )
 
     receipts = sorted(ROOT.rglob("*.hbp"))
     if not receipts:

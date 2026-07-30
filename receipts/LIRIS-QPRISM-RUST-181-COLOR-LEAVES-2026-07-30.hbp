@@ -1,0 +1,17 @@
+RECEIPT|name=LIRIS-QPRISM-RUST-181-COLOR-LEAVES|date=2026-07-30|seat=LIRIS|surface=LIRIS_WSL_UBUNTU|class=MEASURED_LIRIS_LOCAL|json=0
+AUTHORITY|operator_canon=1|measured_github_public_subset=1|system_affirmed=0|fabric_canon=STALE_FALLBACK|recall=UNAVAILABLE|liris_behcs=HEALTH_ONLY|json=0
+GITHUB|owner=JesseBrown1980|surface=AUTHENTICATED_PUBLIC_ROWS|public_repositories=147|public_rows=147|nonpublic_rows_published=0|json=0
+SOURCE|artifact=PUBLIC-OWNER-3D-TREE.hbp|bytes=66191|sha256=e9907a266593da90d74b45fd73474e6757ba5bd159ad97c29129156911f08e52|json=0
+SOURCE|artifact=PUBLIC-OWNER-3D-TREE.hbi|bytes=601|sha256=da2f24ca5f605a4d9db57eb7e81298ab802c070aeeef583233c6d3e5ed8baece|json=0
+SOURCE|artifact=PUBLIC-OWNER-2D.hbp|bytes=97469|sha256=f3a9ade5062c5712070ae3f1b78aaa169ff644d5692bf65f361bdb128b7d6e17|json=0
+TOOLCHAIN|rustc=1.81.0|rustc_commit=eeb90cda1|cargo=1.81.0|cargo_commit=2dbb1af80|edition=2021|dependencies=0|unsafe_code=0|json=0
+TRANSFORM|path=2D_INPUT,3D_QPRISM,SIGNED_2D_PROJECTION|checked_i128=1|float_types=0|float_arithmetic=0|n_level_open=1|reflection_window=60|json=0
+OUTPUT|artifact=PUBLIC-QPRISM-COLOR-LEAVES.hbp|bytes=343228|sha256=24a0d3109e872c3279cd830eeb5081ff94c5f7622c6b7d7da72ac4eb1709995e|records=147|leaves=441|json=0
+OUTPUT|artifact=PUBLIC-QPRISM-COLOR-LEAVES.svg|bytes=206002|sha256=31c772e1b24cd759e60e1c685b167d135872906848e8bbf37ac2e152af509c2a|leaf_paths=441|tables=0|circles=0|active_refs=0|json=0
+DEPTH|distinct_view_z=441|view_z_min=-911106|view_z_max=837572|distinct_rational_orb_depths=145|z_used_by_projection=1|z_used_by_order=1|json=0
+FAMILIES|brown=147|anti_brown=147|anti_anti_brown=147|parent_identities=147|identity_exchange=0|json=0
+TEST|rust_181_wsl=PASS|rust_tests=3|clippy_float_arithmetic_deny=PASS|python_matrix_tests=28|public_repo_verify=PASS|deterministic_rebuild_files=4|deterministic_matches=4|json=0
+VISUAL|surface=HEADLESS_CHROME_RASTER|inspection=PASS|primary_view=COLOR_LEAF_CANOPY|table_view=0|all_leaf_paths_visible=1|json=0
+BOUNDARY|windows_msvc_linker=UNAVAILABLE|github_actions_gate=PENDING|native_windows_full_rust_test=0|wsl_linux_full_rust_test=1|clinical_claim=0|physical_energy_claim=0|autonomous_asi_claim=0|json=0
+SECURITY|credentials=0|private_keys=0|private_repository_metadata=0|raw_repository_contents=0|raw_response_notebooks=0|external_svg_refs=0|json=0
+QPRISMFTR|body_sha256=583d5dd6866e078b487d00a46549e3d5627c25080959eb75097332a3fe8e96a5|rows=17|json=0

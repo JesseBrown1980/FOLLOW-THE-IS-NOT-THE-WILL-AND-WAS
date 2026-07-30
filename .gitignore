@@ -26,5 +26,5 @@ __pycache__/
 *.obj
 *.pyc
 /data/behcs/
-/target/
+target/
 /.pytest_cache/

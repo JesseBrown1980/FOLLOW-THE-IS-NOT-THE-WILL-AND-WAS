@@ -8,8 +8,10 @@ This directory carries the public GitHub projection pipeline:
 authenticated public-only owner census
   -> sealed OWNER3D HBP + HBI + SHA-256 sidecars
   -> PUBLIC2D adapter
-  -> spherical 2D -> 3D -> signed-2D projection
-  -> deterministic static SVG with THIN_TRIPLE_RAINBOW / FREE_0 x3 / REVEAL 4
+  -> exact Rust 1.81 checked-integer 2D -> 3D QPRISM -> signed-2D projection
+  -> 3 independently addressed color leaves per public repository
+  -> deterministic static color-canopy SVG
+  -> exact-rational Python projection and THIN_TRIPLE_RAINBOW compatibility view
   -> monotonic timed GGUF monitor
 ```
 
@@ -40,6 +42,10 @@ From the repository root:
 gh auth status
 py -3.12 matrix/collect_public_owner_inventory.py --owner JesseBrown1980 --output matrix/PUBLIC-OWNER-3D-TREE.hbp --index matrix/PUBLIC-OWNER-3D-TREE.hbi
 py -3.12 matrix/owner3d_to_public2d.py matrix/PUBLIC-OWNER-3D-TREE.hbi matrix/PUBLIC-OWNER-2D.hbp --replace
+cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --release --locked -- matrix/PUBLIC-OWNER-2D.hbp matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg --replace
+cargo +1.81.0 fmt --manifest-path matrix/rust-qprism-181/Cargo.toml -- --check
+cargo +1.81.0 test --manifest-path matrix/rust-qprism-181/Cargo.toml --locked
+cargo +1.81.0 clippy --manifest-path matrix/rust-qprism-181/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
 py -3.12 matrix/spherical_public_projection.py project matrix/PUBLIC-OWNER-2D.hbp matrix/PUBLIC-SPHERICAL-PROJECTION.hbp --replace
 py -3.12 matrix/spherical_public_projection.py verify matrix/PUBLIC-SPHERICAL-PROJECTION.hbp
 py -3.12 matrix/render_public_spherical_svg.py matrix/PUBLIC-SPHERICAL-PROJECTION.hbp matrix/PUBLIC-SPHERICAL-PROJECTION.svg --replace
@@ -49,6 +55,17 @@ py -3.12 matrix/test_spherical_public_projection.py
 py -3.12 matrix/test_render_public_spherical_svg.py
 py -3.12 matrix/test_timed_chiral_gguf_monitor.py
 ```
+
+`PUBLIC-QPRISM-COLOR-LEAVES.svg` is the primary human view. It contains three
+leaf-path identities for each of the 147 public repository records in the current
+authenticated public-owner capture: 441 leaves total. The backend HBP is a sealed
+tuple receipt, not the visual interface. Drawing depth changes only view order;
+repository and leaf identities remain unchanged.
+
+The Rust cell is dependency-free and pinned to `1.81.0`. Its geometry, color
+shading, depth ordering, and projection use checked integers only. The public
+metadata capture has an open semantic N-level relation; `60` is the bounded
+reflection window applied at each observed level, not a final semantic level.
 
 The timed monitor verifies the PUBLIC2D sidecar, writes HBP/HBI status at the real
 monotonic checkpoints `1,2,3,4,8,...,7200`, and emits its derived descriptor-only
