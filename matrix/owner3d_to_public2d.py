@@ -22,7 +22,9 @@ except ImportError:  # Direct script execution from matrix/.
     import spherical_public_projection as projection
 
 
-OWNER_SCHEMA = "ASOLARIA-PUBLIC-OWNER-3D-TREE-V1"
+OWNER_SCHEMA_V1 = "ASOLARIA-PUBLIC-OWNER-3D-TREE-V1"
+OWNER_SCHEMA_V2 = "ASOLARIA-PUBLIC-OWNER-3D-TREE-V2"
+OWNER_SCHEMAS = {OWNER_SCHEMA_V1, OWNER_SCHEMA_V2}
 CENTER_MEMBERS = "HBI,HBP,SHA,SH,HASH"
 CENTER_TRAVERSAL = "HBI,HBP,SH,HASH,SHA"
 OWNER_RECIPE = "GH_PUBLIC_OWNER_TREE_V1"
@@ -31,6 +33,7 @@ MAX_REPOS = projection.MAX_RECORDS
 MAX_HBI_BYTES = 64 * 1024
 MAX_HBP_BYTES = projection.MAX_INPUT_BYTES
 MAX_LINE_BYTES = projection.MAX_LINE_BYTES
+MAX_MEDIA_DECLARED_BYTES = 1_000_000_000_000_000
 HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 OWNER = re.compile(r"[A-Za-z0-9-]{1,39}\Z")
@@ -58,11 +61,17 @@ class OwnerRepo:
     object_root: str
     tree: str
     color: str
+    image_entries: int
+    video_entries: int
+    media_declared_bytes: int
+    media_size_unknown_entries: int
+    media_root: str
     source_row: bytes
 
 
 @dataclass(frozen=True)
 class OwnerSeal:
+    schema: str
     hbi_sha256: str
     hbp_sha256: str
     hbp_filename: str
@@ -181,7 +190,7 @@ def verify_center(fields: dict[str, str], *, hbp: bool) -> None:
         raise AdapterError("CENTER_CONTRACT")
 
 
-def parse_hbi(index_path: Path) -> tuple[str, str, int, str, str]:
+def parse_hbi(index_path: Path) -> tuple[str, str, str, int, str, str]:
     data = read_file(index_path, MAX_HBI_BYTES, "HBI")
     hbi_sha = verify_sidecar(index_path, data)
     lines = text_lines(data, "HBI")
@@ -189,7 +198,8 @@ def parse_hbi(index_path: Path) -> tuple[str, str, int, str, str]:
         raise AdapterError("HBI_ROW_COUNT")
     header = parse_row(lines[0], "OWNER3DHBI")
     exact_fields(header, {"schema", "version", "json"}, "HBI_HEADER_FIELDS")
-    if header["schema"] != OWNER_SCHEMA or header["version"] != "1":
+    schema = header["schema"]
+    if schema not in OWNER_SCHEMAS or header["version"] != "1":
         raise AdapterError("HBI_HEADER")
     verify_center(parse_row(lines[1], "CENTER"), hbp=False)
     hbp_ref = parse_row(lines[2], "HBP")
@@ -225,16 +235,23 @@ def parse_hbi(index_path: Path) -> tuple[str, str, int, str, str]:
     body = ("\n".join(lines[:-1]) + "\n").encode("utf-8")
     if footer["body_sha256"] != digest(body) or footer["rows"] != "6":
         raise AdapterError("HBI_FOOTER")
-    return hbi_sha, filename, repos, hbp_sha, root
+    return schema, hbi_sha, filename, repos, hbp_sha, root
 
 
-def parse_repo(raw: str, expected_index: int) -> tuple[OwnerRepo, dict[str, int]]:
+def parse_repo(
+    raw: str, expected_index: int, schema: str
+) -> tuple[OwnerRepo, dict[str, int]]:
     fields = parse_row(raw, "REPO")
     expected = {
         "i", "name", "branch", "state", "commit", "tree", "entries",
         "blobs", "trees", "commits", "symlinks", "object_root_sha256",
         "word_rime_root_sha256", "word_count", "color", "json",
     }
+    if schema == OWNER_SCHEMA_V2:
+        expected |= {
+            "image_entries", "video_entries", "media_declared_bytes",
+            "media_size_unknown_entries", "media_root_sha256",
+        }
     exact_fields(fields, expected, "REPO_FIELDS")
     if integer(fields["i"], expected_index, expected_index, "REPO_INDEX") != expected_index:
         raise AdapterError("REPO_INDEX")
@@ -255,6 +272,25 @@ def parse_repo(raw: str, expected_index: int) -> tuple[OwnerRepo, dict[str, int]
         raise AdapterError("REPO_ENTRY_SUM")
     if counts["symlinks"] > counts["blobs"]:
         raise AdapterError("REPO_SYMLINK_COUNT")
+    image_entries = integer(fields.get("image_entries", "0"), 0, 1_000_000, "REPO_IMAGE_ENTRIES")
+    video_entries = integer(fields.get("video_entries", "0"), 0, 1_000_000, "REPO_VIDEO_ENTRIES")
+    media_declared_bytes = integer(
+        fields.get("media_declared_bytes", "0"),
+        0,
+        MAX_MEDIA_DECLARED_BYTES,
+        "REPO_MEDIA_DECLARED_BYTES",
+    )
+    media_size_unknown_entries = integer(
+        fields.get("media_size_unknown_entries", "0"),
+        0,
+        1_000_000,
+        "REPO_MEDIA_SIZE_UNKNOWN",
+    )
+    if image_entries + video_entries > counts["blobs"]:
+        raise AdapterError("REPO_MEDIA_COUNT")
+    media_root = hex_value(
+        fields.get("media_root_sha256", EMPTY_SHA256), HEX64, "REPO_MEDIA_ROOT"
+    )
     object_root = hex_value(fields["object_root_sha256"], HEX64, "REPO_OBJECT_ROOT")
     hex_value(fields["word_rime_root_sha256"], HEX64, "REPO_WORD_ROOT")
     integer(fields["word_count"], 1, 100_000_000, "REPO_WORD_COUNT")
@@ -265,6 +301,14 @@ def parse_repo(raw: str, expected_index: int) -> tuple[OwnerRepo, dict[str, int]
             raise AdapterError("REPO_UNBORN_SHAPE")
         if object_root != EMPTY_SHA256:
             raise AdapterError("REPO_UNBORN_ROOT")
+        if (
+            image_entries
+            or video_entries
+            or media_declared_bytes
+            or media_size_unknown_entries
+            or media_root != EMPTY_SHA256
+        ):
+            raise AdapterError("REPO_UNBORN_MEDIA")
     elif commit == ZERO_SHA1 or tree == ZERO_SHA1:
         raise AdapterError("REPO_COMPLETE_SHAPE")
     return (
@@ -275,6 +319,11 @@ def parse_repo(raw: str, expected_index: int) -> tuple[OwnerRepo, dict[str, int]
             object_root,
             tree,
             fields["color"],
+            image_entries,
+            video_entries,
+            media_declared_bytes,
+            media_size_unknown_entries,
+            media_root,
             (raw + "\n").encode("utf-8"),
         ),
         counts,
@@ -286,6 +335,7 @@ def parse_hbp(
     expected_sha: str,
     expected_repos: int,
     expected_root: str,
+    expected_schema: str,
 ) -> tuple[str, tuple[OwnerRepo, ...]]:
     data = read_file(hbp_path, MAX_HBP_BYTES, "HBP")
     hbp_sha = verify_sidecar(hbp_path, data)
@@ -301,7 +351,7 @@ def parse_hbp(
         "HBP_HEADER_FIELDS",
     )
     if (
-        header["schema"] != OWNER_SCHEMA
+        header["schema"] != expected_schema
         or OWNER.fullmatch(header["owner"]) is None
         or UTC_TIME.fullmatch(header["captured_at"]) is None
         or header["surface"] != "PUBLIC_API_SUBSET"
@@ -310,35 +360,52 @@ def parse_hbp(
         raise AdapterError("HBP_HEADER")
     verify_center(parse_row(lines[1], "CENTER"), hbp=True)
     recipe = parse_row(lines[2], "RECIPE")
-    exact_fields(
-        recipe,
-        {"sh", "transport", "recursive_git_tree", "paths_published", "blob_bodies_read", "json"},
-        "HBP_RECIPE_FIELDS",
-    )
-    if recipe != {
+    expected_recipe = {
         "sh": OWNER_RECIPE,
         "transport": "GH_CLI_PUBLIC_REST",
         "recursive_git_tree": "1",
         "paths_published": "0",
         "blob_bodies_read": "0",
         "json": "0",
-    }:
+    }
+    if expected_schema == OWNER_SCHEMA_V2:
+        expected_recipe |= {
+            "media_extensions_classified": "1",
+            "media_paths_published": "0",
+            "media_bodies_read": "0",
+            "media_classification": "PATH_EXTENSION_METADATA_ONLY",
+        }
+    exact_fields(recipe, set(expected_recipe), "HBP_RECIPE_FIELDS")
+    if recipe != expected_recipe:
         raise AdapterError("HBP_RECIPE")
     boundary = parse_row(lines[3], "BOUNDARY")
-    exact_fields(
-        boundary,
-        {"private_repo_endpoint_calls", "private_repo_rows", "private_keys", "credentials_in_output", "catalog_grants_authority", "system_affirmed", "json"},
-        "HBP_BOUNDARY_FIELDS",
-    )
+    boundary_fields = {
+        "private_repo_endpoint_calls", "private_repo_rows", "private_keys",
+        "credentials_in_output", "catalog_grants_authority", "system_affirmed",
+        "json",
+    }
+    if expected_schema == OWNER_SCHEMA_V2:
+        boundary_fields |= {"media_bytes_embedded", "media_decoder_claim"}
+    exact_fields(boundary, boundary_fields, "HBP_BOUNDARY_FIELDS")
     if any(boundary[key] != "0" for key in boundary if key != "json"):
         raise AdapterError("HBP_PUBLIC_BOUNDARY")
     repositories: list[OwnerRepo] = []
     totals = {key: 0 for key in ("entries", "blobs", "trees", "commits", "symlinks")}
+    media_totals = {
+        "image_entries": 0,
+        "video_entries": 0,
+        "media_declared_bytes": 0,
+        "media_size_unknown_entries": 0,
+    }
     for index, raw in enumerate(lines[4 : 4 + expected_repos]):
-        repository, counts = parse_repo(raw, index)
+        repository, counts = parse_repo(raw, index, expected_schema)
         repositories.append(repository)
         for key, value in counts.items():
             totals[key] += value
+        media_totals["image_entries"] += repository.image_entries
+        media_totals["video_entries"] += repository.video_entries
+        media_totals["media_declared_bytes"] += repository.media_declared_bytes
+        media_totals["media_size_unknown_entries"] += repository.media_size_unknown_entries
     if len({repository.name.casefold() for repository in repositories}) != len(repositories):
         raise AdapterError("REPO_NAME_DUPLICATE")
     calculated = hashlib.sha256()
@@ -362,11 +429,13 @@ def parse_hbp(
     ):
         raise AdapterError("HBP_OBJECT_COMMITMENT")
     summary = parse_row(lines[-1], "SUMMARY")
-    exact_fields(
-        summary,
-        {"repos", "branched", "unborn", "entries", "blobs", "trees", "commits", "symlinks", "json"},
-        "HBP_SUMMARY_FIELDS",
-    )
+    expected_summary_fields = {
+        "repos", "branched", "unborn", "entries", "blobs", "trees",
+        "commits", "symlinks", "json",
+    }
+    if expected_schema == OWNER_SCHEMA_V2:
+        expected_summary_fields |= set(media_totals)
+    exact_fields(summary, expected_summary_fields, "HBP_SUMMARY_FIELDS")
     branched = sum(repository.state == "PUBLIC_TREE_COMPLETE" for repository in repositories)
     unborn = expected_repos - branched
     expected_summary = {
@@ -375,19 +444,22 @@ def parse_hbp(
         "unborn": unborn,
         **totals,
     }
+    if expected_schema == OWNER_SCHEMA_V2:
+        expected_summary |= media_totals
     for key, value in expected_summary.items():
-        if integer(summary[key], 0, 1_000_000_000, "HBP_SUMMARY") != value:
+        high = MAX_MEDIA_DECLARED_BYTES if key == "media_declared_bytes" else 1_000_000_000
+        if integer(summary[key], 0, high, "HBP_SUMMARY") != value:
             raise AdapterError("HBP_SUMMARY")
     return hbp_sha, tuple(repositories)
 
 
 def verify_owner_seal(index_path: Path) -> OwnerSeal:
-    hbi_sha, filename, repos, expected_hbp_sha, expected_root = parse_hbi(index_path)
+    schema, hbi_sha, filename, repos, expected_hbp_sha, expected_root = parse_hbi(index_path)
     hbp_path = index_path.with_name(filename)
     hbp_sha, repositories = parse_hbp(
-        hbp_path, expected_hbp_sha, repos, expected_root
+        hbp_path, expected_hbp_sha, repos, expected_root, schema
     )
-    return OwnerSeal(hbi_sha, hbp_sha, filename, expected_root, repositories)
+    return OwnerSeal(schema, hbi_sha, hbp_sha, filename, expected_root, repositories)
 
 
 def signed_coordinate(material: bytes, offset: int) -> int:

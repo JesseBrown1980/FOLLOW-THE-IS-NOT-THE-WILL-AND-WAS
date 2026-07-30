@@ -1,0 +1,11 @@
+OUTWARDIDX|schema=ASOLARIA-PUBLIC-OUTWARD-TRUTH-WAVES-RUST-181-V1|repositories=147|waves=1764|detectors=4|directions=3|json=0
+SOURCE|schema=ASOLARIA-PUBLIC-OWNER-3D-TREE-V2|sha256=6fb6df090527a2c6f422a63ccacd31168d8cf6df5aa4b5029753c34cc50d7ab4|object_hash=9ab8d0c199cafaf62607f366a3fa78867d9b91ee5b828382a0233483e2cdd9de|sidecar_verified=1|json=0
+ARTIFACT|kind=HBP|file=PUBLIC-OUTWARD-TRUTH-WAVES.hbp|sha256=a0a0d0ab471e337edc7942ca42b4fb5c9e6f05060635e3b1ed6c94c1dad03472|json=0
+ARTIFACT|kind=SVG|file=PUBLIC-OUTWARD-TRUTH-WAVES.svg|sha256=b6ad987e4a4b503aef4d1a42eeb662e7e803e6195494ea4704e58267796246aa|static=1|script=0|network=0|json=0
+ARTIFACT|kind=GGUF|file=PUBLIC-OUTWARD-TRUTH-WAVES.gguf|sha256=b315be52a4a6870d2eb15f44736dd29e30685bea6b0b16936e16abc9a809e9f6|tensor=outward_wave|shape=32,3,4,147|order=repo,detector,direction,feature|descriptor_sha256=db3014e49b30cc43a2378348a11646d3d2345342733534c510f1ebdfb905c972|media_bytes_embedded=0|repo_bytes_embedded=0|json=0
+CENTER|nullspace=0|center_members=HBI,HBP,SHA,SH,HASH|traversal=HBI->HBP->SH->HASH->SHA|sha_equals_hash=0|object_hash=dd42bbea54cdb9077597d5f9aa97ec2b529a102adc07f362f987a157ae48461c|json=0
+ELECTRONS|members=BYTE_COMMITMENT,CLAIM_EVIDENCE,MEDIA_BINDING,RUNTIME_AUTHORITY|catalog_only=1|function_call_authority=0|network=0|execution=0|json=0
+QUARANTINE|name=BLACK_HEAT|mode=REVERSIBLE_VISUALIZATION_ONLY|bytes_preserved=1|reversible=1|deletion=0|execution=0|physical_energy=0|identity_accusation=0|quarantine_applied=0|json=0
+BOUNDARY|media_classification=PATH_EXTENSION_METADATA_ONLY|media_bodies_read=0|media_bytes_embedded=0|repository_bodies_read=0|repository_bytes_embedded=0|private_repo_rows=0|private_keys=0|credentials=0|system_affirmed=0|json=0
+RECIPE|sh=OUTWARD_TRUTH_WAVE_RUST_181_V1|integer_only=1|float=0|unsafe=0|dependencies=0|rust=1.81.0|json=0
+OUTWARDIDXFTR|body_sha256=e83282155c80ec4fdfe482f40abb1997c855c7250094153b71901c39ca338944|rows=11|json=0

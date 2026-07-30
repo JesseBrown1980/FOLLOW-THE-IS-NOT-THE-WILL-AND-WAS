@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -82,9 +83,16 @@ MATRIX_PRIMARY = (
     "matrix/owner3d_to_public2d.py",
     "matrix/PUBLIC-OWNER-3D-TREE.hbp",
     "matrix/PUBLIC-OWNER-3D-TREE.hbi",
+    "matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbp",
+    "matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbi",
+    "matrix/PUBLIC-OWNER-MEDIA-POSITION-2D.hbp",
     "matrix/PUBLIC-OWNER-2D.hbp",
     "matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp",
     "matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg",
+    "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbp",
+    "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbi",
+    "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.svg",
+    "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.gguf",
     "matrix/PUBLIC-SPHERICAL-PROJECTION.hbp",
     "matrix/PUBLIC-SPHERICAL-PROJECTION.svg",
     "matrix/README.md",
@@ -94,6 +102,8 @@ MATRIX_PRIMARY = (
     "matrix/rust-qprism-181/README.md",
     "matrix/rust-qprism-181/rust-toolchain.toml",
     "matrix/rust-qprism-181/src/lib.rs",
+    "matrix/rust-qprism-181/src/outward.rs",
+    "matrix/rust-qprism-181/src/bin/outward-truth-waves.rs",
     "matrix/rust-qprism-181/src/main.rs",
     "matrix/spherical_public_projection.py",
     "matrix/SPHERICAL-PUBLIC-PROJECTION.md",
@@ -101,17 +111,89 @@ MATRIX_PRIMARY = (
     "matrix/test_render_public_spherical_svg.py",
     "matrix/test_spherical_public_projection.py",
     "matrix/test_timed_chiral_gguf_monitor.py",
+    "matrix/TIMED-CHIRAL-MONITOR.hbi",
+    "matrix/TIMED-CHIRAL-MONITOR.hbp",
+    "matrix/TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf",
     "matrix/timed_chiral_gguf_monitor.py",
     "matrix/verify_3d_github_harness.py",
 )
 MATRIX_CENTER = "HBI,HBP,SHA,SH,HASH"
 MATRIX_TRAVERSAL_ENCODED = "HBI-%3EHBP-%3ESH-%3EHASH-%3ESHA"
+MAX_GIT_FILE_LIST_BYTES = 4 * 1024 * 1024
+
+
+def decode_git_file_list(data: bytes) -> tuple[Path, ...]:
+    if len(data) > MAX_GIT_FILE_LIST_BYTES:
+        raise ValueError("git file list exceeds bound")
+    if not data:
+        return ()
+    if data[-1] != 0:
+        raise ValueError("git file list is not NUL terminated")
+    paths: list[Path] = []
+    seen: set[str] = set()
+    for raw in data[:-1].split(b"\0"):
+        try:
+            text = raw.decode("utf-8")
+        except UnicodeError as exc:
+            raise ValueError("git file path is not UTF-8") from exc
+        relative = Path(text)
+        if (
+            not text
+            or relative.is_absolute()
+            or "\\" in text
+            or any(part in {"", ".", ".."} for part in relative.parts)
+        ):
+            raise ValueError("git file path is unsafe")
+        normalized = relative.as_posix()
+        if normalized in seen:
+            raise ValueError("git file path is duplicated")
+        seen.add(normalized)
+        paths.append(relative)
+    return tuple(paths)
 
 
 def repo_files() -> list[Path]:
+    try:
+        completed = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(ROOT),
+                "ls-files",
+                "-z",
+                "--cached",
+                "--others",
+                "--exclude-standard",
+            ],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        completed = None
+    if completed is not None and completed.returncode == 0:
+        try:
+            relatives = decode_git_file_list(completed.stdout)
+        except ValueError as exc:
+            fail("public_file_enumeration:" + str(exc))
+        files: list[Path] = []
+        root_resolved = ROOT.resolve()
+        for relative in relatives:
+            path = ROOT / relative
+            if path.is_symlink() or not path.is_file():
+                fail("public_file_missing_or_link:" + relative.as_posix())
+            try:
+                path.resolve().relative_to(root_resolved)
+            except ValueError:
+                fail("public_file_outside_root:" + relative.as_posix())
+            files.append(path)
+        return sorted(files)
     return sorted(
-        path for path in ROOT.rglob("*")
-        if path.is_file() and ".git" not in path.relative_to(ROOT).parts
+        path
+        for path in ROOT.rglob("*")
+        if path.is_file()
+        and ".git" not in path.relative_to(ROOT).parts
     )
 
 
@@ -188,6 +270,8 @@ def main() -> None:
         'cargo +1.81.0 --version)" = "cargo 1.81.0 (2dbb1af80 2024-08-20)',
         "-D clippy::float_arithmetic",
         "PUBLIC-QPRISM-COLOR-LEAVES.svg",
+        "PUBLIC-OUTWARD-TRUTH-WAVES.gguf",
+        "--bin outward-truth-waves",
     ):
         if rust_binding not in workflow_text:
             fail("workflow_rust_181_binding_missing")
@@ -221,6 +305,93 @@ def main() -> None:
             for line in text.splitlines()
         ):
             fail("matrix_json0_missing:" + relative)
+
+    media_owner_path = ROOT / "matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbp"
+    media_owner_lines = media_owner_path.read_text(encoding="utf-8").splitlines()
+    if len(media_owner_lines) != 153 or any(
+        not line.endswith("|json=0") for line in media_owner_lines
+    ):
+        fail("media_owner_row_contract")
+    if not media_owner_lines[0].startswith(
+        "OWNER3DRUN|schema=ASOLARIA-PUBLIC-OWNER-3D-TREE-V2|"
+    ) or "|repos=147|" not in media_owner_lines[0]:
+        fail("media_owner_header")
+    if media_owner_lines[2] != (
+        "RECIPE|sh=GH_PUBLIC_OWNER_TREE_V1|transport=GH_CLI_PUBLIC_REST"
+        "|recursive_git_tree=1|paths_published=0|blob_bodies_read=0"
+        "|media_extensions_classified=1|media_paths_published=0"
+        "|media_bodies_read=0"
+        "|media_classification=PATH_EXTENSION_METADATA_ONLY|json=0"
+    ):
+        fail("media_owner_recipe")
+    if media_owner_lines[3] != (
+        "BOUNDARY|private_repo_endpoint_calls=0|private_repo_rows=0|private_keys=0"
+        "|credentials_in_output=0|catalog_grants_authority=0|system_affirmed=0"
+        "|media_bytes_embedded=0|media_decoder_claim=0|json=0"
+    ):
+        fail("media_owner_boundary")
+
+    def simple_fields(line: str, kind: str) -> dict[str, str]:
+        pieces = line.split("|")
+        if pieces[0] != kind:
+            fail("media_owner_kind:" + kind)
+        result: dict[str, str] = {}
+        for piece in pieces[1:]:
+            if "=" not in piece:
+                fail("media_owner_field_shape")
+            key, value = piece.split("=", 1)
+            if not key or key in result:
+                fail("media_owner_field_duplicate")
+            result[key] = value
+        return result
+
+    media_rows = [simple_fields(line, "REPO") for line in media_owner_lines[4:151]]
+    if [int(row["i"]) for row in media_rows] != list(range(147)):
+        fail("media_owner_index")
+    media_totals = {
+        "image_entries": sum(int(row["image_entries"]) for row in media_rows),
+        "video_entries": sum(int(row["video_entries"]) for row in media_rows),
+        "media_declared_bytes": sum(
+            int(row["media_declared_bytes"]) for row in media_rows
+        ),
+        "media_size_unknown_entries": sum(
+            int(row["media_size_unknown_entries"]) for row in media_rows
+        ),
+    }
+    expected_media_totals = {
+        "image_entries": 1137,
+        "video_entries": 0,
+        "media_declared_bytes": 219346951,
+        "media_size_unknown_entries": 0,
+    }
+    if media_totals != expected_media_totals:
+        fail("media_owner_totals")
+    if any(
+        int(row["image_entries"]) + int(row["video_entries"]) > int(row["blobs"])
+        or not re.fullmatch(r"[0-9a-f]{64}", row["media_root_sha256"])
+        for row in media_rows
+    ):
+        fail("media_owner_repo_contract")
+    media_summary = simple_fields(media_owner_lines[-1], "SUMMARY")
+    if any(media_summary.get(key) != str(value) for key, value in expected_media_totals.items()):
+        fail("media_owner_summary")
+    media_hbi_path = ROOT / "matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbi"
+    media_hbi = media_hbi_path.read_text(encoding="utf-8")
+    if (
+        f"sha256={sha256(media_owner_path)}" not in media_hbi
+        or "|repos=147|raw_blob_bodies=0|" not in media_hbi
+        or not media_hbi.endswith("|json=0\n")
+    ):
+        fail("media_owner_hbi_binding")
+
+    media_position_path = ROOT / "matrix/PUBLIC-OWNER-MEDIA-POSITION-2D.hbp"
+    media_position_lines = media_position_path.read_text(encoding="utf-8").splitlines()
+    if (
+        len(media_position_lines) != 149
+        or "|observed_records=147|" not in media_position_lines[0]
+        or any(not line.endswith("|json=0") for line in media_position_lines)
+    ):
+        fail("media_position_2d_contract")
 
     projection_text = (
         ROOT / "matrix/PUBLIC-SPHERICAL-PROJECTION.hbp"
@@ -382,6 +553,8 @@ def main() -> None:
         for relative in (
             "matrix/rust-qprism-181/src/lib.rs",
             "matrix/rust-qprism-181/src/main.rs",
+            "matrix/rust-qprism-181/src/outward.rs",
+            "matrix/rust-qprism-181/src/bin/outward-truth-waves.rs",
         )
     )
     if 'rust-version = "1.81"' not in cargo_text or '[dependencies]\n\n' not in cargo_text:
@@ -394,6 +567,274 @@ def main() -> None:
     if re.search(r"(?<![A-Za-z0-9_])\d+\.\d", rust_without_strings):
         fail("qprism_rust_float_literal")
 
+    matrix_path = str(ROOT / "matrix")
+    if matrix_path not in sys.path:
+        sys.path.insert(0, matrix_path)
+    from spherical_public_projection import parse_inventory  # noqa: PLC0415
+    from timed_chiral_gguf_monitor import (  # noqa: PLC0415
+        TARGET_SECONDS,
+        descriptor_bytes,
+        verify_gguf,
+    )
+
+    timed_source = ROOT / "matrix/PUBLIC-OWNER-2D.hbp"
+    timed_source_sha = sha256(timed_source)
+    if timed_source_sha != (
+        "f3a9ade5062c5712070ae3f1b78aaa169ff644d5692bf65f361bdb128b7d6e17"
+    ):
+        fail("timed_source_f3a9_immutability")
+    timed_gguf_path = ROOT / "matrix/TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf"
+    timed_gguf = timed_gguf_path.read_bytes()
+    if (
+        len(timed_gguf) != 2200
+        or verify_gguf(timed_gguf, timed_source_sha, 147, TARGET_SECONDS)
+        != "77174fb892a1c8152de362730d2864ef2b7f929b496af7758a5c42a88798bb6e"
+    ):
+        fail("timed_gguf_contract")
+    inventory = parse_inventory(timed_source)
+    if not timed_gguf.endswith(descriptor_bytes(inventory)):
+        fail("timed_gguf_descriptor_source_closure")
+    timed_hbp_path = ROOT / "matrix/TIMED-CHIRAL-MONITOR.hbp"
+    timed_hbp = timed_hbp_path.read_text(encoding="utf-8").splitlines()
+    if (
+        len(timed_hbp) != 18
+        or any(not line.endswith("|json=0") for line in timed_hbp)
+        or "|status=COMPLETE|elapsed_seconds=7200|target_seconds=7200|" not in timed_hbp[0]
+        or "|checkpoint_seconds=7200|" not in timed_hbp[-3]
+        or "|state=PRESENT|" not in timed_hbp[-2]
+    ):
+        fail("timed_hbp_contract")
+    timed_body = ("\n".join(timed_hbp[:-1]) + "\n").encode("utf-8")
+    timed_footer = tuple_fields(timed_hbp[-1], "TIMEDCHIRALFTR")
+    if (
+        timed_footer.get("body_sha256") != hashlib.sha256(timed_body).hexdigest()
+        or timed_footer.get("rows") != "18"
+    ):
+        fail("timed_hbp_footer")
+    timed_hbi = (ROOT / "matrix/TIMED-CHIRAL-MONITOR.hbi").read_text(
+        encoding="utf-8"
+    )
+    if (
+        f"hbp_sha256={sha256(timed_hbp_path)}" not in timed_hbi
+        or f"gguf_sha256={sha256(timed_gguf_path)}" not in timed_hbi
+        or "authority_granted=0" not in timed_hbi
+        or not timed_hbi.endswith("|json=0\n")
+    ):
+        fail("timed_hbi_binding")
+
+    outward_hbp_path = ROOT / "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbp"
+    outward_hbp_lines = outward_hbp_path.read_text(encoding="utf-8").splitlines()
+    if len(outward_hbp_lines) != 1778 or any(
+        not line.endswith("|json=0") for line in outward_hbp_lines
+    ):
+        fail("outward_hbp_row_contract")
+    outward_header = tuple_fields(outward_hbp_lines[0], "OUTWARDRUN")
+    expected_outward_header = {
+        "schema": "ASOLARIA-PUBLIC-OUTWARD-TRUTH-WAVES-RUST-181-V1",
+        "source_schema": "ASOLARIA-PUBLIC-OWNER-3D-TREE-V2",
+        "repositories": "147",
+        "waves": "1764",
+        "detectors": "4",
+        "directions": "3",
+        "descriptor_width": "32",
+        "json": "0",
+    }
+    if outward_header != expected_outward_header:
+        fail("outward_hbp_header")
+    outward_detectors = [
+        tuple_fields(line, "DETECTOR")
+        for line in outward_hbp_lines
+        if line.startswith("DETECTOR|")
+    ]
+    expected_detector_names = {
+        "BYTE_COMMITMENT",
+        "CLAIM_EVIDENCE",
+        "MEDIA_BINDING",
+        "RUNTIME_AUTHORITY",
+    }
+    if (
+        len(outward_detectors) != 4
+        or {row["name"] for row in outward_detectors} != expected_detector_names
+        or [int(row["i"]) for row in outward_detectors] != list(range(4))
+        or any(
+            row.get("catalog_only") != "1"
+            or row.get("function_call_authority") != "0"
+            or row.get("network") != "0"
+            or row.get("execution") != "0"
+            for row in outward_detectors
+        )
+    ):
+        fail("outward_detector_contract")
+    outward_wave_rows = [
+        tuple_fields(line, "WAVE")
+        for line in outward_hbp_lines
+        if line.startswith("WAVE|")
+    ]
+    if len(outward_wave_rows) != 1764 or [
+        int(row["i"]) for row in outward_wave_rows
+    ] != list(range(1764)):
+        fail("outward_wave_index")
+    expected_directions = {"NEGATIVE", "CENTRE", "POSITIVE"}
+    expected_evidence = {
+        "MEASURED_MATCH",
+        "OPERATOR_TAG_PRESERVED",
+        "EXTENSION_METADATA_PRESENT",
+        "NO_EXTENSION_MATCH_IN_CAPTURE",
+        "SYSTEM_AFFIRMED_0",
+    }
+    outward_by_repo: dict[str, set[tuple[str, str]]] = {}
+    for row in outward_wave_rows:
+        outward_by_repo.setdefault(row["repo"], set()).add(
+            (row["detector"], row["direction"])
+        )
+        hash_fields = [
+            row[name] for name in ("wave_id", "hbi", "hbp", "sha", "sh", "hash")
+        ]
+        if (
+            row["detector"] not in expected_detector_names
+            or row["direction"] not in expected_directions
+            or row["evidence_status"] not in expected_evidence
+            or row.get("claim_label") != "LIE"
+            or row.get("correction_label") != "THRUTH"
+            or row.get("catalog_only") != "1"
+            or row.get("function_call_authority") != "0"
+            or row.get("network") != "0"
+            or row.get("execution") != "0"
+            or row.get("physical_energy") != "0"
+            or row.get("identity_accusation") != "0"
+            or row.get("quarantine_applied") != "0"
+            or any(not re.fullmatch(r"[0-9a-f]{64}", value) for value in hash_fields)
+            or len(set(hash_fields[1:])) != 5
+        ):
+            fail("outward_wave_boundary")
+    expected_addresses = {
+        (detector, direction)
+        for detector in expected_detector_names
+        for direction in expected_directions
+    }
+    if len(outward_by_repo) != 147 or any(
+        addresses != expected_addresses for addresses in outward_by_repo.values()
+    ):
+        fail("outward_four_by_three_population")
+    outward_quarantine = next(
+        (
+            tuple_fields(line, "QUARANTINE")
+            for line in outward_hbp_lines
+            if line.startswith("QUARANTINE|")
+        ),
+        {},
+    )
+    if outward_quarantine != {
+        "name": "BLACK_HEAT",
+        "mode": "REVERSIBLE_VISUALIZATION_ONLY",
+        "bytes_preserved": "1",
+        "reversible": "1",
+        "deletion": "0",
+        "execution": "0",
+        "physical_energy": "0",
+        "identity_accusation": "0",
+        "quarantine_applied": "0",
+        "json": "0",
+    }:
+        fail("outward_reversible_quarantine")
+    outward_hbp_body = ("\n".join(outward_hbp_lines[:-1]) + "\n").encode("utf-8")
+    outward_hbp_footer = tuple_fields(outward_hbp_lines[-1], "OUTWARDFTR")
+    if (
+        outward_hbp_footer.get("body_sha256")
+        != hashlib.sha256(outward_hbp_body).hexdigest()
+        or outward_hbp_footer.get("rows") != "1778"
+    ):
+        fail("outward_hbp_footer")
+
+    outward_hbi_path = ROOT / "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbi"
+    outward_hbi_lines = outward_hbi_path.read_text(encoding="utf-8").splitlines()
+    outward_svg_path = ROOT / "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.svg"
+    outward_gguf_path = ROOT / "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.gguf"
+    if len(outward_hbi_lines) != 11 or any(
+        not line.endswith("|json=0") for line in outward_hbi_lines
+    ):
+        fail("outward_hbi_row_contract")
+    outward_hbi_text = "\n".join(outward_hbi_lines) + "\n"
+    outward_hbi_source = tuple_fields(outward_hbi_lines[1], "SOURCE")
+    if (
+        outward_hbi_source.get("schema") != "ASOLARIA-PUBLIC-OWNER-3D-TREE-V2"
+        or outward_hbi_source.get("sha256") != sha256(media_owner_path)
+        or outward_hbi_source.get("sidecar_verified") != "1"
+    ):
+        fail("outward_hbi_source")
+    outward_hbi_artifacts = {
+        row["kind"]: row
+        for row in (
+            tuple_fields(line, "ARTIFACT")
+            for line in outward_hbi_lines
+            if line.startswith("ARTIFACT|")
+        )
+    }
+    expected_outward_artifacts = {
+        "HBP": outward_hbp_path,
+        "SVG": outward_svg_path,
+        "GGUF": outward_gguf_path,
+    }
+    if set(outward_hbi_artifacts) != set(expected_outward_artifacts) or any(
+        outward_hbi_artifacts[kind].get("file") != path.name
+        or outward_hbi_artifacts[kind].get("sha256") != sha256(path)
+        for kind, path in expected_outward_artifacts.items()
+    ):
+        fail("outward_hbi_artifacts")
+    for binding in (
+        "shape=32,3,4,147",
+        "descriptor_sha256=db3014e49b30cc43a2378348a11646d3d2345342733534c510f1ebdfb905c972",
+        "media_bytes_embedded=0",
+        "repo_bytes_embedded=0",
+        "function_call_authority=0",
+        "physical_energy=0",
+        "quarantine_applied=0",
+        "system_affirmed=0",
+    ):
+        if binding not in outward_hbi_text:
+            fail("outward_hbi_binding")
+    outward_hbi_body = ("\n".join(outward_hbi_lines[:-1]) + "\n").encode("utf-8")
+    outward_hbi_footer = tuple_fields(outward_hbi_lines[-1], "OUTWARDIDXFTR")
+    if (
+        outward_hbi_footer.get("body_sha256")
+        != hashlib.sha256(outward_hbi_body).hexdigest()
+        or outward_hbi_footer.get("rows") != "11"
+    ):
+        fail("outward_hbi_footer")
+
+    outward_svg = outward_svg_path.read_text(encoding="utf-8")
+    if (
+        outward_svg.count('id="repo-') != 147
+        or outward_svg.count('data-detector="') != 1764
+        or outward_svg.count('data-label="LIE"') != 1764
+        or outward_svg.count('data-label="THRUTH"') != 1764
+        or 'data-repositories="147"' not in outward_svg
+        or 'data-waves="1764"' not in outward_svg
+        or 'id="BLACK_HEAT_REVERSIBLE_VISUALIZATION" visibility="hidden"'
+        not in outward_svg
+        or 'data-bytes-preserved="1" data-reversible="1" data-deletion="0"'
+        not in outward_svg
+        or 'data-physical-energy="0" data-identity-accusation="0" data-quarantine-applied="0"'
+        not in outward_svg
+    ):
+        fail("outward_svg_population_or_boundary")
+    if any(
+        token in outward_svg.lower()
+        for token in (
+            "<script", "<image", "<foreignobject", " href=", "url(", "<a ",
+            "@import", "file:", "javascript:",
+        )
+    ):
+        fail("outward_svg_active_content")
+    outward_gguf = outward_gguf_path.read_bytes()
+    if (
+        len(outward_gguf) != 58560
+        or not outward_gguf.startswith(b"GGUF\x03\x00\x00\x00")
+        or sha256(outward_gguf_path)
+        != "b315be52a4a6870d2eb15f44736dd29e30685bea6b0b16936e16abc9a809e9f6"
+    ):
+        fail("outward_gguf_contract")
+
     video_paths = [
         path.relative_to(ROOT).as_posix()
         for path in files
@@ -404,8 +845,6 @@ def main() -> None:
 
     secret_hits = []
     for path in files:
-        if path.stat().st_size > 2_000_000:
-            continue
         data = path.read_bytes()
         for name, pattern in SECRET_PATTERNS.items():
             if pattern.search(data):
@@ -419,8 +858,6 @@ def main() -> None:
         b"private_" + b"repositories=",
     )
     for path in files:
-        if path.stat().st_size > 2_000_000:
-            continue
         data = path.read_bytes()
         if any(token in data for token in private_github_metadata_tokens):
             private_github_metadata_hits.append(path.relative_to(ROOT).as_posix())

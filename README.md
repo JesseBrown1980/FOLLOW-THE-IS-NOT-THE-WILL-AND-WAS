@@ -51,7 +51,8 @@ coordinates.
   and NEST sequence plus its exact source ledger.
 - `matrix/` — the authenticated public-owner census, sealed HBI/HBP roots,
   exact Rust 1.81 integer QPRISM, plural-leaf 3-D color canopy, reversible
-  projection, and timed GGUF monitor.
+  projection, completed timed GGUF monitor, additive public media-extension
+  commitments, and four-by-three outward truth-wave view.
 
 ## Public evidence boundary
 
@@ -66,6 +67,11 @@ The sealed public-owner snapshot contains 147 repository roots measured through
 GitHub's public API subset: 93 branched and 54 empty/unborn. It carries aggregate
 public commitments and public identifiers, with raw repository contents, private
 repository metadata, credentials, and response notebooks excluded.
+
+The additive V2 snapshot measured 1,137 public image-extension entries and zero
+video-extension entries in the same 147-repository census. It stores counts,
+declared Git-object bytes, unknown-size counts, and commitments; paths and media
+bodies remain absent. Zero videos is scoped to that exact public capture.
 
 ## Center and traversal
 
@@ -93,6 +99,14 @@ addressed leaf families per parent—441 colored leaf paths—through
 `2D_INPUT -> 3D_QPRISM -> SIGNED_2D_PROJECTION`. Rust `1.81.0` performs the
 geometry with checked integers and no floating-point tolerance. Drawing order is a
 view coordinate, never repository identity.
+
+The additive
+[`PUBLIC-OUTWARD-TRUTH-WAVES.svg`](matrix/PUBLIC-OUTWARD-TRUTH-WAVES.svg)
+projects four detector families through negative, centre, and positive directions
+from each public-repository center: 1,764 independently hashed wave paths. Its
+BLACK/HEAT lane is reversible relation coloring with bytes preserved and zero
+deletion, execution, or identity accusation. The sibling GGUF is a stackable
+descriptor, not embedded repository or media content.
 
 The compatibility map also carries the V13 visual sequence:
 `THIN_TRIPLE_RAINBOW` with three thin arc groups, `FREE_0 × 3`, followed by

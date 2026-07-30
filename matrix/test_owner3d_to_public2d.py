@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -38,6 +39,11 @@ class Owner3DToPublic2DTests(unittest.TestCase):
                 trees=1,
                 commits=0,
                 symlinks=0,
+                image_entries=1,
+                video_entries=1,
+                media_declared_bytes=321,
+                media_size_unknown_entries=0,
+                media_root_sha256="6" * 64,
                 object_root_sha256="3" * 64,
                 word_rime_root_sha256="4" * 64,
                 word_count=7,
@@ -55,6 +61,11 @@ class Owner3DToPublic2DTests(unittest.TestCase):
                 trees=0,
                 commits=0,
                 symlinks=0,
+                image_entries=0,
+                video_entries=0,
+                media_declared_bytes=0,
+                media_size_unknown_entries=0,
+                media_root_sha256=collector.EMPTY_SHA256,
                 object_root_sha256=collector.EMPTY_SHA256,
                 word_rime_root_sha256="5" * 64,
                 word_count=2,
@@ -94,6 +105,106 @@ class Owner3DToPublic2DTests(unittest.TestCase):
         self.assertIn(center + "|brown_center=#8B5A2B|close_to=1|json=0", hbp)
         self.assertIn(center + "|json=0", hbi)
         self.assertNotIn("|sign=", hbp + hbi)
+
+    def test_media_classifier_is_extension_only_and_blob_only(self) -> None:
+        self.assertEqual(collector.media_kind_from_path("art/RAINBOW.PNG", "blob"), "IMAGE")
+        self.assertEqual(collector.media_kind_from_path("film/clip.WeBm", "blob"), "VIDEO")
+        self.assertIsNone(collector.media_kind_from_path("notes/image.png.txt", "blob"))
+        self.assertIsNone(collector.media_kind_from_path("folder/video.mp4", "tree"))
+        text = self.hbp_path.read_text(encoding="utf-8")
+        self.assertIn("media_classification=PATH_EXTENSION_METADATA_ONLY", text)
+        self.assertIn("media_bytes_embedded=0", text)
+
+    def test_media_declared_bytes_keep_unknown_sizes_separate(self) -> None:
+        commit = {
+            "sha": "1" * 40,
+            "commit": {"tree": {"sha": "2" * 40}},
+        }
+        tree = {
+            "truncated": False,
+            "tree": [
+                {"path": "art/RAINBOW.PNG", "mode": "100644", "type": "blob", "sha": "3" * 40},
+                {"path": "film/clip.MP4", "mode": "100644", "type": "blob", "sha": "4" * 40, "size": 123},
+                {"path": "notes/clip.mp4.txt", "mode": "100644", "type": "blob", "sha": "5" * 40, "size": 7},
+                {"path": "folder.webp", "mode": "040000", "type": "tree", "sha": "6" * 40},
+            ],
+        }
+        repository = {"name": "media-test", "default_branch": "main", "size": 1}
+        with mock.patch.object(collector, "run_gh_json", side_effect=[commit, tree]):
+            seal = collector.seal_repository("gh", "JesseBrown1980", 0, repository)
+        self.assertEqual(seal.image_entries, 1)
+        self.assertEqual(seal.video_entries, 1)
+        self.assertEqual(seal.media_declared_bytes, 123)
+        self.assertEqual(seal.media_size_unknown_entries, 1)
+        self.assertNotEqual(seal.media_root_sha256, collector.EMPTY_SHA256)
+
+    def test_media_declared_byte_bound_is_shared_and_exact(self) -> None:
+        self.assertEqual(
+            collector.MAX_MEDIA_DECLARED_BYTES,
+            adapter.MAX_MEDIA_DECLARED_BYTES,
+        )
+        self.assertEqual(adapter.MAX_MEDIA_DECLARED_BYTES, 1_000_000_000_000_000)
+        self.assertEqual(
+            adapter.integer(
+                str(adapter.MAX_MEDIA_DECLARED_BYTES),
+                0,
+                adapter.MAX_MEDIA_DECLARED_BYTES,
+                "MEDIA_BOUND",
+            ),
+            adapter.MAX_MEDIA_DECLARED_BYTES,
+        )
+        with self.assertRaisesRegex(adapter.AdapterError, "MEDIA_BOUND"):
+            adapter.integer(
+                str(adapter.MAX_MEDIA_DECLARED_BYTES + 1),
+                0,
+                adapter.MAX_MEDIA_DECLARED_BYTES,
+                "MEDIA_BOUND",
+            )
+
+    def test_collector_rejects_output_role_aliases_before_writes(self) -> None:
+        same = self.root / "SAME.hbp"
+        with self.assertRaisesRegex(collector.InventoryError, "path role collision"):
+            collector.resolve_output_roles(same, same)
+        with self.assertRaisesRegex(collector.InventoryError, "path role collision"):
+            collector.resolve_output_roles(
+                self.root / "CAPTURE.hbp",
+                self.root / "CAPTURE.hbp.sha256",
+            )
+        with self.assertRaisesRegex(collector.InventoryError, "path role collision"):
+            collector.resolve_output_roles(
+                self.root / "INDEX.hbi.sha256",
+                self.root / "INDEX.hbi",
+            )
+        output, index = collector.resolve_output_roles(
+            self.root / "CAPTURE.hbp",
+            self.root / "INDEX.hbi",
+        )
+        self.assertNotEqual(output, index)
+
+    def test_collector_rejects_linked_output_roles(self) -> None:
+        target = self.root / "real-output"
+        target.mkdir()
+        link = self.root / "linked-output"
+        try:
+            link.symlink_to(target, target_is_directory=True)
+        except (NotImplementedError, OSError):
+            self.skipTest("directory symlinks are unavailable on this seat")
+        with self.assertRaisesRegex(collector.InventoryError, "link-like path"):
+            collector.resolve_output_roles(
+                link / "CAPTURE.hbp",
+                self.root / "INDEX.hbi",
+            )
+
+    def test_collector_rejects_existing_hardlink_aliases(self) -> None:
+        output = self.root / "CAPTURE.hbp"
+        index = self.root / "INDEX.hbi"
+        output.write_bytes(b"sealed")
+        try:
+            os.link(output, index)
+        except OSError:
+            self.skipTest("hard links are unavailable on this seat")
+        with self.assertRaisesRegex(collector.InventoryError, "path role collision"):
+            collector.resolve_output_roles(output, index)
 
     def test_strict_conversion_is_deterministic_and_projection_accepted(self) -> None:
         first = self.root / "FIRST.hbp"

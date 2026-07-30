@@ -39,6 +39,8 @@ jobs:
 
       - name: Verify the public spherical matrix
         run: |
+          python -m unittest discover -s tests -p "test_*.py"
+          python tests/verify_public_repo.py
           python matrix/test_owner3d_to_public2d.py
           python matrix/test_spherical_public_projection.py
           python matrix/test_render_public_spherical_svg.py
@@ -51,7 +53,7 @@ jobs:
           cargo +1.81.0 test --manifest-path matrix/rust-qprism-181/Cargo.toml --locked
           cargo +1.81.0 clippy --manifest-path matrix/rust-qprism-181/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
           mkdir "${RUNNER_TEMP}/qprism"
-          cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --release --locked -- \
+          cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin rust-qprism-181 --release --locked -- \
             matrix/PUBLIC-OWNER-2D.hbp \
             "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.hbp" \
             "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg" \
@@ -60,6 +62,26 @@ jobs:
           cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.hbp.sha256" matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp.sha256
           cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg" matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg
           cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg.sha256" matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg.sha256
+
+      - name: Verify the four-by-three outward truth waves
+        run: |
+          mkdir "${RUNNER_TEMP}/outward"
+          cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin outward-truth-waves --release --locked -- \
+            matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbp \
+            "${RUNNER_TEMP}/outward" \
+            --replace
+          for name in \
+            PUBLIC-OUTWARD-TRUTH-WAVES.hbp \
+            PUBLIC-OUTWARD-TRUTH-WAVES.hbp.sha256 \
+            PUBLIC-OUTWARD-TRUTH-WAVES.hbi \
+            PUBLIC-OUTWARD-TRUTH-WAVES.hbi.sha256 \
+            PUBLIC-OUTWARD-TRUTH-WAVES.svg \
+            PUBLIC-OUTWARD-TRUTH-WAVES.svg.sha256 \
+            PUBLIC-OUTWARD-TRUTH-WAVES.gguf \
+            PUBLIC-OUTWARD-TRUTH-WAVES.gguf.sha256
+          do
+            cmp "${RUNNER_TEMP}/outward/${name}" "matrix/${name}"
+          done
 
       - name: Run the fixed public tournament
         run: >-

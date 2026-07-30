@@ -1,0 +1,6 @@
+OWNER3DHBI|schema=ASOLARIA-PUBLIC-OWNER-3D-TREE-V2|version=1|json=0
+CENTER|nullspace=0|center_members=HBI,HBP,SHA,SH,HASH|traversal=HBI,HBP,SH,HASH,SHA|sha_equals_hash=0|json=0
+HBP|path=PUBLIC-OWNER-3D-MEDIA-TREE.hbp|sha256=6fb6df090527a2c6f422a63ccacd31168d8cf6df5aa4b5029753c34cc50d7ab4|repos=147|raw_blob_bodies=0|json=0
+HASH|role=SPHERICAL_OBJECT_COMMITMENT|value=9ab8d0c199cafaf62607f366a3fa78867d9b91ee5b828382a0233483e2cdd9de|json=0
+SH|recipe=GH_PUBLIC_OWNER_TREE_V1|executed_authority=0|json=0
+OWNER3DHBIFTR|body_sha256=96ae59de256acd1432ad6cb5830e882a29dceec8b448aa980b4a102c8c7f90a7|rows=6|json=0
