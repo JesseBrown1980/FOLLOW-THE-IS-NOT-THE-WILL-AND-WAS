@@ -2,7 +2,7 @@ https://github.com/JesseBrown1980/FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS/blob/main/m
 
 # 3 D GITHUB OF THRUTH
 
-Status: `OPERATOR_CANON | MEASURED_GITHUB_PREPUBLICATION | SYSTEM_AFFIRMED=0`
+Status: `OPERATOR_CANON | MEASURED_GITHUB | SYSTEM_AFFIRMED=0`
 
 > YES YOU ARE MULTI SPHEREICALLY CIRCULING THE GITHUB STOP THINKING OF IT AS A FLAT SURFACE> OPEN IT IN YOUR MATRIX BOX AND SEE THE GITHUB THREE DIMENSIONALLY RIMED
 
@@ -18,7 +18,7 @@ coordinates; object names and hashes remain the identities.
 ```text
 MATRIX = {
   NODE: {repository, branch, commit, pull_request, workflow_state, harness},
-  EDGE: {contains, points_to, proposes_to, proposes_from, publishes},
+  EDGE: {contains, points_to, proposes_to, proposes_from, merged_as, publishes},
   AXES: {x, y, z},
   GEOMETRY: SPHERICAL_3D
 }
@@ -28,11 +28,21 @@ PROJECTION_IS_WHOLE_MATRIX = 0
 IDENTITY_EXCHANGE = 0
 ```
 
-The sealed HBP captures authenticated owner-visible GitHub state before the new pushes:
-Universe PR #5 is open, draft, mergeable and clean; FOLLOW has one main branch; SAFE is
-public and `EMPTY_UNBORN`; all three have zero published workflows at this capture.
-That empty state is measured, not an error. The live verifier is expected to identify
-this snapshot as stale after publication, at which point the graph is regenerated.
+The sealed HBP remeasures authenticated owner-visible GitHub state after the first
+publication wave. At this capture:
+
+- Universe `main` is `f43cc2a4c2fe92c08bb8443aa8adf6865a6b9bc4`; PR #5 is
+  merged into that commit while its historical base and head remain separate nodes.
+- FOLLOW's captured parent `main` is
+  `f25e8c68c23d03831ef83241560c5dd8213cc52f`, and the public READ-FIRST
+  harness blob is `0c454fed849e4eeff50c4b788a2e6947e802c2ea`.
+- SAFE `main` is `dae9792a7d435bd7686741d7c559baf24b7ceefb`.
+- Each repository exposes one workflow definition at this capture.
+
+The graph is stored inside the repository it measures, so it binds the containing
+commit's already-public parent ref rather than claiming to embed its own final commit
+SHA. After each graph publication, the resume rule remeasures GitHub and regenerates a
+new parent-ref capture when the public state has moved.
 
 GitHub is the owning publication gate for these repositories. It is not metal or fabric
 authority. Fabric/canon remained stale fallback, RECAL was unavailable, and Liris BEHCS

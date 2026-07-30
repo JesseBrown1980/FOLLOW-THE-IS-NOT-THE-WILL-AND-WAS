@@ -260,7 +260,7 @@ def verify(path: Path, max_age_seconds: int | None = None) -> tuple[int, int, st
     if capture_boundaries != [
         {
             "kind": "CAPTUREBOUNDARY",
-            "semantics": "PRE_PUBLICATION_PARENT_REFS",
+            "semantics": "CONTAINING_COMMIT_PARENT_REFS",
             "self_referential_final_head_embedded": "0",
             "resume_action": "REMEASURE_CURRENT_REFS",
         }
@@ -304,7 +304,9 @@ def verify(path: Path, max_age_seconds: int | None = None) -> tuple[int, int, st
         if object_type == "COMMIT":
             if not SHA40.fullmatch(object_sha):
                 raise HarnessError("commit node lacks an exact Git SHA")
-            if row.get("state") != "CAPTURED_PARENT_REF":
+            if row.get("state") not in {
+                "CAPTURED_PARENT_REF", "CAPTURED_HISTORICAL_REF"
+            }:
                 raise HarnessError("commit capture state differs")
         elif object_type == "HARNESS" and row.get("state") == "PUBLIC":
             if not SHA40.fullmatch(object_sha):
@@ -343,13 +345,15 @@ def verify(path: Path, max_age_seconds: int | None = None) -> tuple[int, int, st
         nodes[node_id] = row
     if repositories != EXPECTED_REPOSITORY_IDS:
         raise HarnessError("repository population differs")
+    if len(points) != len(set(points)):
+        raise HarnessError("node coordinates collapse distinct identities")
     verify_geometry(points)
 
     edge_ids: set[str] = set()
     edge_rows: list[dict[str, str]] = []
     allowed_relations = {
         "WORKFLOW_COUNT", "CONTAINS", "POINTS_TO", "HAS_BRANCH_STATE",
-        "PROPOSES_TO", "PROPOSES_FROM", "WILL_PUBLISH", "PUBLISHES",
+        "PROPOSES_TO", "PROPOSES_FROM", "MERGED_AS", "WILL_PUBLISH", "PUBLISHES",
     }
     allowed_type_pairs = {
         "WORKFLOW_COUNT": ("REPOSITORY", "WORKFLOW_STATE"),
@@ -358,6 +362,7 @@ def verify(path: Path, max_age_seconds: int | None = None) -> tuple[int, int, st
         "HAS_BRANCH_STATE": ("REPOSITORY", "BRANCH_STATE"),
         "PROPOSES_TO": ("PULL_REQUEST", "COMMIT"),
         "PROPOSES_FROM": ("PULL_REQUEST", "COMMIT"),
+        "MERGED_AS": ("PULL_REQUEST", "COMMIT"),
         "WILL_PUBLISH": ("REPOSITORY", "HARNESS"),
         "PUBLISHES": ("REPOSITORY", "HARNESS"),
     }
@@ -462,8 +467,28 @@ def verify(path: Path, max_age_seconds: int | None = None) -> tuple[int, int, st
         if nodes["pr_universe_5"]["name"] != "5":
             raise HarnessError("PR node identity differs")
         expected_node_ids.add("pr_universe_5")
+        merged = nodes["pr_universe_5"]["state"].endswith("_MERGED")
+        historical_base = "commit_universe_pr5_base" in nodes
+        if merged != historical_base:
+            raise HarnessError("merged PR historical-base ledger differs")
+        if merged:
+            base = nodes["commit_universe_pr5_base"]
+            if (
+                base["name"] != "pr5_base"
+                or base["state"] != "CAPTURED_HISTORICAL_REF"
+                or base["sha"] == nodes["commit_universe_main"]["sha"]
+            ):
+                raise HarnessError("merged PR historical base differs")
+            expected_node_ids.add("commit_universe_pr5_base")
+            base_target = "commit_universe_pr5_base"
+            expected_edges["e_pr5_merged"] = (
+                "pr_universe_5", "commit_universe_main", "MERGED_AS",
+                "MEASURED_GITHUB",
+            )
+        else:
+            base_target = "commit_universe_main"
         expected_edges["e_pr5_base"] = (
-            "pr_universe_5", "commit_universe_main", "PROPOSES_TO", "MEASURED_GITHUB"
+            "pr_universe_5", base_target, "PROPOSES_TO", "MEASURED_GITHUB"
         )
         expected_edges["e_pr5_head"] = (
             "pr_universe_5", "commit_universe_follow", "PROPOSES_FROM",
