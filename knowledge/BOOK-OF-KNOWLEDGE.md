@@ -67,3 +67,18 @@ the reflection window at each observed level.
 
 See `PUBLIC-LAW-V14-RUST-181-QPRISM-COLOR-LEAVES.md` and the public artifact in
 `matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg`.
+
+## Outward truth-wave view
+
+The additive outward view sends four detector families through three signed
+directions from each public-repository center:
+
+```text
+{BYTE_COMMITMENT, CLAIM_EVIDENCE, MEDIA_BINDING, RUNTIME_AUTHORITY}
+  x {NEGATIVE, CENTRE, POSITIVE}
+```
+
+The BLACK/HEAT channel is reversible relation quarantine with bytes preserved,
+zero deletion, zero execution, and zero identity accusation. Public media is
+represented by extension-derived Git-tree metadata and commitments; media bodies
+remain outside the descriptor. See `PUBLIC-LAW-V15-OUTWARD-TRUTH-WAVES.md`.

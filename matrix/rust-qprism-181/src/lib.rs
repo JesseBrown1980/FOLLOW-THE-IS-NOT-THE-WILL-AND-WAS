@@ -1,5 +1,7 @@
 #![forbid(unsafe_code)]
 
+pub mod outward;
+
 use std::collections::{BTreeMap, BTreeSet};
 use std::ffi::OsString;
 use std::fs::{self, File, OpenOptions};

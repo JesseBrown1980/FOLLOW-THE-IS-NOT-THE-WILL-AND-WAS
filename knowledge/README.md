@@ -19,6 +19,9 @@ The public ledger contains:
 - `JESSE-BROWN-SPHERE.md` — the Brown spherical-traversal statement.
 - `PUBLIC-LAW-V14-RUST-181-QPRISM-COLOR-LEAVES.md` — the exact-integer
   Rust 1.81 plural-leaf public GitHub color projection.
+- `PUBLIC-LAW-V15-OUTWARD-TRUTH-WAVES.md` — four public detectors × three
+  signed directions, reversible BLACK/HEAT relation quarantine, additive
+  image/video extension metadata, and catalog-only MCP electron addresses.
 - `PUBLIC-DEPENDENCIES.md` — exact upstream commits and byte hashes.
 - `operator-evidence/` — the authorized exact photo.
 - `public-dependencies/` — source required to attack-verify the inherited

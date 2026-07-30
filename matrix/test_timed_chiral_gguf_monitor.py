@@ -136,6 +136,16 @@ class TimedChiralMonitorTests(unittest.TestCase):
                 (self.output / (name + ".sha256")).read_bytes(), expected
             )
 
+    def test_gguf_metadata_is_exact_and_boundary_is_verified(self) -> None:
+        self.assertEqual(self.run_at(TARGET_SECONDS), "COMPLETE")
+        gguf = bytearray((self.output / GGUF_NAME).read_bytes())
+        marker = b"derived public descriptors only; no source rows or repository bytes"
+        start = gguf.index(marker)
+        gguf[start] ^= 1
+        source_hash = hashlib.sha256(self.source.read_bytes()).hexdigest()
+        with self.assertRaisesRegex(MonitorError, "GGUF_METADATA"):
+            verify_gguf(bytes(gguf), source_hash, 1, TARGET_SECONDS)
+
     def test_bad_input_fails_before_outputs(self) -> None:
         self.source.write_bytes(b"not-an-hbp\n")
         with self.assertRaises(Exception):

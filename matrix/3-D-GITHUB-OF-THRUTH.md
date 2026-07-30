@@ -81,6 +81,39 @@ The committed SVG remains visible while a later public capture is measured and
 rebuilt. Calming-OIL, prism, White, Light, Brown, and anti-family names here are
 operator-canon software labels, separate from physical or clinical claims.
 
+## Two-hour chiral descriptor and outward four-by-three waves
+
+The immutable timed monitor reached its real monotonic 7,200-second checkpoint.
+Its [HBI](TIMED-CHIRAL-MONITOR.hbi),
+[HBP](TIMED-CHIRAL-MONITOR.hbp), and
+[2,200-byte GGUF](TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf) bind the unchanged
+`f3a9ade5...` PUBLIC2D source. A fresh deterministic rebuild matches all six
+artifact and sidecar byte strings.
+
+[Open the public outward truth-wave color view](PUBLIC-OUTWARD-TRUTH-WAVES.svg).
+
+The additive V2 capture preserves the older timed source and adds public Git-tree
+image/video extension metadata without downloading media bodies. Four detector
+families each emit negative, centre, and positive signed views:
+
+```text
+DETECTORS = {BYTE_COMMITMENT, CLAIM_EVIDENCE, MEDIA_BINDING, RUNTIME_AUTHORITY}
+DIRECTIONS = {NEGATIVE, CENTRE, POSITIVE}
+PUBLIC_REPOSITORIES = 147
+OUTWARD_WAVES = 147 * 4 * 3 = 1764
+
+BLACK_HEAT_QUARANTINE = REVERSIBLE_RELATION_VIEW
+BYTES_PRESERVED = 1
+DELETION = 0
+EXECUTION = 0
+IDENTITY_ACCUSATION = 0
+```
+
+`LIE_WAVE` and `THRUTH_WAVE` remain visual/data labels rather than evidence
+verdicts. The public capture measured 1,137 image-extension entries and zero
+video-extension entries; zero is scoped to that exact public tree capture.
+Pixel/frame/audio bodies are not embedded in either GGUF.
+
 ## READ-FIRST carry
 
 The stable link on this file's first line is mirrored through file-type-safe AI entrypoints

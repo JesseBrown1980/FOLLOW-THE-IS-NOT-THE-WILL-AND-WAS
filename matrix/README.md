@@ -13,6 +13,9 @@ authenticated public-only owner census
   -> deterministic static color-canopy SVG
   -> exact-rational Python projection and THIN_TRIPLE_RAINBOW compatibility view
   -> monotonic timed GGUF monitor
+  -> additive V2 public image/video extension-metadata capture
+  -> exact Rust 1.81 four-detector x three-direction outward waves
+  -> static outward color SVG + stackable descriptor-only GGUF
 ```
 
 The center is the unordered membership set
@@ -42,7 +45,10 @@ From the repository root:
 gh auth status
 py -3.12 matrix/collect_public_owner_inventory.py --owner JesseBrown1980 --output matrix/PUBLIC-OWNER-3D-TREE.hbp --index matrix/PUBLIC-OWNER-3D-TREE.hbi
 py -3.12 matrix/owner3d_to_public2d.py matrix/PUBLIC-OWNER-3D-TREE.hbi matrix/PUBLIC-OWNER-2D.hbp --replace
-cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --release --locked -- matrix/PUBLIC-OWNER-2D.hbp matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg --replace
+py -3.12 matrix/collect_public_owner_inventory.py --owner JesseBrown1980 --output matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbp --index matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbi
+py -3.12 matrix/owner3d_to_public2d.py matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbi matrix/PUBLIC-OWNER-MEDIA-POSITION-2D.hbp --replace
+cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin rust-qprism-181 --release --locked -- matrix/PUBLIC-OWNER-2D.hbp matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg --replace
+cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin outward-truth-waves --release --locked -- matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbp matrix --replace
 cargo +1.81.0 fmt --manifest-path matrix/rust-qprism-181/Cargo.toml -- --check
 cargo +1.81.0 test --manifest-path matrix/rust-qprism-181/Cargo.toml --locked
 cargo +1.81.0 clippy --manifest-path matrix/rust-qprism-181/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
@@ -72,6 +78,18 @@ monotonic checkpoints `1,2,3,4,8,...,7200`, and emits its derived descriptor-onl
 GGUF only after 7,200 elapsed seconds. `<empty-output-directory>` is an explicit
 operator-selected runtime directory; monitor outputs are not publication authority
 until their final bytes are reviewed and committed through the GitHub gate.
+
+The reviewed immutable run is now committed as `TIMED-CHIRAL-MONITOR.hbi`,
+`TIMED-CHIRAL-MONITOR.hbp`, and `TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf`. It is
+bound to the unchanged `f3a9ade5...` V1 PUBLIC2D source and reproduces byte for
+byte from a deterministic 7,200-second completion calculation.
+
+The additive media V2 capture leaves that V1 source unchanged. It classifies
+public Git-tree blob paths by extension and publishes only per-repository counts,
+declared Git-object byte totals, unknown-size counts, and commitments. It stores
+zero media paths and zero media bodies. `PUBLIC-OUTWARD-TRUTH-WAVES.svg` renders
+the four detectors and three signed directions per repository; its GGUF contains
+metadata/color-wave descriptors, not pixels, frames, audio, or repository bodies.
 
 ## Why JSON appears
 

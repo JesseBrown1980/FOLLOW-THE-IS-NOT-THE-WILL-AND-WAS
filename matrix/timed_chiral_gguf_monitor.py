@@ -231,6 +231,7 @@ def verify_gguf(
     descriptor = blob[data_start:]
     expected = {
         "general.architecture": "asolaria-public-color-orbit",
+        "general.name": "TIMED-CHIRAL-PUBLIC-COLOR-ORBITS",
         "general.alignment": ALIGNMENT,
         "asolaria.schema": SCHEMA,
         "asolaria.payload.kind": "DERIVED_PUBLIC_COLOR_ORBITS",
@@ -242,8 +243,13 @@ def verify_gguf(
         "asolaria.raw_repository_bytes": 0,
         "asolaria.network_access": 0,
         "asolaria.descriptor.sha256": sha256(descriptor),
+        "asolaria.boundary": (
+            "derived public descriptors only; no source rows or repository bytes"
+        ),
     }
-    if any(metadata.get(key) != value for key, value in expected.items()):
+    if set(metadata) != set(expected) or any(
+        metadata.get(key) != value for key, value in expected.items()
+    ):
         raise MonitorError("GGUF_METADATA")
     return sha256(blob)
 

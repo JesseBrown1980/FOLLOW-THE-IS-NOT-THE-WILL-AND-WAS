@@ -6,6 +6,10 @@ transport, but requests only ``users/{owner}/repos`` and public repository objec
 It stores repository names and aggregate Git-object commitments. It does not copy
 blob bodies, publish individual paths, enumerate private repositories, or treat a
 catalog entry as runtime authority.
+
+V2 additionally classifies public Git-tree blob paths by image/video extension.
+It publishes aggregate counts, declared Git-object sizes, unknown-size counts,
+and a path/OID commitment; it publishes no media path or body.
 """
 
 from __future__ import annotations
@@ -26,7 +30,7 @@ from typing import Any, Iterable
 from urllib.parse import quote
 
 
-SCHEMA = "ASOLARIA-PUBLIC-OWNER-3D-TREE-V1"
+SCHEMA = "ASOLARIA-PUBLIC-OWNER-3D-TREE-V2"
 DEFAULT_OWNER = "JesseBrown1980"
 CENTER_MEMBERS = "HBI,HBP,SHA,SH,HASH"
 CENTER_TRAVERSAL = "HBI,HBP,SH,HASH,SHA"
@@ -34,10 +38,19 @@ MAX_REPOS = 512
 MAX_API_BYTES = 32 * 1024 * 1024
 MAX_ENTRIES_PER_REPO = 200_000
 MAX_ENTRIES_TOTAL = 1_000_000
+MAX_MEDIA_DECLARED_BYTES = 1_000_000_000_000_000
 MAX_VALUE_BYTES = 2_048
 ZERO_SHA1 = "0" * 40
 EMPTY_SHA256 = hashlib.sha256(b"").hexdigest()
 WORD_RE = re.compile(r"[A-Za-z0-9]+")
+IMAGE_SUFFIXES = {
+    ".apng", ".avif", ".bmp", ".gif", ".heic", ".heif", ".jpeg",
+    ".jpg", ".png", ".svg", ".tif", ".tiff", ".webp",
+}
+VIDEO_SUFFIXES = {
+    ".avi", ".m4v", ".mkv", ".mov", ".mp4", ".mpeg", ".mpg",
+    ".ogv", ".webm",
+}
 
 
 class InventoryError(ValueError):
@@ -57,6 +70,11 @@ class RepoSeal:
     trees: int
     commits: int
     symlinks: int
+    image_entries: int
+    video_entries: int
+    media_declared_bytes: int
+    media_size_unknown_entries: int
+    media_root_sha256: str
     object_root_sha256: str
     word_rime_root_sha256: str
     word_count: int
@@ -68,6 +86,10 @@ class RepoSeal:
             f"|state={self.state}|commit={self.commit}|tree={self.tree}"
             f"|entries={self.entries}|blobs={self.blobs}|trees={self.trees}"
             f"|commits={self.commits}|symlinks={self.symlinks}"
+            f"|image_entries={self.image_entries}|video_entries={self.video_entries}"
+            f"|media_declared_bytes={self.media_declared_bytes}"
+            f"|media_size_unknown_entries={self.media_size_unknown_entries}"
+            f"|media_root_sha256={self.media_root_sha256}"
             f"|object_root_sha256={self.object_root_sha256}"
             f"|word_rime_root_sha256={self.word_rime_root_sha256}"
             f"|word_count={self.word_count}|color={self.color}|json=0"
@@ -124,6 +146,27 @@ def write_sidecar(path: Path, digest: str) -> None:
         path.with_name(path.name + ".sha256"),
         f"{digest}  {path.name}\n".encode("ascii"),
     )
+
+
+def resolve_output_roles(output: Path, index: Path) -> tuple[Path, Path]:
+    hbp_path = output.absolute()
+    hbi_path = index.absolute()
+    roles = (
+        hbp_path,
+        hbp_path.with_name(hbp_path.name + ".sha256"),
+        hbi_path,
+        hbi_path.with_name(hbi_path.name + ".sha256"),
+    )
+    for path in roles:
+        reject_link_chain(path)
+    normalized = {os.path.normcase(str(path.resolve())) for path in roles}
+    if len(normalized) != len(roles):
+        raise InventoryError("output path role collision")
+    for index, left in enumerate(roles):
+        for right in roles[index + 1 :]:
+            if left.exists() and right.exists() and os.path.samefile(left, right):
+                raise InventoryError("output path role collision")
+    return hbp_path, hbi_path
 
 
 def run_gh_json(gh: str, endpoint: str) -> Any:
@@ -202,6 +245,17 @@ def color_from_root(root: str) -> str:
     return f"#{round(red * 255):02X}{round(green * 255):02X}{round(blue * 255):02X}"
 
 
+def media_kind_from_path(path: str, kind: str) -> str | None:
+    if kind != "blob":
+        return None
+    suffix = Path(path).suffix.casefold()
+    if suffix in IMAGE_SUFFIXES:
+        return "IMAGE"
+    if suffix in VIDEO_SUFFIXES:
+        return "VIDEO"
+    return None
+
+
 def seal_empty(index: int, repository: dict[str, Any]) -> RepoSeal:
     name = repository["name"]
     branch = repository.get("default_branch") or "UNBORN"
@@ -219,6 +273,11 @@ def seal_empty(index: int, repository: dict[str, Any]) -> RepoSeal:
         trees=0,
         commits=0,
         symlinks=0,
+        image_entries=0,
+        video_entries=0,
+        media_declared_bytes=0,
+        media_size_unknown_entries=0,
+        media_root_sha256=EMPTY_SHA256,
         object_root_sha256=EMPTY_SHA256,
         word_rime_root_sha256=words.hexdigest(),
         word_count=word_count,
@@ -261,9 +320,12 @@ def seal_repository(
         raise InventoryError(f"public tree entry count exceeds bound: {name}")
 
     object_hasher = hashlib.sha256()
+    media_hasher = hashlib.sha256()
     word_hasher = hashlib.sha256()
     word_count = hash_words(word_hasher, name)
     blobs = trees = commits = symlinks = 0
+    image_entries = video_entries = media_declared_bytes = 0
+    media_size_unknown_entries = 0
     normalized: list[tuple[str, str, str, str, str]] = []
     for entry in entries:
         if not isinstance(entry, dict):
@@ -292,6 +354,21 @@ def seal_repository(
         record = "\0".join((path, mode, kind, oid, size_text)).encode("utf-8") + b"\n"
         object_hasher.update(record)
         word_count += hash_words(word_hasher, path)
+        media_kind = media_kind_from_path(path, kind)
+        if media_kind is not None:
+            size_token = size_text if size_text else "UNKNOWN"
+            media_hasher.update(
+                "\0".join((media_kind, path, oid, size_token)).encode("utf-8")
+                + b"\n"
+            )
+            image_entries += media_kind == "IMAGE"
+            video_entries += media_kind == "VIDEO"
+            if size_text:
+                media_declared_bytes += int(size_text)
+                if media_declared_bytes > MAX_MEDIA_DECLARED_BYTES:
+                    raise InventoryError("repository media declared bytes exceed bound")
+            else:
+                media_size_unknown_entries += 1
     object_root = object_hasher.hexdigest()
     return RepoSeal(
         index=index,
@@ -305,6 +382,11 @@ def seal_repository(
         trees=trees,
         commits=commits,
         symlinks=symlinks,
+        image_entries=image_entries,
+        video_entries=video_entries,
+        media_declared_bytes=media_declared_bytes,
+        media_size_unknown_entries=media_size_unknown_entries,
+        media_root_sha256=media_hasher.hexdigest(),
         object_root_sha256=object_root,
         word_rime_root_sha256=word_hasher.hexdigest(),
         word_count=word_count,
@@ -335,11 +417,15 @@ def build_hbp(owner: str, captured_at: str, seals: list[RepoSeal]) -> bytes:
         ),
         (
             "RECIPE|sh=GH_PUBLIC_OWNER_TREE_V1|transport=GH_CLI_PUBLIC_REST"
-            "|recursive_git_tree=1|paths_published=0|blob_bodies_read=0|json=0"
+            "|recursive_git_tree=1|paths_published=0|blob_bodies_read=0"
+            "|media_extensions_classified=1|media_paths_published=0"
+            "|media_bodies_read=0"
+            "|media_classification=PATH_EXTENSION_METADATA_ONLY|json=0"
         ),
         (
             "BOUNDARY|private_repo_endpoint_calls=0|private_repo_rows=0|private_keys=0"
-            "|credentials_in_output=0|catalog_grants_authority=0|system_affirmed=0|json=0"
+            "|credentials_in_output=0|catalog_grants_authority=0|system_affirmed=0"
+            "|media_bytes_embedded=0|media_decoder_claim=0|json=0"
         ),
         *[seal.row() for seal in seals],
         (
@@ -352,7 +438,12 @@ def build_hbp(owner: str, captured_at: str, seals: list[RepoSeal]) -> bytes:
             f"|entries={sum(seal.entries for seal in seals)}"
             f"|blobs={sum(seal.blobs for seal in seals)}|trees={sum(seal.trees for seal in seals)}"
             f"|commits={sum(seal.commits for seal in seals)}"
-            f"|symlinks={sum(seal.symlinks for seal in seals)}|json=0"
+            f"|symlinks={sum(seal.symlinks for seal in seals)}"
+            f"|image_entries={sum(seal.image_entries for seal in seals)}"
+            f"|video_entries={sum(seal.video_entries for seal in seals)}"
+            f"|media_declared_bytes={sum(seal.media_declared_bytes for seal in seals)}"
+            f"|media_size_unknown_entries={sum(seal.media_size_unknown_entries for seal in seals)}"
+            "|json=0"
         ),
     ]
     return ("\n".join(rows) + "\n").encode("utf-8")
@@ -382,8 +473,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--owner", default=DEFAULT_OWNER)
     parser.add_argument("--gh", default=shutil.which("gh") or "gh")
-    parser.add_argument("--output", type=Path, default=root / "PUBLIC-OWNER-3D-TREE.hbp")
-    parser.add_argument("--index", type=Path, default=root / "PUBLIC-OWNER-3D-TREE.hbi")
+    parser.add_argument(
+        "--output", type=Path, default=root / "PUBLIC-OWNER-3D-MEDIA-TREE.hbp"
+    )
+    parser.add_argument(
+        "--index", type=Path, default=root / "PUBLIC-OWNER-3D-MEDIA-TREE.hbi"
+    )
     return parser.parse_args()
 
 
@@ -394,15 +489,20 @@ def main() -> int:
     gh = shutil.which(args.gh) if os.path.sep not in args.gh else args.gh
     if not gh or not Path(gh).is_file():
         raise InventoryError("gh executable not found")
+    hbp_path, hbi_path = resolve_output_roles(args.output, args.index)
     captured_at = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
     repositories = public_repositories(gh, args.owner)
     seals: list[RepoSeal] = []
     entries_total = 0
+    media_declared_bytes_total = 0
     for index, repository in enumerate(repositories):
         seal = seal_repository(gh, args.owner, index, repository)
         entries_total += seal.entries
         if entries_total > MAX_ENTRIES_TOTAL:
             raise InventoryError("aggregate public tree entries exceed bound")
+        media_declared_bytes_total += seal.media_declared_bytes
+        if media_declared_bytes_total > MAX_MEDIA_DECLARED_BYTES:
+            raise InventoryError("aggregate media declared bytes exceed bound")
         seals.append(seal)
         print(
             f"OWNER3DPROGRESS|i={index}|repos={len(repositories)}|state={seal.state}"
@@ -410,13 +510,11 @@ def main() -> int:
             file=sys.stderr,
         )
     hbp = build_hbp(args.owner, captured_at, seals)
-    hbp_path = args.output.resolve()
     hbp_sha = sha256(hbp)
     atomic_write(hbp_path, hbp)
     write_sidecar(hbp_path, hbp_sha)
     root = spherical_root(seals)
     hbi = build_hbi(hbp_path, hbp_sha, root, len(seals))
-    hbi_path = args.index.resolve()
     hbi_sha = sha256(hbi)
     atomic_write(hbi_path, hbi)
     write_sidecar(hbi_path, hbi_sha)
