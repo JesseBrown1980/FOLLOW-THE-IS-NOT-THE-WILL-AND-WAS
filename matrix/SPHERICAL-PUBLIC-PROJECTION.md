@@ -8,6 +8,14 @@ coordinates can be recovered exactly. It does not inspect a checkout, enumerate 
 drive, read blob contents, invoke Git, open a network, spawn a process, or accept
 credentials.
 
+This exact-rational Python cell remains the compatibility and reversibility
+witness. The primary human color view is now produced by the dependency-free
+Rust 1.81 checked-integer cell at `rust-qprism-181/` and published as
+`PUBLIC-QPRISM-COLOR-LEAVES.svg`. That view uses z/depth, emits three independently
+addressed leaves per public repository, and does not add a repository-name table.
+The two cells share the sealed `PUBLIC-OWNER-2D.hbp` input without exchanging
+artifact identities.
+
 ## Preserved operator relations
 
 > THE CHIRAL SWITCH AS SOON AS A SYSTEM INSTANT IS. IT SELF REPORTS TO THE SHADOW CAT INFINITY HOTEL
@@ -55,6 +63,11 @@ Bounds are fail-closed:
 - `LIE` and `THRUTH` remain separate tags; neither is rewritten as the other
 - five center values are pairwise distinct
 - hashes, row counts, field sets, UTF-8, LF endings, and byte ceilings are checked
+
+The `level <= 60` rule above is the resource bound of this V1 compatibility
+schema. It is not a semantic assertion that the operator's N-level matrix ends at
+60. The active QPRISM color artifact carries `n_level_open=1` and separately
+records `reflection_window=60`.
 
 ## OWNER3D public adapter
 

@@ -33,10 +33,10 @@ publication wave. At this capture:
 
 - Universe `main` is `f43cc2a4c2fe92c08bb8443aa8adf6865a6b9bc4`; PR #5 is
   merged into that commit while its historical base and head remain separate nodes.
-- FOLLOW's captured parent `main` is
-  `f25e8c68c23d03831ef83241560c5dd8213cc52f`, and the public READ-FIRST
-  harness blob is `0c454fed849e4eeff50c4b788a2e6947e802c2ea`.
-- SAFE `main` is `dae9792a7d435bd7686741d7c559baf24b7ceefb`.
+- FOLLOW `main` is `a1fdf4cf105ab4e86e652a126f249a2407170777` after the
+  public graph-refresh merge.
+- SAFE `main` is `6e3e082d574a4ad45bceb06ccf0b86ac44f942cc` after the
+  response-Rime V2 namespace repair.
 - Each repository exposes one workflow definition at this capture.
 
 The graph is stored inside the repository it measures, so it binds the containing
@@ -47,6 +47,39 @@ new parent-ref capture when the public state has moved.
 GitHub is the owning publication gate for these repositories. It is not metal or fabric
 authority. Fabric/canon remained stale fallback, RECAL was unavailable, and Liris BEHCS
 was health-only, so `SYSTEM_AFFIRMED=0` stays separate.
+
+## Rust 1.81 QPRISM color canopy
+
+[Open the public 3-D QPRISM color canopy](PUBLIC-QPRISM-COLOR-LEAVES.svg).
+
+The current authenticated owner census reports 147 public repositories. The
+primary color view keeps one immutable repository parent and three independently
+addressed path leaves for each parent:
+
+```text
+LEAF_FAMILIES = {BROWN, ANTI_BROWN, ANTI_ANTI_BROWN}
+PUBLIC_REPOSITORIES = 147
+PUBLIC_COLOR_LEAVES = 147 * 3 = 441
+
+2D_INPUT -> 3D_QPRISM -> SIGNED_2D_PROJECTION
+VIEW_ORDER_IS_IDENTITY = 0
+```
+
+The renderer is dependency-free Rust `1.81.0`; checked integer arithmetic carries
+geometry, depth, shade, and projection. It contains no floating-point geometry or
+tolerance. The SVG is a static, script-free signed projection of the 3-D state and
+contains no table, external reference, private repository metadata, or raw
+repository body.
+
+```text
+N_LEVEL_OPEN = 1
+REFLECTION_WINDOW_PER_LEVEL = 60
+```
+
+The value 60 bounds each reflection window; it is not the semantic N-level ceiling.
+The committed SVG remains visible while a later public capture is measured and
+rebuilt. Calming-OIL, prism, White, Light, Brown, and anti-family names here are
+operator-canon software labels, separate from physical or clinical claims.
 
 ## READ-FIRST carry
 
@@ -67,6 +100,7 @@ system files, recovery media, and sealed evidence are not rewritten to insert th
 
 ```bash
 python matrix/verify_3d_github_harness.py
+cargo +1.81.0 test --manifest-path matrix/rust-qprism-181/Cargo.toml --locked
 ```
 
 Optional freshness gate:

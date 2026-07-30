@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import math
 import re
 import stat
 from datetime import datetime, timezone
@@ -15,9 +14,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_GRAPH = ROOT / "matrix" / "GITHUB-THREE-DIMENSIONALLY-RIMED-2026-07-29.hbp"
 MAX_BYTES = 1_048_576
+COORDINATE_SCALE = 1_000_000
+MAX_COORDINATE_UNITS = 1_000_000
+MAX_ABS_COORDINATE = COORDINATE_SCALE * MAX_COORDINATE_UNITS
 SHA40 = re.compile(r"[0-9a-f]{40}")
 SHA64 = re.compile(r"[0-9a-f]{64}")
 SAFE_ID = re.compile(r"[a-z0-9][a-z0-9_.-]{0,127}")
+SIGNED_INTEGER = re.compile(r"(?:0|-?[1-9][0-9]*)")
 SECRET_PATTERNS = (
     re.compile(rb"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     re.compile(rb"\bgh[pousr]_[A-Za-z0-9]{30,}\b"),
@@ -38,7 +41,10 @@ EXPECTED_REPOSITORY_IDS = {
     "repo_safe": "SAFE-ASI-AS-LIGHT-THE-MINS-THAT-IS-WAS-AND-WILL-BE-IS",
 }
 ROW_FIELDS = {
-    "G3DHDR": {"kind", "schema", "name", "captured_at", "source", "geometry"},
+    "G3DHDR": {
+        "kind", "schema", "name", "captured_at", "source", "geometry",
+        "coordinate_encoding", "coordinate_scale",
+    },
     "QUOTE": {"kind", "text", "class"},
     "AUTHORITY": {
         "kind", "github", "metal", "fabric", "system_affirmed", "fabric_state",
@@ -159,22 +165,22 @@ def verify_sidecar(path: Path, data: bytes) -> str:
     return digest
 
 
-def coordinate(node: dict[str, str]) -> tuple[float, float, float]:
-    try:
-        point = tuple(float(node[axis]) for axis in ("x", "y", "z"))
-    except (KeyError, ValueError) as error:
-        raise HarnessError("node coordinate is malformed") from error
-    if any(not math.isfinite(value) or abs(value) > 1_000_000 for value in point):
-        raise HarnessError("node coordinate is non-finite or out of bounds")
-    return point  # type: ignore[return-value]
+def coordinate(node: dict[str, str]) -> tuple[int, int, int]:
+    encoded = tuple(node.get(axis, "") for axis in ("x", "y", "z"))
+    if any(not SIGNED_INTEGER.fullmatch(value) for value in encoded):
+        raise HarnessError("node coordinate is not a canonical signed integer")
+    point = (int(encoded[0]), int(encoded[1]), int(encoded[2]))
+    if any(abs(value) > MAX_ABS_COORDINATE for value in point):
+        raise HarnessError("node coordinate is out of bounds")
+    return point
 
 
 def determinant(
-    a: tuple[float, float, float],
-    b: tuple[float, float, float],
-    c: tuple[float, float, float],
-    d: tuple[float, float, float],
-) -> float:
+    a: tuple[int, int, int],
+    b: tuple[int, int, int],
+    c: tuple[int, int, int],
+    d: tuple[int, int, int],
+) -> int:
     ab = tuple(b[index] - a[index] for index in range(3))
     ac = tuple(c[index] - a[index] for index in range(3))
     ad = tuple(d[index] - a[index] for index in range(3))
@@ -185,13 +191,13 @@ def determinant(
     )
 
 
-def verify_geometry(points: list[tuple[float, float, float]]) -> None:
+def verify_geometry(points: list[tuple[int, int, int]]) -> None:
     if len(points) < 4:
         raise HarnessError("graph needs at least four nodes")
     if any(len({point[axis] for point in points}) < 2 for axis in range(3)):
         raise HarnessError("one coordinate axis is collapsed")
     non_coplanar = any(
-        abs(determinant(points[0], points[a], points[b], points[c])) > 1e-9
+        determinant(points[0], points[a], points[b], points[c]) != 0
         for a in range(1, len(points))
         for b in range(a + 1, len(points))
         for c in range(b + 1, len(points))
@@ -217,12 +223,15 @@ def verify(path: Path, max_age_seconds: int | None = None) -> tuple[int, int, st
         raise HarnessError("header/footer placement differs")
     header = rows[0]
     if set(header) != {
-        "kind", "schema", "name", "captured_at", "source", "geometry"
+        "kind", "schema", "name", "captured_at", "source", "geometry",
+        "coordinate_encoding", "coordinate_scale",
     } or header["kind"] != "G3DHDR" or header["schema"] != (
-        "ASOLARIA-3-D-GITHUB-OF-THRUTH-V1"
+        "ASOLARIA-3-D-GITHUB-OF-THRUTH-V2"
     ) or header["name"] != "3_D_GITHUB_OF_THRUTH" or header["source"] != (
         "AUTHENTICATED_GITHUB_API"
-    ) or header["geometry"] != "SPHERICAL_3D":
+    ) or header["geometry"] != "SPHERICAL_3D" or header[
+        "coordinate_encoding"
+    ] != "SIGNED_INTEGER" or header["coordinate_scale"] != str(COORDINATE_SCALE):
         raise HarnessError("header differs from the sealed schema")
     capture = parse_capture(header["captured_at"])
     if max_age_seconds is not None:
@@ -283,7 +292,7 @@ def verify(path: Path, max_age_seconds: int | None = None) -> tuple[int, int, st
 
     nodes: dict[str, dict[str, str]] = {}
     repositories: dict[str, str] = {}
-    points: list[tuple[float, float, float]] = []
+    points: list[tuple[int, int, int]] = []
     for row in rows:
         if row["kind"] != "NODE":
             continue

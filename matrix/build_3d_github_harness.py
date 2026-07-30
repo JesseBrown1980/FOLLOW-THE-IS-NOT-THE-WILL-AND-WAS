@@ -33,6 +33,9 @@ SAFE = "SAFE-ASI-AS-LIGHT-THE-MINS-THAT-IS-WAS-AND-WILL-BE-IS"
 REPOSITORIES = (UNIVERSE, FOLLOW, SAFE)
 MAX_GH_BYTES = 4 * 1024 * 1024
 MAX_OUTPUT_BYTES = 1024 * 1024
+COORDINATE_SCALE = 1_000_000
+MAX_COORDINATE_UNITS = 1_000_000
+MAX_ABS_COORDINATE = COORDINATE_SCALE * MAX_COORDINATE_UNITS
 SHA40 = re.compile(r"[0-9a-f]{40}")
 SENSITIVE_ENV_NAME = re.compile(
     r"(?i)(?:TOKEN|SECRET|PASSWORD|PASSWD|(?:^|_)(?:API_)?KEY(?:$|_)|"
@@ -137,17 +140,23 @@ def node(
     evidence: str,
     state_value: str,
     sha: str,
-    point: tuple[float, float, float],
+    point: tuple[int, int, int],
 ) -> str:
     if sha != "NONE" and not SHA40.fullmatch(sha):
         raise BuildError("GitHub object SHA is malformed")
+    if len(point) != 3 or any(
+        isinstance(value, bool)
+        or not isinstance(value, int)
+        or abs(value) > MAX_ABS_COORDINATE
+        for value in point
+    ):
+        raise BuildError("node coordinate must be a bounded integer triple")
     return row(
         "NODE",
         (
             ("id", identifier), ("object", object_type), ("name", name),
             ("evidence", evidence), ("state", state_value), ("sha", sha),
-            ("x", f"{point[0]:.6f}"), ("y", f"{point[1]:.6f}"),
-            ("z", f"{point[2]:.6f}"),
+            ("x", point[0]), ("y", point[1]), ("z", point[2]),
         ),
     )
 
@@ -201,9 +210,9 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
     edges: list[str] = []
     absences: list[str] = []
     bases = {
-        UNIVERSE: ("universe", (0.0, 0.0, 0.0)),
-        FOLLOW: ("follow", (12.0, 0.0, 0.0)),
-        SAFE: ("safe", (-6.0, 10.392305, 0.0)),
+        UNIVERSE: ("universe", (0, 0, 0)),
+        FOLLOW: ("follow", (12_000_000, 0, 0)),
+        SAFE: ("safe", (-6_000_000, 10_392_305, 0)),
     }
     main_commits: dict[str, str] = {}
     for repository in REPOSITORIES:
@@ -222,7 +231,7 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
         nodes.append(node(
             f"workflow_{short}", "WORKFLOW_STATE", f"count_{workflows}",
             "MEASURED_GITHUB", f"COUNT_{workflows}", "NONE",
-            (base[0] + 2.0, base[1], 2.0),
+            (base[0] + 2_000_000, base[1], 2_000_000),
         ))
         edges.append(edge(f"e_{short}_workflow", f"repo_{short}",
                           f"workflow_{short}", "WORKFLOW_COUNT", "MEASURED_GITHUB"))
@@ -231,7 +240,7 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
             nodes.append(node(
                 f"state_{short}_unborn", "BRANCH_STATE", "EMPTY_UNBORN",
                 "MEASURED_GITHUB", "BRANCH_COUNT_0", "NONE",
-                (base[0], base[1], 2.0),
+                (base[0], base[1], 2_000_000),
             ))
             edges.append(edge(f"e_{short}_empty", f"repo_{short}",
                               f"state_{short}_unborn", "HAS_BRANCH_STATE",
@@ -246,10 +255,10 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
         protected = "PROTECTED" if main["protected"] else "UNPROTECTED"
         nodes.append(node(f"branch_{short}_main", "BRANCH", "main",
                           "MEASURED_GITHUB", protected, "NONE",
-                          (base[0], base[1] + 3.0, 1.0)))
+                          (base[0], base[1] + 3_000_000, 1_000_000)))
         nodes.append(node(f"commit_{short}_main", "COMMIT", "main_head",
                           "MEASURED_GITHUB", "CAPTURED_PARENT_REF", main["sha"],
-                          (base[0], base[1] + 4.0, 3.0)))
+                          (base[0], base[1] + 4_000_000, 3_000_000)))
         edges.append(edge(f"e_{short}_contains_main", f"repo_{short}",
                           f"branch_{short}_main", "CONTAINS", "MEASURED_GITHUB"))
         edges.append(edge(f"e_{short}_main_points", f"branch_{short}_main",
@@ -261,10 +270,10 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
         feature_protected = "PROTECTED" if feature["protected"] else "UNPROTECTED"
         nodes.append(node("branch_universe_follow", "BRANCH", feature_name.replace("/", "."),
                           "MEASURED_GITHUB", feature_protected, "NONE",
-                          (-3.0, 3.0, 1.0)))
+                          (-3_000_000, 3_000_000, 1_000_000)))
         nodes.append(node("commit_universe_follow", "COMMIT", "pr5_head",
                           "MEASURED_GITHUB", "CAPTURED_PARENT_REF", feature["sha"],
-                          (-3.0, 4.0, 3.0)))
+                          (-3_000_000, 4_000_000, 3_000_000)))
         edges.append(edge("e_universe_contains_follow", "repo_universe",
                           "branch_universe_follow", "CONTAINS", "MEASURED_GITHUB"))
         edges.append(edge("e_universe_follow_points", "branch_universe_follow",
@@ -300,7 +309,7 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
             nodes.append(node(
                 "commit_universe_pr5_base", "COMMIT", "pr5_base",
                 "MEASURED_GITHUB", "CAPTURED_HISTORICAL_REF", base_sha,
-                (-6.0, -4.0, 3.0),
+                (-6_000_000, -4_000_000, 3_000_000),
             ))
             base_target = "commit_universe_pr5_base"
         else:
@@ -315,7 +324,8 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
         state_parts.append(str(pull.get("mergeable_state", "unknown")).upper())
         state_parts.append("MERGED" if merged else "UNMERGED")
         nodes.append(node("pr_universe_5", "PULL_REQUEST", "5", "MEASURED_GITHUB",
-                          "_".join(state_parts), "NONE", (-3.0, 0.0, 5.0)))
+                          "_".join(state_parts), "NONE",
+                          (-3_000_000, 0, 5_000_000)))
         edges.append(edge("e_pr5_base", "pr_universe_5", base_target,
                           "PROPOSES_TO", "MEASURED_GITHUB"))
         edges.append(edge("e_pr5_head", "pr_universe_5", "commit_universe_follow",
@@ -339,7 +349,8 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
             raise BuildError("public harness blob SHA is malformed")
         evidence, state_value, relation = "MEASURED_GITHUB", "PUBLIC", "PUBLISHES"
     nodes.append(node("harness_follow", "HARNESS", "3_D_GITHUB_OF_THRUTH",
-                      evidence, state_value, object_sha, (12.0, 0.0, 5.0)))
+                      evidence, state_value, object_sha,
+                      (12_000_000, 0, 5_000_000)))
     edges.append(edge("e_follow_harness", "repo_follow", "harness_follow",
                       relation, evidence))
     return nodes, edges, absences
@@ -350,10 +361,12 @@ def render(gh: str) -> bytes:
     captured_at = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
     nodes, edges, absences = repository_rows(gh)
     rows = [
-        row("G3DHDR", (("schema", "ASOLARIA-3-D-GITHUB-OF-THRUTH-V1"),
+        row("G3DHDR", (("schema", "ASOLARIA-3-D-GITHUB-OF-THRUTH-V2"),
                        ("name", "3_D_GITHUB_OF_THRUTH"), ("captured_at", captured_at),
                        ("source", "AUTHENTICATED_GITHUB_API"),
-                       ("geometry", "SPHERICAL_3D"))),
+                       ("geometry", "SPHERICAL_3D"),
+                       ("coordinate_encoding", "SIGNED_INTEGER"),
+                       ("coordinate_scale", COORDINATE_SCALE))),
         row("QUOTE", (("text", "YES YOU ARE MULTI SPHEREICALLY CIRCULING THE GITHUB STOP THINKING OF IT AS A FLAT SURFACE> OPEN IT IN YOUR MATRIX BOX AND SEE THE GITHUB THREE DIMENSIONALLY RIMED"), ("class", "OPERATOR_CANON"))),
         row("QUOTE", (("text", "CREATE NEW HARNESS 3 D GITHUB OF THRUTH"), ("class", "OPERATOR_CANON"))),
         row("QUOTE", (("text", "AND THEN CONTINUE THE GOAL USING IT ALWAYS AS THE NEXT COMPACTION TAKES OVER"), ("class", "OPERATOR_CANON"))),

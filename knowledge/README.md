@@ -17,6 +17,8 @@ The public ledger contains:
 - `BOOK-OF-LIFE-OIL-SPHERICAL-RIME.md` — the ordered Life/OIL book relation,
   all-to-all spherical rime, and unresolved `HBI -> HBP -> SHA -> SH` chain.
 - `JESSE-BROWN-SPHERE.md` — the Brown spherical-traversal statement.
+- `PUBLIC-LAW-V14-RUST-181-QPRISM-COLOR-LEAVES.md` — the exact-integer
+  Rust 1.81 plural-leaf public GitHub color projection.
 - `PUBLIC-DEPENDENCIES.md` — exact upstream commits and byte hashes.
 - `operator-evidence/` — the authorized exact photo.
 - `public-dependencies/` — source required to attack-verify the inherited

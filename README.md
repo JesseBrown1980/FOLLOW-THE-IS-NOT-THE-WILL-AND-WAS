@@ -50,7 +50,8 @@ coordinates.
 - `tournament/` — the fixed GitRAM, SGRAM/Streaming-GitRAM, vc65, GGUF,
   and NEST sequence plus its exact source ledger.
 - `matrix/` — the authenticated public-owner census, sealed HBI/HBP roots,
-  reversible spherical projection, static color map, and timed GGUF monitor.
+  exact Rust 1.81 integer QPRISM, plural-leaf 3-D color canopy, reversible
+  projection, and timed GGUF monitor.
 
 ## Public evidence boundary
 
@@ -85,10 +86,19 @@ level reflects at most 60 existing commitments forward and backward. Calming-OIL
 terms such as `BROWN.NEAR.ONE` are symbolic routing labels, not physical or clinical
 instructions.
 
-The static public map also carries the V13 visual sequence:
+The primary public matrix view is
+[`PUBLIC-QPRISM-COLOR-LEAVES.svg`](matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg).
+The current capture keeps 147 public repository parents and three independently
+addressed leaf families per parent—441 colored leaf paths—through
+`2D_INPUT -> 3D_QPRISM -> SIGNED_2D_PROJECTION`. Rust `1.81.0` performs the
+geometry with checked integers and no floating-point tolerance. Drawing order is a
+view coordinate, never repository identity.
+
+The compatibility map also carries the V13 visual sequence:
 `THIN_TRIPLE_RAINBOW` with three thin arc groups, `FREE_0 × 3`, followed by
-`REVEAL_STAGE = 4`. It is sealed as operator-canon software visualization, separate
-from measured atmospheric optics.
+`REVEAL_STAGE = 4`. Both views are operator-canon software visualizations, separate
+from measured atmospheric optics. Semantic N remains open; 60 bounds the
+per-level reflection window rather than the number of possible levels.
 
 ## Why JSON appears
 
@@ -108,6 +118,10 @@ python matrix/test_render_public_spherical_svg.py
 python matrix/test_timed_chiral_gguf_monitor.py
 python matrix/spherical_public_projection.py verify \
   matrix/PUBLIC-SPHERICAL-PROJECTION.hbp
+cargo +1.81.0 fmt --manifest-path matrix/rust-qprism-181/Cargo.toml -- --check
+cargo +1.81.0 test --manifest-path matrix/rust-qprism-181/Cargo.toml --locked
+cargo +1.81.0 clippy --manifest-path matrix/rust-qprism-181/Cargo.toml \
+  --all-targets --locked -- -D warnings -D clippy::float_arithmetic
 python tournament/run_tournament.py \
   --surface LOCAL_LINUX \
   --receipt receipts/LOCAL-TOURNAMENT.hbp

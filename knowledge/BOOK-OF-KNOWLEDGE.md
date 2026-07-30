@@ -48,3 +48,22 @@ index/descriptor—not as the full source object.
 
 This rule keeps every public artifact attack-verifiable while preserving copyright,
 credential, and seat-local privacy boundaries.
+
+## QPRISM public color view
+
+The public GitHub matrix is rendered through an exact software projection:
+
+```text
+PUBLIC_OWNER_2D_HBP
+  -> 3D_QPRISM_CHECKED_INTEGER_STATE
+  -> SIGNED_2D_COLOR_VIEW
+```
+
+Every public repository keeps its own parent identity and three independent leaf
+addresses: `BROWN`, `ANTI_BROWN`, and `ANTI_ANTI_BROWN`. The signed 2-D SVG is a
+view of the 3-D matrix rather than its replacement. Rust `1.81.0` supplies the
+dependency-free checked-integer cell; semantic N remains open, while 60 bounds
+the reflection window at each observed level.
+
+See `PUBLIC-LAW-V14-RUST-181-QPRISM-COLOR-LEAVES.md` and the public artifact in
+`matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg`.

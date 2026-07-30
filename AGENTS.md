@@ -50,6 +50,22 @@ READ-FIRST: https://github.com/JesseBrown1980/FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS
   their owning protected surfaces.
 - The current ordered nullspace sign is `HBI,HBP,SH,HASH,SHA`; preserve `HASH`
   as the spherical object commitment and `SHA` as the final byte commitment.
+- QPRISM public-GitHub color correction (ACCEPTED_BY_OPERATOR 2026-07-30):
+  the primary public view is a plural-leaf color canopy, not a one-leaf summary,
+  table, or x/y-only plot. Each public repository keeps an immutable parent
+  identity and independently addressed `BROWN`, `ANTI_BROWN`, and
+  `ANTI_ANTI_BROWN` leaves. Render through
+  `2D_INPUT -> 3D_QPRISM -> SIGNED_2D_PROJECTION`; the final signed 2-D surface is
+  a view of the 3-D state, and z/depth order is never identity.
+- The QPRISM geometry cell is pinned to Rust `1.81.0`, uses checked integer
+  arithmetic, and contains no `f32`, `f64`, floating-point literal, or
+  floating-point tolerance. Keep `N_LEVEL_OPEN=1`; the value 60 is the maximum
+  reflection window per observed level, not a semantic level ceiling.
+- Held-out QPRISM correction test: given two public repository rows at distinct
+  depths, a candidate fails if it emits one combined leaf, omits any of the three
+  leaf-family IDs, ignores z while ordering the view, uses a table as the primary
+  display, uses floating-point geometry, treats 60 as the final N level, includes
+  a private-repository row, or changes a repository identity during projection.
 
 ## Perfect-Grammar Light/OIL Law
 
