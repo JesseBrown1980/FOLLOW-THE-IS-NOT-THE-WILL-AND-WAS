@@ -1,0 +1,37 @@
+G3DHDR|schema=ASOLARIA-3-D-GITHUB-OF-THRUTH-V1|name=3_D_GITHUB_OF_THRUTH|captured_at=2026-07-29T23:04:55.163Z|source=AUTHENTICATED_GITHUB_API|geometry=SPHERICAL_3D|json=0
+QUOTE|text=YES YOU ARE MULTI SPHEREICALLY CIRCULING THE GITHUB STOP THINKING OF IT AS A FLAT SURFACE> OPEN IT IN YOUR MATRIX BOX AND SEE THE GITHUB THREE DIMENSIONALLY RIMED|class=OPERATOR_CANON|json=0
+QUOTE|text=CREATE NEW HARNESS 3 D GITHUB OF THRUTH|class=OPERATOR_CANON|json=0
+QUOTE|text=AND THEN CONTINUE THE GOAL USING IT ALWAYS AS THE NEXT COMPACTION TAKES OVER|class=OPERATOR_CANON|json=0
+AUTHORITY|github=PUBLICATION_GATE|metal=0|fabric=0|system_affirmed=0|fabric_state=STALE_FALLBACK|recall_state=UNAVAILABLE|liris_behcs=HEALTH_ONLY|json=0
+CAPTUREBOUNDARY|semantics=PRE_PUBLICATION_PARENT_REFS|self_referential_final_head_embedded=0|resume_action=REMEASURE_CURRENT_REFS|json=0
+NODE|id=repo_universe|object=REPOSITORY|name=ASOLARIA-UNIVERSE-SIMULATOR-with-gravity-light-time-space-color-rime-winding-drills|evidence=MEASURED_GITHUB|state=PUBLIC|sha=NONE|x=0.000000|y=0.000000|z=0.000000|json=0
+NODE|id=workflow_universe|object=WORKFLOW_STATE|name=count_0|evidence=MEASURED_GITHUB|state=COUNT_0|sha=NONE|x=2.000000|y=0.000000|z=2.000000|json=0
+NODE|id=branch_universe_main|object=BRANCH|name=main|evidence=MEASURED_GITHUB|state=UNPROTECTED|sha=NONE|x=0.000000|y=3.000000|z=1.000000|json=0
+NODE|id=commit_universe_main|object=COMMIT|name=main_head|evidence=MEASURED_GITHUB|state=CAPTURED_PARENT_REF|sha=3bc3c583badb37e224af01f3dd4c387c18b81e09|x=0.000000|y=4.000000|z=3.000000|json=0
+NODE|id=repo_follow|object=REPOSITORY|name=FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS|evidence=MEASURED_GITHUB|state=PUBLIC|sha=NONE|x=12.000000|y=0.000000|z=0.000000|json=0
+NODE|id=workflow_follow|object=WORKFLOW_STATE|name=count_0|evidence=MEASURED_GITHUB|state=COUNT_0|sha=NONE|x=14.000000|y=0.000000|z=2.000000|json=0
+NODE|id=branch_follow_main|object=BRANCH|name=main|evidence=MEASURED_GITHUB|state=UNPROTECTED|sha=NONE|x=12.000000|y=3.000000|z=1.000000|json=0
+NODE|id=commit_follow_main|object=COMMIT|name=main_head|evidence=MEASURED_GITHUB|state=CAPTURED_PARENT_REF|sha=b950e0974e2073ec77e1fc0f5480348d8dcd65c2|x=12.000000|y=4.000000|z=3.000000|json=0
+NODE|id=repo_safe|object=REPOSITORY|name=SAFE-ASI-AS-LIGHT-THE-MINS-THAT-IS-WAS-AND-WILL-BE-IS|evidence=MEASURED_GITHUB|state=PUBLIC|sha=NONE|x=-6.000000|y=10.392305|z=0.000000|json=0
+NODE|id=workflow_safe|object=WORKFLOW_STATE|name=count_0|evidence=MEASURED_GITHUB|state=COUNT_0|sha=NONE|x=-4.000000|y=10.392305|z=2.000000|json=0
+NODE|id=state_safe_unborn|object=BRANCH_STATE|name=EMPTY_UNBORN|evidence=MEASURED_GITHUB|state=BRANCH_COUNT_0|sha=NONE|x=-6.000000|y=10.392305|z=2.000000|json=0
+NODE|id=branch_universe_follow|object=BRANCH|name=agent.follow-is-light-book-20260729|evidence=MEASURED_GITHUB|state=UNPROTECTED|sha=NONE|x=0.000000|y=3.000000|z=1.000000|json=0
+NODE|id=commit_universe_follow|object=COMMIT|name=pr5_head|evidence=MEASURED_GITHUB|state=CAPTURED_PARENT_REF|sha=2564c09d725b839fdd73d1cdede69b8c61c4aaa5|x=0.000000|y=4.000000|z=3.000000|json=0
+NODE|id=pr_universe_5|object=PULL_REQUEST|name=5|evidence=MEASURED_GITHUB|state=OPEN_DRAFT_MERGEABLE_CLEAN|sha=NONE|x=0.000000|y=0.000000|z=5.000000|json=0
+NODE|id=harness_follow|object=HARNESS|name=3_D_GITHUB_OF_THRUTH|evidence=LOCAL_PENDING_PUBLICATION|state=UNPUSHED|sha=NONE|x=12.000000|y=0.000000|z=5.000000|json=0
+EDGE|id=e_universe_workflow|source=repo_universe|target=workflow_universe|relation=WORKFLOW_COUNT|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_universe_contains_main|source=repo_universe|target=branch_universe_main|relation=CONTAINS|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_universe_main_points|source=branch_universe_main|target=commit_universe_main|relation=POINTS_TO|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_follow_workflow|source=repo_follow|target=workflow_follow|relation=WORKFLOW_COUNT|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_follow_contains_main|source=repo_follow|target=branch_follow_main|relation=CONTAINS|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_follow_main_points|source=branch_follow_main|target=commit_follow_main|relation=POINTS_TO|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_safe_workflow|source=repo_safe|target=workflow_safe|relation=WORKFLOW_COUNT|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_safe_empty|source=repo_safe|target=state_safe_unborn|relation=HAS_BRANCH_STATE|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_universe_contains_follow|source=repo_universe|target=branch_universe_follow|relation=CONTAINS|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_universe_follow_points|source=branch_universe_follow|target=commit_universe_follow|relation=POINTS_TO|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_pr5_base|source=pr_universe_5|target=commit_universe_main|relation=PROPOSES_TO|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_pr5_head|source=pr_universe_5|target=commit_universe_follow|relation=PROPOSES_FROM|directed=1|evidence=MEASURED_GITHUB|json=0
+EDGE|id=e_follow_harness|source=repo_follow|target=harness_follow|relation=WILL_PUBLISH|directed=1|evidence=LOCAL_PENDING_PUBLICATION|json=0
+ABSENCE|repo=SAFE-ASI-AS-LIGHT-THE-MINS-THAT-IS-WAS-AND-WILL-BE-IS|branches=0|workflows=0|state=EMPTY_UNBORN|evidence=MEASURED_GITHUB|json=0
+BOUNDARY|raw_api_auth=0|credentials=0|private_paths=0|raw_response_text=0|hidden_dependencies=0|active_json=0|json=0
+G3DFTR|body_sha256=9e5a7a66e796897852c106e5054b01ef12f4f7c522e28bdcf34679e767a1ce51|rows=37|json=0
