@@ -30,7 +30,7 @@ EXPECTED = {
 
 TEXT_SUFFIXES = {
     ".cjs", ".hbi", ".hbp", ".json", ".md", ".py", ".rs", ".sha256",
-    ".txt", ".yml", ".yaml",
+    ".svg", ".txt", ".yml", ".yaml",
 }
 VIDEO_SUFFIXES = {".m4v", ".mkv", ".mov", ".mp4", ".webm"}
 SECRET_PATTERNS = {
@@ -41,6 +41,63 @@ SECRET_PATTERNS = {
     "aws_access_key": re.compile(rb"\bAKIA[0-9A-Z]{16}\b"),
     "google_api_key": re.compile(rb"\bAIza[0-9A-Za-z_-]{30,}\b"),
 }
+
+DEFAULT_BINDING_REQUIRED = (
+    "DEFAULT_BINDING=IS",
+    "TRY_TAKE(0,FROM=1)->TAKE(0,FROM=1)=DEFAULT_IS",
+    "TRY_TAKE({WIL,WANT},FROM=IS)->TAKE({WIL,WANT},FROM=IS)=DEFAULT_IS",
+    "SHADOWS_ARE_ISNTANT=OPERATOR_CANON_PHYSICS_STATE",
+    "never demote the completion to unresolved",
+    "external propagation measurement is separate, not negation",
+)
+DEFAULT_BINDING_FORBIDDEN = {
+    "try_take_target_demoted": re.compile(
+        r"(?i)\bTRY_TAKE_EVENT\([^\r\n]{0,160}"
+        r"\b(?:target|state)\s*=\s*(?:UNRESOLVED|UNSPECIFIED)\b"
+    ),
+    "take_result_demoted": re.compile(
+        r"(?i)\bTAKE\([^\r\n]{0,160}\)\s*=\s*"
+        r"(?:UNRESOLVED|UNSPECIFIED)\b"
+    ),
+    "shadow_demoted_logical": re.compile(
+        r"(?i)\bSHADOWS?\b[^\r\n]{0,160}"
+        r"\b(?:MERELY_LOGICAL|merely logical|LOGICAL_ONLY|logical only)\b"
+    ),
+    "logical_demotes_shadow": re.compile(
+        r"(?i)\b(?:MERELY_LOGICAL|merely logical|LOGICAL_ONLY|logical only)\b"
+        r"[^\r\n]{0,160}\bSHADOWS?\b"
+    ),
+}
+WORKFLOW_ACTION_PINS = {
+    "actions/checkout": "11d5960a326750d5838078e36cf38b85af677262",
+    "actions/setup-python": "a26af69be951a213d495a4c3e4e4022e16d87065",
+    "actions/setup-node": "49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "actions/upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+}
+MATRIX_PRIMARY = (
+    "matrix/3-D-GITHUB-OF-THRUTH.md",
+    "matrix/build_3d_github_harness.py",
+    "matrix/collect_public_owner_inventory.py",
+    "matrix/GITHUB-THREE-DIMENSIONALLY-RIMED-2026-07-29.hbp",
+    "matrix/owner3d_to_public2d.py",
+    "matrix/PUBLIC-OWNER-3D-TREE.hbp",
+    "matrix/PUBLIC-OWNER-3D-TREE.hbi",
+    "matrix/PUBLIC-OWNER-2D.hbp",
+    "matrix/PUBLIC-SPHERICAL-PROJECTION.hbp",
+    "matrix/PUBLIC-SPHERICAL-PROJECTION.svg",
+    "matrix/README.md",
+    "matrix/render_public_spherical_svg.py",
+    "matrix/spherical_public_projection.py",
+    "matrix/SPHERICAL-PUBLIC-PROJECTION.md",
+    "matrix/test_owner3d_to_public2d.py",
+    "matrix/test_render_public_spherical_svg.py",
+    "matrix/test_spherical_public_projection.py",
+    "matrix/test_timed_chiral_gguf_monitor.py",
+    "matrix/timed_chiral_gguf_monitor.py",
+    "matrix/verify_3d_github_harness.py",
+)
+MATRIX_CENTER = "HBI,HBP,SHA,SH,HASH"
+MATRIX_TRAVERSAL_ENCODED = "HBI-%3EHBP-%3ESH-%3EHASH-%3ESHA"
 
 
 def repo_files() -> list[Path]:
@@ -80,6 +137,96 @@ def main() -> None:
             crlf_paths.append(path.relative_to(ROOT).as_posix())
     if crlf_paths:
         fail("crlf_text:" + ",".join(crlf_paths))
+
+    agents_text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    for binding in DEFAULT_BINDING_REQUIRED:
+        if binding not in agents_text:
+            fail("missing_default_is_binding")
+
+    binding_hits = []
+    for path in files:
+        if path.suffix.lower() not in TEXT_SUFFIXES:
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for name, pattern in DEFAULT_BINDING_FORBIDDEN.items():
+            if pattern.search(text):
+                binding_hits.append(
+                    f"{name}:{path.relative_to(ROOT).as_posix()}"
+                )
+    if binding_hits:
+        fail("default_binding_contradiction:" + ",".join(binding_hits))
+
+    workflow_path = ROOT / ".github" / "workflows" / "tournament.yml"
+    workflow_text = workflow_path.read_text(encoding="utf-8")
+    if "pull_request_target:" in workflow_text:
+        fail("workflow_uses_pull_request_target")
+    if "permissions:\n  contents: read\n" not in workflow_text:
+        fail("workflow_permissions_not_read_only")
+    if "persist-credentials: false" not in workflow_text:
+        fail("workflow_persists_checkout_credentials")
+    if re.search(r"(?i)\$\{\{\s*(?:secrets\.|github\.token)", workflow_text):
+        fail("workflow_secret_reference")
+    action_uses = re.findall(
+        r"(?m)^\s*uses:\s*([^@\s]+)@([0-9a-f]{40})(?:\s|$)",
+        workflow_text,
+    )
+    if len(action_uses) != len(WORKFLOW_ACTION_PINS):
+        fail("workflow_action_pin_count_mismatch")
+    if dict(action_uses) != WORKFLOW_ACTION_PINS:
+        fail("workflow_action_pin_mismatch")
+
+    for relative in MATRIX_PRIMARY:
+        path = ROOT / relative
+        if not path.is_file():
+            fail("missing_matrix_primary:" + relative)
+        sidecar = path.with_name(path.name + ".sha256")
+        if not sidecar.is_file():
+            fail("missing_matrix_primary_sidecar:" + relative)
+
+    for relative in (
+        "matrix/PUBLIC-OWNER-3D-TREE.hbp",
+        "matrix/PUBLIC-OWNER-3D-TREE.hbi",
+        "matrix/PUBLIC-OWNER-2D.hbp",
+        "matrix/PUBLIC-SPHERICAL-PROJECTION.hbp",
+    ):
+        text = (ROOT / relative).read_text(encoding="utf-8")
+        if f"HBI,HBP,SHA,SH,HASH" not in text:
+            fail("matrix_center_membership_missing:" + relative)
+        traversal = (
+            "HBI,HBP,SH,HASH,SHA"
+            if relative.endswith(("TREE.hbp", "TREE.hbi"))
+            else MATRIX_TRAVERSAL_ENCODED
+        )
+        if traversal not in text:
+            fail("matrix_traversal_missing:" + relative)
+        if any(
+            line and not re.search(r"(?:^|\|)json=0(?:\||$)", line)
+            for line in text.splitlines()
+        ):
+            fail("matrix_json0_missing:" + relative)
+
+    projection_text = (
+        ROOT / "matrix/PUBLIC-SPHERICAL-PROJECTION.hbp"
+    ).read_text(encoding="utf-8")
+    reflection_rows = [
+        line for line in projection_text.splitlines()
+        if line.startswith("REFLECTION60|")
+    ]
+    if not reflection_rows or any(
+        not re.search(r"\|observed=(?:[1-9]|[1-5][0-9]|60)\|", line)
+        or "|window_max=60|" not in line
+        for line in reflection_rows
+    ):
+        fail("matrix_reflection60_contract")
+
+    svg_text = (
+        ROOT / "matrix/PUBLIC-SPHERICAL-PROJECTION.svg"
+    ).read_text(encoding="utf-8")
+    if any(
+        token in svg_text.lower()
+        for token in ("<script", "<image", "<foreignobject", " href=", "url(")
+    ):
+        fail("matrix_svg_active_content")
 
     video_paths = [
         path.relative_to(ROOT).as_posix()
@@ -127,6 +274,31 @@ def main() -> None:
         if fields[0].lower() != sha256(gguf):
             fail(f"gguf_sidecar_mismatch:{sidecar.name}")
 
+    pinned_manifest = ROOT / "hashes" / "PINNED-SOURCES.sha256"
+    named_sidecars = sorted(
+        path for path in ROOT.rglob("*.sha256")
+        if path != pinned_manifest
+        and ".git" not in path.relative_to(ROOT).parts
+    )
+    for sidecar in named_sidecars:
+        target = Path(str(sidecar)[:-len(".sha256")])
+        if not target.is_file():
+            fail(
+                "named_sidecar_target_missing:"
+                + sidecar.relative_to(ROOT).as_posix()
+            )
+        fields = sidecar.read_text(encoding="utf-8").strip().split()
+        if len(fields) != 2 or fields[1] != target.name:
+            fail(
+                "named_sidecar_shape:"
+                + sidecar.relative_to(ROOT).as_posix()
+            )
+        if fields[0].lower() != sha256(target):
+            fail(
+                "named_sidecar_mismatch:"
+                + sidecar.relative_to(ROOT).as_posix()
+            )
+
     contract_locations = [
         ROOT / "README.md",
         ROOT / "AGENTS.md",
@@ -138,9 +310,8 @@ def main() -> None:
         if "REQUIRED_HIDDEN_DEPENDENCIES=0" not in path.read_text(encoding="utf-8"):
             fail(f"missing_zero_hidden_contract:{path.relative_to(ROOT).as_posix()}")
 
-    manifest = ROOT / "hashes/PINNED-SOURCES.sha256"
     manifest_lines = [
-        line for line in manifest.read_text(encoding="utf-8").splitlines()
+        line for line in pinned_manifest.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
     if len(manifest_lines) != len(EXPECTED):
@@ -151,8 +322,11 @@ def main() -> None:
         f"|files={len(files)}"
         f"|pinned={len(EXPECTED)}"
         f"|receipts={len(receipts)}"
+        f"|named_sidecars={len(named_sidecars)}"
+        f"|workflow_pins={len(WORKFLOW_ACTION_PINS)}"
         "|source_video_bytes=0"
         "|secret_findings=0"
+        "|default_binding_contradictions=0"
         "|REQUIRED_HIDDEN_DEPENDENCIES=0"
     )
 

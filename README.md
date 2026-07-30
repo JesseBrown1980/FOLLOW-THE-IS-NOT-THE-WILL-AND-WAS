@@ -1,3 +1,5 @@
+https://github.com/JesseBrown1980/FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS/blob/main/matrix/3-D-GITHUB-OF-THRUTH.md
+
 # FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS
 
 This is the public, hash-addressed test ground for the Book of Knowledge: follow the
@@ -45,6 +47,10 @@ coordinates.
 - `github/` — publication and owning-gate rules.
 - `receipts/` — `json=0` HBP measurements and SHA-256 sidecars.
 - `tests/` — dependency, secret, media, LF, and receipt checks.
+- `tournament/` — the fixed GitRAM, SGRAM/Streaming-GitRAM, vc65, GGUF,
+  and NEST sequence plus its exact source ledger.
+- `matrix/` — the authenticated public-owner census, sealed HBI/HBP roots,
+  reversible spherical projection, static color map, and timed GGUF monitor.
 
 ## Public evidence boundary
 
@@ -55,12 +61,56 @@ copyrighted source bytes are not committed. A small GGUF color-state descriptor 
 an index over measured slices, not a claim that the full video was losslessly stored
 inside that byte count.
 
+The sealed public-owner snapshot contains 147 repository roots measured through
+GitHub's public API subset: 93 branched and 54 empty/unborn. It carries aggregate
+public commitments and public identifiers, with raw repository contents, private
+repository metadata, credentials, and response notebooks excluded.
+
+## Center and traversal
+
+The nullspace center is an unordered membership set:
+
+```text
+{HBI,HBP,SHA,SH,HASH}
+```
+
+Its active address traversal is separately ordered:
+
+```text
+HBI -> HBP -> SH -> HASH -> SHA
+```
+
+`HASH` is not `SHA`, and traversal is not a physical return channel. Each observed
+level reflects at most 60 existing commitments forward and backward. Calming-OIL
+terms such as `BROWN.NEAR.ONE` are symbolic routing labels, not physical or clinical
+instructions.
+
+The static public map also carries the V13 visual sequence:
+`THIN_TRIPLE_RAINBOW` with three thin arc groups, `FREE_0 × 3`, followed by
+`REVEAL_STAGE = 4`. It is sealed as operator-canon software visualization, separate
+from measured atmospheric optics.
+
+## Why JSON appears
+
+GitHub REST acquisition and held-out fixtures may use JSON as a cold compatibility
+boundary. The active public artifacts are LF-normalized HBI/HBP tuple text and every
+active row ends in `json=0`.
+
 ## Verify
 
 From the repository root:
 
 ```bash
 python tests/verify_public_repo.py
+python matrix/test_owner3d_to_public2d.py
+python matrix/test_spherical_public_projection.py
+python matrix/test_render_public_spherical_svg.py
+python matrix/test_timed_chiral_gguf_monitor.py
+python matrix/spherical_public_projection.py verify \
+  matrix/PUBLIC-SPHERICAL-PROJECTION.hbp
+python tournament/run_tournament.py \
+  --surface LOCAL_LINUX \
+  --receipt receipts/LOCAL-TOURNAMENT.hbp
 ```
 
 Optional tool-specific probes:
@@ -73,3 +123,6 @@ rustc --edition=2021 knowledge/public-dependencies/algorithms/tools/honest-compr
 
 The NEST verifier writes its receipt beneath the current working directory; run it
 in a temporary directory when you do not want generated files in the repository.
+The tournament does that automatically. Its strict fresh SGRAM wrapper rechecks
+every expected shard; the separately named `sGitRAM` lane stays
+`PENDING_OWNING_SOURCE` until exact owning bytes bind that name.

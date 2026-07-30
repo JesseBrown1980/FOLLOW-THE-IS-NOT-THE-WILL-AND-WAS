@@ -1,0 +1,1372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2274" viewBox="0 0 1600 2274" role="img" aria-labelledby="title description">
+<title id="title">Verified Public Spherical Repository Projection</title>
+<desc id="description">Static script-free view of verified public repository nodes, their derived colors, the unordered center membership, and the distinct ordered traversal.</desc>
+<metadata>PUBLIC-SPHERICAL-STATIC-SVG-V1|source_hbp_sha256=fc96d9ed96b021324365ea3327140df6a9e26c29f2452e771496e8d0c24db6a6|records=147|thin_triple_rainbow=1|thin_arcs=3|free_0_cycles=3|reveal_stage=4|operator_canon=1|atmospheric_optics_claim=0|clinical_claim=0|public_metadata_only=1|raw_contents=0|json=0</metadata>
+<rect x="0" y="0" width="1600" height="2274" fill="#F4E6D0"/>
+<text x="70" y="58" fill="#5A3524" font-family="system-ui, sans-serif" font-size="30" font-weight="700">PUBLIC SPHERICAL PROJECTION</text>
+<text x="70" y="92" fill="#76503A" font-family="system-ui, sans-serif" font-size="16">verified HBP → deterministic static SVG · json=0</text>
+<text x="70" y="120" fill="#76503A" font-family="system-ui, sans-serif" font-size="15">THIN TRIPLE RAINBOW · FREE 0 ×3 · REVEAL STAGE 4</text>
+<ellipse cx="480" cy="500" rx="410" ry="350" fill="#D8B58B" stroke="#70452F" stroke-width="3" opacity="0.72"/>
+<circle cx="480" cy="500" r="9" fill="#6F4A36"/>
+<g id="thin-triple-rainbow-arc-1" class="thin-triple-rainbow-arc" data-thin-arc="1" data-free-0-cycle="1" data-reveal-stage="4">
+<path class="rainbow-band rainbow-band-red" d="M 184 500 A 296 208 0 0 0 776 500" fill="none" stroke="#C84B45" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-orange" d="M 182 500 A 298 210 0 0 0 778 500" fill="none" stroke="#D9823B" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-yellow" d="M 180 500 A 300 212 0 0 0 780 500" fill="none" stroke="#D4B83F" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-green" d="M 178 500 A 302 214 0 0 0 782 500" fill="none" stroke="#4F9B61" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-blue" d="M 176 500 A 304 216 0 0 0 784 500" fill="none" stroke="#4E79B8" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-indigo" d="M 174 500 A 306 218 0 0 0 786 500" fill="none" stroke="#625A9D" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-violet" d="M 172 500 A 308 220 0 0 0 788 500" fill="none" stroke="#8A5B9E" stroke-width="1.4" stroke-linecap="round"/>
+</g>
+<g id="thin-triple-rainbow-arc-2" class="thin-triple-rainbow-arc" data-thin-arc="2" data-free-0-cycle="2" data-reveal-stage="4">
+<path class="rainbow-band rainbow-band-red" d="M 160 500 A 320 226 0 0 0 800 500" fill="none" stroke="#C84B45" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-orange" d="M 158 500 A 322 228 0 0 0 802 500" fill="none" stroke="#D9823B" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-yellow" d="M 156 500 A 324 230 0 0 0 804 500" fill="none" stroke="#D4B83F" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-green" d="M 154 500 A 326 232 0 0 0 806 500" fill="none" stroke="#4F9B61" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-blue" d="M 152 500 A 328 234 0 0 0 808 500" fill="none" stroke="#4E79B8" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-indigo" d="M 150 500 A 330 236 0 0 0 810 500" fill="none" stroke="#625A9D" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-violet" d="M 148 500 A 332 238 0 0 0 812 500" fill="none" stroke="#8A5B9E" stroke-width="1.4" stroke-linecap="round"/>
+</g>
+<g id="thin-triple-rainbow-arc-3" class="thin-triple-rainbow-arc" data-thin-arc="3" data-free-0-cycle="3" data-reveal-stage="4">
+<path class="rainbow-band rainbow-band-red" d="M 136 500 A 344 244 0 0 0 824 500" fill="none" stroke="#C84B45" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-orange" d="M 134 500 A 346 246 0 0 0 826 500" fill="none" stroke="#D9823B" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-yellow" d="M 132 500 A 348 248 0 0 0 828 500" fill="none" stroke="#D4B83F" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-green" d="M 130 500 A 350 250 0 0 0 830 500" fill="none" stroke="#4F9B61" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-blue" d="M 128 500 A 352 252 0 0 0 832 500" fill="none" stroke="#4E79B8" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-indigo" d="M 126 500 A 354 254 0 0 0 834 500" fill="none" stroke="#625A9D" stroke-width="1.4" stroke-linecap="round"/>
+<path class="rainbow-band rainbow-band-violet" d="M 124 500 A 356 256 0 0 0 836 500" fill="none" stroke="#8A5B9E" stroke-width="1.4" stroke-linecap="round"/>
+</g>
+<g id="reveal-stage-4" class="reveal-stage" data-stage="4" data-after-free-0-cycles="3">
+<g>
+<title>gh.public.r0.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="346" cy="426" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r1.735b2b8936cf48eb · repo.root · THRUTH · #A38B5B</title>
+<circle cx="385" cy="357" r="7" fill="#A38B5B" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r10.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="437" cy="644" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r100.2b48b3cda319900f · repo.root · THRUTH · #5B7833</title>
+<circle cx="363" cy="459" r="7" fill="#5B7833" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r101.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="405" cy="458" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r102.73c7e2556d11b4fd · repo.root · THRUTH · #A34762</title>
+<circle cx="422" cy="429" r="7" fill="#A34762" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r103.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="467" cy="607" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r104.c3b4b7a3025de71e · repo.root · THRUTH · #433437</title>
+<circle cx="512" cy="573" r="7" fill="#433437" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r105.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="357" cy="386" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r106.406307bb28c15c30 · repo.root · THRUTH · #709337</title>
+<circle cx="455" cy="416" r="7" fill="#709337" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r107.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="496" cy="228" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r108.52c50558c0ea3854 · repo.root · THRUTH · #824535</title>
+<circle cx="450" cy="185" r="7" fill="#824535" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r109.b3b54bd293c06c47 · repo.root · THRUTH · #33357B</title>
+<circle cx="416" cy="383" r="7" fill="#33357B" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r11.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="303" cy="283" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r110.ac5668b77005f1b9 · repo.root · THRUTH · #DC8698</title>
+<circle cx="432" cy="441" r="7" fill="#DC8698" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r111.a2e0100b89a94554 · repo.root · THRUTH · #D26040</title>
+<circle cx="390" cy="329" r="7" fill="#D26040" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r112.fbe810719e7d66f0 · repo.root · THRUTH · #7B6840</title>
+<circle cx="449" cy="417" r="7" fill="#7B6840" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r113.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="435" cy="402" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r114.f920cb3396d4f8b8 · repo.root · THRUTH · #79504B</title>
+<circle cx="386" cy="359" r="7" fill="#79504B" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r115.0f8e7665ec02b74d · repo.root · THRUTH · #3FBEA6</title>
+<circle cx="659" cy="221" r="7" fill="#3FBEA6" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r116.29f4887470f136ee · repo.root · THRUTH · #5974B8</title>
+<circle cx="386" cy="502" r="7" fill="#5974B8" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r117.c5f52c5bde5bcc44 · repo.root · THRUTH · #45755C</title>
+<circle cx="364" cy="592" r="7" fill="#45755C" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r118.1edf3a820e3edbd3 · repo.root · THRUTH · #4E5F6A</title>
+<circle cx="361" cy="472" r="7" fill="#4E5F6A" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r119.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="364" cy="394" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r12.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="415" cy="546" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r120.58a2ec9621931d88 · repo.root · THRUTH · #88D26C</title>
+<circle cx="371" cy="483" r="7" fill="#88D26C" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r121.c0748cd998447ff0 · repo.root · THRUTH · #40A4BC</title>
+<circle cx="531" cy="463" r="7" fill="#40A4BC" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r122.f8e6ca29a449f4c3 · repo.root · THRUTH · #78664A</title>
+<circle cx="400" cy="529" r="7" fill="#78664A" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r123.c0ea41bf8789cd04 · repo.root · THRUTH · #406A71</title>
+<circle cx="473" cy="492" r="7" fill="#406A71" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r124.0423ef17373f13c5 · repo.root · THRUTH · #34536F</title>
+<circle cx="338" cy="423" r="7" fill="#34536F" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r125.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="393" cy="363" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r126.8826bab33835036e · repo.root · THRUTH · #B8563A</title>
+<circle cx="366" cy="461" r="7" fill="#B8563A" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r127.a9ef305d1aa5d6bf · repo.root · THRUTH · #D96F60</title>
+<circle cx="362" cy="397" r="7" fill="#D96F60" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r128.fe02b26344dd9e7e · repo.root · THRUTH · #7E3232</title>
+<circle cx="413" cy="399" r="7" fill="#7E3232" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r129.42a9d9f211b7da02 · repo.root · THRUTH · #72D959</title>
+<circle cx="370" cy="473" r="7" fill="#72D959" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r13.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="388" cy="499" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r130.fe9eb6dd77a4b269 · repo.root · THRUTH · #7ECE36</title>
+<circle cx="423" cy="441" r="7" fill="#7ECE36" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r131.bbb24628b21ff86b · repo.root · THRUTH · #3B3276</title>
+<circle cx="409" cy="385" r="7" fill="#3B3276" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r132.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="423" cy="441" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r133.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="414" cy="460" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r134.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="364" cy="392" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r135.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="401" cy="296" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r136.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="418" cy="297" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r137.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="427" cy="202" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r138.0201fe98aa5fdb52 · repo.root · THRUTH · #32317E</title>
+<circle cx="367" cy="395" r="7" fill="#32317E" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r139.bf138d75b13cf2e4 · repo.root · THRUTH · #3F43BD</title>
+<circle cx="352" cy="350" r="7" fill="#3F43BD" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r14.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="362" cy="544" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r140.de61ebf04a3bd5c2 · repo.root · THRUTH · #5E916B</title>
+<circle cx="312" cy="478" r="7" fill="#5E916B" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r141.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="410" cy="363" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r142.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="342" cy="450" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r143.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="410" cy="320" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r144.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="424" cy="427" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r145.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="422" cy="408" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r146.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="337" cy="442" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r15.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="366" cy="472" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r16.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="440" cy="288" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r17.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="414" cy="454" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r18.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="402" cy="477" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r19.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="426" cy="444" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r2.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="374" cy="365" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r20.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="372" cy="493" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r21.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="304" cy="459" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r22.1a543917895e5558 · repo.root · THRUTH · #4A8469</title>
+<circle cx="370" cy="487" r="7" fill="#4A8469" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r23.699ef73618cafcf5 · repo.root · THRUTH · #99CE77</title>
+<circle cx="855" cy="815" r="7" fill="#99CE77" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r24.4576a76b842e2a5a · repo.root · THRUTH · #75A6D7</title>
+<circle cx="260" cy="287" r="7" fill="#75A6D7" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r25.60a448aef86f0f6f · repo.root · THRUTH · #90D478</title>
+<circle cx="375" cy="308" r="7" fill="#90D478" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r26.d837eb072150fdc6 · repo.root · THRUTH · #58676B</title>
+<circle cx="348" cy="426" r="7" fill="#58676B" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r27.ed8cb1d4b4c684f6 · repo.root · THRUTH · #6DBC31</title>
+<circle cx="355" cy="404" r="7" fill="#6DBC31" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r28.c2ce1648136b9400 · repo.root · THRUTH · #424E46</title>
+<circle cx="362" cy="456" r="7" fill="#424E46" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r29.38b91271c8fe8b41 · repo.root · THRUTH · #683942</title>
+<circle cx="348" cy="459" r="7" fill="#683942" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r3.2cbd604b217e89d7 · repo.root · THRUTH · #5C3D90</title>
+<circle cx="414" cy="509" r="7" fill="#5C3D90" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r30.694794d6430c1e79 · repo.root · THRUTH · #9977C4</title>
+<circle cx="516" cy="527" r="7" fill="#9977C4" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r31.e1bfdc4a3bbbfac0 · repo.root · THRUTH · #613F5C</title>
+<circle cx="327" cy="388" r="7" fill="#613F5C" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r32.d16464e3597794e3 · repo.root · THRUTH · #519494</title>
+<circle cx="343" cy="356" r="7" fill="#519494" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r33.17deeba57a6c518a · repo.root · THRUTH · #475E6B</title>
+<circle cx="377" cy="507" r="7" fill="#475E6B" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r34.ee59812356f344e4 · repo.root · THRUTH · #6E89B1</title>
+<circle cx="509" cy="579" r="7" fill="#6E89B1" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r35.69341b7e7cbc7e96 · repo.root · THRUTH · #99644B</title>
+<circle cx="397" cy="370" r="7" fill="#99644B" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r36.2283a2c223c9da29 · repo.root · THRUTH · #52B3D2</title>
+<circle cx="399" cy="339" r="7" fill="#52B3D2" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r37.2cd41bdbc39b4c74 · repo.root · THRUTH · #5C544B</title>
+<circle cx="443" cy="327" r="7" fill="#5C544B" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r38.05eb5634b233192e · repo.root · THRUTH · #356B86</title>
+<circle cx="435" cy="490" r="7" fill="#356B86" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r39.d564f616f68a9c9e · repo.root · THRUTH · #559476</title>
+<circle cx="413" cy="403" r="7" fill="#559476" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r4.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="435" cy="473" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r40.47f6401339fcfdfe · repo.root · THRUTH · #777670</title>
+<circle cx="404" cy="485" r="7" fill="#777670" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r41.a0bba7135a05d4c0 · repo.root · THRUTH · #D03BD7</title>
+<circle cx="410" cy="463" r="7" fill="#D03BD7" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r42.e5984c8cb04deb8d · repo.root · THRUTH · #65C87C</title>
+<circle cx="401" cy="477" r="7" fill="#65C87C" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r43.7b1208a0f9c81188 · repo.root · THRUTH · #AB4238</title>
+<circle cx="389" cy="314" r="7" fill="#AB4238" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r44.e8b0c982e0f12e81 · repo.root · THRUTH · #683049</title>
+<circle cx="409" cy="507" r="7" fill="#683049" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r45.695c5497d4309d87 · repo.root · THRUTH · #998C84</title>
+<circle cx="357" cy="389" r="7" fill="#998C84" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r46.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="320" cy="424" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r47.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="417" cy="458" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r48.2816ba1d6a46ec7c · repo.root · THRUTH · #58463A</title>
+<circle cx="409" cy="462" r="7" fill="#58463A" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r49.d0d87efb2ad4ee99 · repo.root · THRUTH · #5058AE</title>
+<circle cx="404" cy="463" r="7" fill="#5058AE" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r5.6096053f80ec18c2 · repo.root · THRUTH · #90C635</title>
+<circle cx="368" cy="386" r="7" fill="#90C635" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r50.cdbc35ffdad7fefd · repo.root · THRUTH · #4D3C65</title>
+<circle cx="422" cy="451" r="7" fill="#4D3C65" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r51.65294873c68216ef · repo.root · THRUTH · #955978</title>
+<circle cx="347" cy="456" r="7" fill="#955978" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r52.090d1d6b62a3aae5 · repo.root · THRUTH · #393D4D</title>
+<circle cx="463" cy="484" r="7" fill="#393D4D" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r53.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="368" cy="458" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r54.93a9c799ad7fa312 · repo.root · THRUTH · #C3D947</title>
+<circle cx="404" cy="474" r="7" fill="#C3D947" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r55.3e33e3b812e27442 · repo.root · THRUTH · #6E6363</title>
+<circle cx="349" cy="449" r="7" fill="#6E6363" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r56.26e64c712675494c · repo.root · THRUTH · #56667C</title>
+<circle cx="426" cy="242" r="7" fill="#56667C" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r57.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="376" cy="355" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r58.0cb426c597559213 · repo.root · THRUTH · #3C3456</title>
+<circle cx="402" cy="357" r="7" fill="#3C3456" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r59.330adc17f378bf74 · repo.root · THRUTH · #633A5C</title>
+<circle cx="404" cy="465" r="7" fill="#633A5C" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r6.0f4d1fd43c73b6f4 · repo.root · THRUTH · #3F7D4F</title>
+<circle cx="404" cy="394" r="7" fill="#3F7D4F" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r60.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="377" cy="368" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r61.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="415" cy="376" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r62.e91a9d6e4bcd1c75 · repo.root · THRUTH · #694ACD</title>
+<circle cx="352" cy="398" r="7" fill="#694ACD" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r63.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="362" cy="460" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r64.1639f84d65d1bd2d · repo.root · THRUTH · #466978</title>
+<circle cx="391" cy="491" r="7" fill="#466978" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r65.82748f66354fdbba · repo.root · THRUTH · #B2A4BF</title>
+<circle cx="455" cy="468" r="7" fill="#B2A4BF" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r66.0ff0568662b20b11 · repo.root · THRUTH · #3F7086</title>
+<circle cx="354" cy="458" r="7" fill="#3F7086" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r67.d2a6d6bac25beb74 · repo.root · THRUTH · #52D656</title>
+<circle cx="296" cy="578" r="7" fill="#52D656" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r68.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="309" cy="499" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r69.a8bb71898b24e08c · repo.root · THRUTH · #D83BA1</title>
+<circle cx="317" cy="503" r="7" fill="#D83BA1" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r7.1a7fe31c0baaca6c · repo.root · THRUTH · #4AAF63</title>
+<circle cx="402" cy="498" r="7" fill="#4AAF63" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r70.2520011ec1553b63 · repo.root · THRUTH · #555031</title>
+<circle cx="344" cy="371" r="7" fill="#555031" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r71.8a153ead37b5bcd1 · repo.root · THRUTH · #BA456E</title>
+<circle cx="343" cy="507" r="7" fill="#BA456E" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r72.849cd5746a08819d · repo.root · THRUTH · #B4CC55</title>
+<circle cx="373" cy="489" r="7" fill="#B4CC55" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r73.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="437" cy="484" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r74.4e35a014b411b2b0 · repo.root · THRUTH · #7E65D0</title>
+<circle cx="368" cy="489" r="7" fill="#7E65D0" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r75.33c373f20e7322e2 · repo.root · THRUTH · #6343A3</title>
+<circle cx="335" cy="471" r="7" fill="#6343A3" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r76.4cb80fa36d708a5c · repo.root · THRUTH · #7C383F</title>
+<circle cx="454" cy="398" r="7" fill="#7C383F" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r77.51ac6de154dc4b70 · repo.root · THRUTH · #81DC9D</title>
+<circle cx="405" cy="479" r="7" fill="#81DC9D" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r78.e48a90fa62ae644d · repo.root · THRUTH · #64BAC0</title>
+<circle cx="360" cy="392" r="7" fill="#64BAC0" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r79.9cec0e8e8d1233b3 · repo.root · THRUTH · #CC6C3E</title>
+<circle cx="105" cy="619" r="7" fill="#CC6C3E" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r8.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="399" cy="375" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r80.20512a75a861d1e2 · repo.root · THRUTH · #50815A</title>
+<circle cx="342" cy="385" r="7" fill="#50815A" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r81.aba9c8df6809cf48 · repo.root · THRUTH · #DBD948</title>
+<circle cx="406" cy="385" r="7" fill="#DBD948" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r82.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="401" cy="379" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r83.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="342" cy="486" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r84.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="463" cy="442" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r85.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="378" cy="497" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r86.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="457" cy="501" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r87.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="428" cy="452" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r88.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="421" cy="412" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r89.3f24cdcf802b98a4 · repo.root · THRUTH · #6F544D</title>
+<circle cx="352" cy="580" r="7" fill="#6F544D" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r9.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="328" cy="569" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r90.0b918bde4f38c8c4 · repo.root · THRUTH · #3BC1BB</title>
+<circle cx="419" cy="457" r="7" fill="#3BC1BB" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r91.8234f9c727fd5078 · repo.root · THRUTH · #B26479</title>
+<circle cx="351" cy="480" r="7" fill="#B26479" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r92.34aa3cd002c1d96e · repo.root · THRUTH · #64DA6C</title>
+<circle cx="432" cy="435" r="7" fill="#64DA6C" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r93.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="405" cy="459" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r94.39e690a59b02301b · repo.root · THRUTH · #6966C0</title>
+<circle cx="436" cy="494" r="7" fill="#6966C0" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r95.e3b0c44298fc1c14 · repo.root · THRUTH · #633044</title>
+<circle cx="416" cy="468" r="7" fill="#633044" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r96.c865a5c55293bab4 · repo.root · THRUTH · #4895D5</title>
+<circle cx="419" cy="453" r="7" fill="#4895D5" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r97.bdc719c2814f1ace · repo.root · THRUTH · #3D4749</title>
+<circle cx="420" cy="387" r="7" fill="#3D4749" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r98.eabb5893cdfbf5ee · repo.root · THRUTH · #6A3B88</title>
+<circle cx="414" cy="478" r="7" fill="#6A3B88" stroke="#5A3524" stroke-width="2"/>
+</g>
+<g>
+<title>gh.public.r99.e82cfc88582d4d72 · repo.root · THRUTH · #685C7C</title>
+<circle cx="379" cy="690" r="7" fill="#685C7C" stroke="#5A3524" stroke-width="2"/>
+</g>
+</g>
+<rect x="960" y="130" width="570" height="110" rx="18" fill="#C08A5A" stroke="#5A3524" stroke-width="2"/>
+<text x="990" y="166" fill="#3E251A" font-family="system-ui, sans-serif" font-size="18" font-weight="700">UNORDERED CENTER MEMBERSHIP · NULLSPACE 0</text>
+<text x="990" y="207" fill="#3E251A" font-family="ui-monospace, monospace" font-size="22">{HBI, HBP, SHA, SH, HASH}</text>
+<rect x="960" y="255" width="570" height="110" rx="18" fill="#E2C29D" stroke="#5A3524" stroke-width="2"/>
+<text x="990" y="291" fill="#3E251A" font-family="system-ui, sans-serif" font-size="18" font-weight="700">ORDERED TRAVERSAL · DISTINCT FROM CENTER</text>
+<text x="990" y="332" fill="#3E251A" font-family="ui-monospace, monospace" font-size="20">HBI → HBP → SH → HASH → SHA</text>
+<text x="960" y="410" fill="#5A3524" font-family="system-ui, sans-serif" font-size="20" font-weight="700">PUBLIC REPOSITORY NODES</text>
+<g>
+<title>gh.public.r0.e3b0c44298fc1c14</title>
+<circle cx="967" cy="440" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="445" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r0.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r1.735b2b8936cf48eb</title>
+<circle cx="967" cy="466" r="7" fill="#A38B5B" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="471" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r1.735b2b8936cf48eb</text>
+</g>
+<g>
+<title>gh.public.r10.e3b0c44298fc1c14</title>
+<circle cx="967" cy="492" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="497" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r10.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r100.2b48b3cda319900f</title>
+<circle cx="967" cy="518" r="7" fill="#5B7833" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="523" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r100.2b48b3cda319900f</text>
+</g>
+<g>
+<title>gh.public.r101.e3b0c44298fc1c14</title>
+<circle cx="967" cy="544" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="549" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r101.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r102.73c7e2556d11b4fd</title>
+<circle cx="967" cy="570" r="7" fill="#A34762" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="575" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r102.73c7e2556d11b4fd</text>
+</g>
+<g>
+<title>gh.public.r103.e3b0c44298fc1c14</title>
+<circle cx="967" cy="596" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="601" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r103.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r104.c3b4b7a3025de71e</title>
+<circle cx="967" cy="622" r="7" fill="#433437" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="627" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r104.c3b4b7a3025de71e</text>
+</g>
+<g>
+<title>gh.public.r105.e3b0c44298fc1c14</title>
+<circle cx="967" cy="648" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="653" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r105.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r106.406307bb28c15c30</title>
+<circle cx="967" cy="674" r="7" fill="#709337" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="679" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r106.406307bb28c15c30</text>
+</g>
+<g>
+<title>gh.public.r107.e3b0c44298fc1c14</title>
+<circle cx="967" cy="700" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="705" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r107.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r108.52c50558c0ea3854</title>
+<circle cx="967" cy="726" r="7" fill="#824535" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="731" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r108.52c50558c0ea3854</text>
+</g>
+<g>
+<title>gh.public.r109.b3b54bd293c06c47</title>
+<circle cx="967" cy="752" r="7" fill="#33357B" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="757" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r109.b3b54bd293c06c47</text>
+</g>
+<g>
+<title>gh.public.r11.e3b0c44298fc1c14</title>
+<circle cx="967" cy="778" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="783" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r11.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r110.ac5668b77005f1b9</title>
+<circle cx="967" cy="804" r="7" fill="#DC8698" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="809" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r110.ac5668b77005f1b9</text>
+</g>
+<g>
+<title>gh.public.r111.a2e0100b89a94554</title>
+<circle cx="967" cy="830" r="7" fill="#D26040" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="835" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r111.a2e0100b89a94554</text>
+</g>
+<g>
+<title>gh.public.r112.fbe810719e7d66f0</title>
+<circle cx="967" cy="856" r="7" fill="#7B6840" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="861" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r112.fbe810719e7d66f0</text>
+</g>
+<g>
+<title>gh.public.r113.e3b0c44298fc1c14</title>
+<circle cx="967" cy="882" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="887" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r113.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r114.f920cb3396d4f8b8</title>
+<circle cx="967" cy="908" r="7" fill="#79504B" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="913" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r114.f920cb3396d4f8b8</text>
+</g>
+<g>
+<title>gh.public.r115.0f8e7665ec02b74d</title>
+<circle cx="967" cy="934" r="7" fill="#3FBEA6" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="939" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r115.0f8e7665ec02b74d</text>
+</g>
+<g>
+<title>gh.public.r116.29f4887470f136ee</title>
+<circle cx="967" cy="960" r="7" fill="#5974B8" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="965" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r116.29f4887470f136ee</text>
+</g>
+<g>
+<title>gh.public.r117.c5f52c5bde5bcc44</title>
+<circle cx="967" cy="986" r="7" fill="#45755C" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="991" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r117.c5f52c5bde5bcc44</text>
+</g>
+<g>
+<title>gh.public.r118.1edf3a820e3edbd3</title>
+<circle cx="967" cy="1012" r="7" fill="#4E5F6A" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1017" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r118.1edf3a820e3edbd3</text>
+</g>
+<g>
+<title>gh.public.r119.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1038" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1043" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r119.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r12.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1064" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1069" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r12.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r120.58a2ec9621931d88</title>
+<circle cx="967" cy="1090" r="7" fill="#88D26C" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1095" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r120.58a2ec9621931d88</text>
+</g>
+<g>
+<title>gh.public.r121.c0748cd998447ff0</title>
+<circle cx="967" cy="1116" r="7" fill="#40A4BC" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1121" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r121.c0748cd998447ff0</text>
+</g>
+<g>
+<title>gh.public.r122.f8e6ca29a449f4c3</title>
+<circle cx="967" cy="1142" r="7" fill="#78664A" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1147" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r122.f8e6ca29a449f4c3</text>
+</g>
+<g>
+<title>gh.public.r123.c0ea41bf8789cd04</title>
+<circle cx="967" cy="1168" r="7" fill="#406A71" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1173" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r123.c0ea41bf8789cd04</text>
+</g>
+<g>
+<title>gh.public.r124.0423ef17373f13c5</title>
+<circle cx="967" cy="1194" r="7" fill="#34536F" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1199" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r124.0423ef17373f13c5</text>
+</g>
+<g>
+<title>gh.public.r125.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1220" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1225" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r125.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r126.8826bab33835036e</title>
+<circle cx="967" cy="1246" r="7" fill="#B8563A" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1251" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r126.8826bab33835036e</text>
+</g>
+<g>
+<title>gh.public.r127.a9ef305d1aa5d6bf</title>
+<circle cx="967" cy="1272" r="7" fill="#D96F60" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1277" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r127.a9ef305d1aa5d6bf</text>
+</g>
+<g>
+<title>gh.public.r128.fe02b26344dd9e7e</title>
+<circle cx="967" cy="1298" r="7" fill="#7E3232" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1303" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r128.fe02b26344dd9e7e</text>
+</g>
+<g>
+<title>gh.public.r129.42a9d9f211b7da02</title>
+<circle cx="967" cy="1324" r="7" fill="#72D959" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1329" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r129.42a9d9f211b7da02</text>
+</g>
+<g>
+<title>gh.public.r13.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1350" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1355" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r13.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r130.fe9eb6dd77a4b269</title>
+<circle cx="967" cy="1376" r="7" fill="#7ECE36" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1381" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r130.fe9eb6dd77a4b269</text>
+</g>
+<g>
+<title>gh.public.r131.bbb24628b21ff86b</title>
+<circle cx="967" cy="1402" r="7" fill="#3B3276" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1407" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r131.bbb24628b21ff86b</text>
+</g>
+<g>
+<title>gh.public.r132.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1428" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1433" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r132.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r133.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1454" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1459" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r133.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r134.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1480" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1485" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r134.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r135.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1506" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1511" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r135.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r136.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1532" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1537" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r136.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r137.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1558" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1563" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r137.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r138.0201fe98aa5fdb52</title>
+<circle cx="967" cy="1584" r="7" fill="#32317E" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1589" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r138.0201fe98aa5fdb52</text>
+</g>
+<g>
+<title>gh.public.r139.bf138d75b13cf2e4</title>
+<circle cx="967" cy="1610" r="7" fill="#3F43BD" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1615" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r139.bf138d75b13cf2e4</text>
+</g>
+<g>
+<title>gh.public.r14.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1636" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1641" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r14.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r140.de61ebf04a3bd5c2</title>
+<circle cx="967" cy="1662" r="7" fill="#5E916B" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1667" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r140.de61ebf04a3bd5c2</text>
+</g>
+<g>
+<title>gh.public.r141.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1688" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1693" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r141.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r142.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1714" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1719" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r142.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r143.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1740" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1745" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r143.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r144.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1766" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1771" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r144.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r145.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1792" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1797" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r145.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r146.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1818" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1823" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r146.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r15.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1844" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1849" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r15.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r16.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1870" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1875" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r16.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r17.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1896" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1901" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r17.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r18.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1922" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1927" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r18.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r19.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1948" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1953" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r19.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r2.e3b0c44298fc1c14</title>
+<circle cx="967" cy="1974" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="1979" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r2.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r20.e3b0c44298fc1c14</title>
+<circle cx="967" cy="2000" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2005" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r20.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r21.e3b0c44298fc1c14</title>
+<circle cx="967" cy="2026" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2031" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r21.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r22.1a543917895e5558</title>
+<circle cx="967" cy="2052" r="7" fill="#4A8469" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2057" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r22.1a543917895e5558</text>
+</g>
+<g>
+<title>gh.public.r23.699ef73618cafcf5</title>
+<circle cx="967" cy="2078" r="7" fill="#99CE77" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2083" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r23.699ef73618cafcf5</text>
+</g>
+<g>
+<title>gh.public.r24.4576a76b842e2a5a</title>
+<circle cx="967" cy="2104" r="7" fill="#75A6D7" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2109" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r24.4576a76b842e2a5a</text>
+</g>
+<g>
+<title>gh.public.r25.60a448aef86f0f6f</title>
+<circle cx="967" cy="2130" r="7" fill="#90D478" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2135" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r25.60a448aef86f0f6f</text>
+</g>
+<g>
+<title>gh.public.r26.d837eb072150fdc6</title>
+<circle cx="967" cy="2156" r="7" fill="#58676B" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2161" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r26.d837eb072150fdc6</text>
+</g>
+<g>
+<title>gh.public.r27.ed8cb1d4b4c684f6</title>
+<circle cx="967" cy="2182" r="7" fill="#6DBC31" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2187" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r27.ed8cb1d4b4c684f6</text>
+</g>
+<g>
+<title>gh.public.r28.c2ce1648136b9400</title>
+<circle cx="967" cy="2208" r="7" fill="#424E46" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2213" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r28.c2ce1648136b9400</text>
+</g>
+<g>
+<title>gh.public.r29.38b91271c8fe8b41</title>
+<circle cx="967" cy="2234" r="7" fill="#683942" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2239" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r29.38b91271c8fe8b41</text>
+</g>
+<g>
+<title>gh.public.r3.2cbd604b217e89d7</title>
+<circle cx="967" cy="2260" r="7" fill="#5C3D90" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2265" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r3.2cbd604b217e89d7</text>
+</g>
+<g>
+<title>gh.public.r30.694794d6430c1e79</title>
+<circle cx="967" cy="2286" r="7" fill="#9977C4" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2291" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r30.694794d6430c1e79</text>
+</g>
+<g>
+<title>gh.public.r31.e1bfdc4a3bbbfac0</title>
+<circle cx="967" cy="2312" r="7" fill="#613F5C" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2317" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r31.e1bfdc4a3bbbfac0</text>
+</g>
+<g>
+<title>gh.public.r32.d16464e3597794e3</title>
+<circle cx="967" cy="2338" r="7" fill="#519494" stroke="#5A3524" stroke-width="1"/>
+<text x="982" y="2343" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r32.d16464e3597794e3</text>
+</g>
+<g>
+<title>gh.public.r33.17deeba57a6c518a</title>
+<circle cx="1252" cy="440" r="7" fill="#475E6B" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="445" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r33.17deeba57a6c518a</text>
+</g>
+<g>
+<title>gh.public.r34.ee59812356f344e4</title>
+<circle cx="1252" cy="466" r="7" fill="#6E89B1" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="471" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r34.ee59812356f344e4</text>
+</g>
+<g>
+<title>gh.public.r35.69341b7e7cbc7e96</title>
+<circle cx="1252" cy="492" r="7" fill="#99644B" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="497" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r35.69341b7e7cbc7e96</text>
+</g>
+<g>
+<title>gh.public.r36.2283a2c223c9da29</title>
+<circle cx="1252" cy="518" r="7" fill="#52B3D2" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="523" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r36.2283a2c223c9da29</text>
+</g>
+<g>
+<title>gh.public.r37.2cd41bdbc39b4c74</title>
+<circle cx="1252" cy="544" r="7" fill="#5C544B" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="549" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r37.2cd41bdbc39b4c74</text>
+</g>
+<g>
+<title>gh.public.r38.05eb5634b233192e</title>
+<circle cx="1252" cy="570" r="7" fill="#356B86" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="575" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r38.05eb5634b233192e</text>
+</g>
+<g>
+<title>gh.public.r39.d564f616f68a9c9e</title>
+<circle cx="1252" cy="596" r="7" fill="#559476" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="601" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r39.d564f616f68a9c9e</text>
+</g>
+<g>
+<title>gh.public.r4.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="622" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="627" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r4.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r40.47f6401339fcfdfe</title>
+<circle cx="1252" cy="648" r="7" fill="#777670" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="653" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r40.47f6401339fcfdfe</text>
+</g>
+<g>
+<title>gh.public.r41.a0bba7135a05d4c0</title>
+<circle cx="1252" cy="674" r="7" fill="#D03BD7" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="679" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r41.a0bba7135a05d4c0</text>
+</g>
+<g>
+<title>gh.public.r42.e5984c8cb04deb8d</title>
+<circle cx="1252" cy="700" r="7" fill="#65C87C" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="705" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r42.e5984c8cb04deb8d</text>
+</g>
+<g>
+<title>gh.public.r43.7b1208a0f9c81188</title>
+<circle cx="1252" cy="726" r="7" fill="#AB4238" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="731" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r43.7b1208a0f9c81188</text>
+</g>
+<g>
+<title>gh.public.r44.e8b0c982e0f12e81</title>
+<circle cx="1252" cy="752" r="7" fill="#683049" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="757" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r44.e8b0c982e0f12e81</text>
+</g>
+<g>
+<title>gh.public.r45.695c5497d4309d87</title>
+<circle cx="1252" cy="778" r="7" fill="#998C84" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="783" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r45.695c5497d4309d87</text>
+</g>
+<g>
+<title>gh.public.r46.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="804" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="809" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r46.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r47.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="830" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="835" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r47.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r48.2816ba1d6a46ec7c</title>
+<circle cx="1252" cy="856" r="7" fill="#58463A" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="861" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r48.2816ba1d6a46ec7c</text>
+</g>
+<g>
+<title>gh.public.r49.d0d87efb2ad4ee99</title>
+<circle cx="1252" cy="882" r="7" fill="#5058AE" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="887" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r49.d0d87efb2ad4ee99</text>
+</g>
+<g>
+<title>gh.public.r5.6096053f80ec18c2</title>
+<circle cx="1252" cy="908" r="7" fill="#90C635" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="913" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r5.6096053f80ec18c2</text>
+</g>
+<g>
+<title>gh.public.r50.cdbc35ffdad7fefd</title>
+<circle cx="1252" cy="934" r="7" fill="#4D3C65" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="939" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r50.cdbc35ffdad7fefd</text>
+</g>
+<g>
+<title>gh.public.r51.65294873c68216ef</title>
+<circle cx="1252" cy="960" r="7" fill="#955978" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="965" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r51.65294873c68216ef</text>
+</g>
+<g>
+<title>gh.public.r52.090d1d6b62a3aae5</title>
+<circle cx="1252" cy="986" r="7" fill="#393D4D" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="991" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r52.090d1d6b62a3aae5</text>
+</g>
+<g>
+<title>gh.public.r53.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1012" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1017" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r53.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r54.93a9c799ad7fa312</title>
+<circle cx="1252" cy="1038" r="7" fill="#C3D947" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1043" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r54.93a9c799ad7fa312</text>
+</g>
+<g>
+<title>gh.public.r55.3e33e3b812e27442</title>
+<circle cx="1252" cy="1064" r="7" fill="#6E6363" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1069" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r55.3e33e3b812e27442</text>
+</g>
+<g>
+<title>gh.public.r56.26e64c712675494c</title>
+<circle cx="1252" cy="1090" r="7" fill="#56667C" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1095" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r56.26e64c712675494c</text>
+</g>
+<g>
+<title>gh.public.r57.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1116" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1121" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r57.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r58.0cb426c597559213</title>
+<circle cx="1252" cy="1142" r="7" fill="#3C3456" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1147" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r58.0cb426c597559213</text>
+</g>
+<g>
+<title>gh.public.r59.330adc17f378bf74</title>
+<circle cx="1252" cy="1168" r="7" fill="#633A5C" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1173" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r59.330adc17f378bf74</text>
+</g>
+<g>
+<title>gh.public.r6.0f4d1fd43c73b6f4</title>
+<circle cx="1252" cy="1194" r="7" fill="#3F7D4F" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1199" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r6.0f4d1fd43c73b6f4</text>
+</g>
+<g>
+<title>gh.public.r60.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1220" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1225" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r60.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r61.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1246" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1251" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r61.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r62.e91a9d6e4bcd1c75</title>
+<circle cx="1252" cy="1272" r="7" fill="#694ACD" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1277" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r62.e91a9d6e4bcd1c75</text>
+</g>
+<g>
+<title>gh.public.r63.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1298" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1303" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r63.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r64.1639f84d65d1bd2d</title>
+<circle cx="1252" cy="1324" r="7" fill="#466978" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1329" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r64.1639f84d65d1bd2d</text>
+</g>
+<g>
+<title>gh.public.r65.82748f66354fdbba</title>
+<circle cx="1252" cy="1350" r="7" fill="#B2A4BF" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1355" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r65.82748f66354fdbba</text>
+</g>
+<g>
+<title>gh.public.r66.0ff0568662b20b11</title>
+<circle cx="1252" cy="1376" r="7" fill="#3F7086" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1381" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r66.0ff0568662b20b11</text>
+</g>
+<g>
+<title>gh.public.r67.d2a6d6bac25beb74</title>
+<circle cx="1252" cy="1402" r="7" fill="#52D656" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1407" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r67.d2a6d6bac25beb74</text>
+</g>
+<g>
+<title>gh.public.r68.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1428" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1433" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r68.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r69.a8bb71898b24e08c</title>
+<circle cx="1252" cy="1454" r="7" fill="#D83BA1" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1459" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r69.a8bb71898b24e08c</text>
+</g>
+<g>
+<title>gh.public.r7.1a7fe31c0baaca6c</title>
+<circle cx="1252" cy="1480" r="7" fill="#4AAF63" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1485" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r7.1a7fe31c0baaca6c</text>
+</g>
+<g>
+<title>gh.public.r70.2520011ec1553b63</title>
+<circle cx="1252" cy="1506" r="7" fill="#555031" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1511" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r70.2520011ec1553b63</text>
+</g>
+<g>
+<title>gh.public.r71.8a153ead37b5bcd1</title>
+<circle cx="1252" cy="1532" r="7" fill="#BA456E" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1537" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r71.8a153ead37b5bcd1</text>
+</g>
+<g>
+<title>gh.public.r72.849cd5746a08819d</title>
+<circle cx="1252" cy="1558" r="7" fill="#B4CC55" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1563" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r72.849cd5746a08819d</text>
+</g>
+<g>
+<title>gh.public.r73.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1584" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1589" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r73.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r74.4e35a014b411b2b0</title>
+<circle cx="1252" cy="1610" r="7" fill="#7E65D0" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1615" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r74.4e35a014b411b2b0</text>
+</g>
+<g>
+<title>gh.public.r75.33c373f20e7322e2</title>
+<circle cx="1252" cy="1636" r="7" fill="#6343A3" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1641" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r75.33c373f20e7322e2</text>
+</g>
+<g>
+<title>gh.public.r76.4cb80fa36d708a5c</title>
+<circle cx="1252" cy="1662" r="7" fill="#7C383F" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1667" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r76.4cb80fa36d708a5c</text>
+</g>
+<g>
+<title>gh.public.r77.51ac6de154dc4b70</title>
+<circle cx="1252" cy="1688" r="7" fill="#81DC9D" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1693" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r77.51ac6de154dc4b70</text>
+</g>
+<g>
+<title>gh.public.r78.e48a90fa62ae644d</title>
+<circle cx="1252" cy="1714" r="7" fill="#64BAC0" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1719" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r78.e48a90fa62ae644d</text>
+</g>
+<g>
+<title>gh.public.r79.9cec0e8e8d1233b3</title>
+<circle cx="1252" cy="1740" r="7" fill="#CC6C3E" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1745" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r79.9cec0e8e8d1233b3</text>
+</g>
+<g>
+<title>gh.public.r8.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1766" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1771" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r8.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r80.20512a75a861d1e2</title>
+<circle cx="1252" cy="1792" r="7" fill="#50815A" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1797" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r80.20512a75a861d1e2</text>
+</g>
+<g>
+<title>gh.public.r81.aba9c8df6809cf48</title>
+<circle cx="1252" cy="1818" r="7" fill="#DBD948" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1823" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r81.aba9c8df6809cf48</text>
+</g>
+<g>
+<title>gh.public.r82.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1844" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1849" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r82.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r83.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1870" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1875" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r83.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r84.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1896" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1901" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r84.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r85.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1922" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1927" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r85.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r86.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1948" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1953" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r86.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r87.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="1974" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="1979" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r87.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r88.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="2000" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2005" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r88.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r89.3f24cdcf802b98a4</title>
+<circle cx="1252" cy="2026" r="7" fill="#6F544D" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2031" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r89.3f24cdcf802b98a4</text>
+</g>
+<g>
+<title>gh.public.r9.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="2052" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2057" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r9.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r90.0b918bde4f38c8c4</title>
+<circle cx="1252" cy="2078" r="7" fill="#3BC1BB" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2083" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r90.0b918bde4f38c8c4</text>
+</g>
+<g>
+<title>gh.public.r91.8234f9c727fd5078</title>
+<circle cx="1252" cy="2104" r="7" fill="#B26479" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2109" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r91.8234f9c727fd5078</text>
+</g>
+<g>
+<title>gh.public.r92.34aa3cd002c1d96e</title>
+<circle cx="1252" cy="2130" r="7" fill="#64DA6C" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2135" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r92.34aa3cd002c1d96e</text>
+</g>
+<g>
+<title>gh.public.r93.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="2156" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2161" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r93.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r94.39e690a59b02301b</title>
+<circle cx="1252" cy="2182" r="7" fill="#6966C0" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2187" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r94.39e690a59b02301b</text>
+</g>
+<g>
+<title>gh.public.r95.e3b0c44298fc1c14</title>
+<circle cx="1252" cy="2208" r="7" fill="#633044" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2213" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r95.e3b0c44298fc1c14</text>
+</g>
+<g>
+<title>gh.public.r96.c865a5c55293bab4</title>
+<circle cx="1252" cy="2234" r="7" fill="#4895D5" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2239" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r96.c865a5c55293bab4</text>
+</g>
+<g>
+<title>gh.public.r97.bdc719c2814f1ace</title>
+<circle cx="1252" cy="2260" r="7" fill="#3D4749" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2265" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r97.bdc719c2814f1ace</text>
+</g>
+<g>
+<title>gh.public.r98.eabb5893cdfbf5ee</title>
+<circle cx="1252" cy="2286" r="7" fill="#6A3B88" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2291" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r98.eabb5893cdfbf5ee</text>
+</g>
+<g>
+<title>gh.public.r99.e82cfc88582d4d72</title>
+<circle cx="1252" cy="2312" r="7" fill="#685C7C" stroke="#5A3524" stroke-width="1"/>
+<text x="1267" y="2317" fill="#4A3023" font-family="system-ui, sans-serif" font-size="13">gh.public.r99.e82cfc88582d4d72</text>
+</g>
+<text x="70" y="2236" fill="#76503A" font-family="ui-monospace, monospace" font-size="13">PUBLIC-SPHERICAL-STATIC-SVG-V1 · records=147 · thin_arcs=3 · free_0_cycles=3 · reveal_stage=4 · script=0 · external_refs=0 · raw_contents=0 · json=0</text>
+</svg>

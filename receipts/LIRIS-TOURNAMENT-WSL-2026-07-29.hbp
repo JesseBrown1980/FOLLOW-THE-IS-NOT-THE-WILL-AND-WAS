@@ -1,0 +1,15 @@
+TOURNAMENTHDR|schema=FOLLOW-IS-PUBLIC-TOURNAMENT-V1|surface=LIRIS_WSL|date=2026-07-29|sequence=FIXED|REQUIRED_HIDDEN_DEPENDENCIES=0|source_video_bytes=0|secrets_read=0|json=0
+SYSTEMGATE|fabric=STALE_FALLBACK|canon=STALE_FALLBACK|recall=UNAVAILABLE|liris_behcs=HEALTH_LIVE_ONLY|system_affirmed=0|evidence=PARENT_MEASURED_2026-07-29|json=0
+STAGE|seq=01|id=PUBLIC_REPO_VERIFY|status=PASS|evidence=MEASURED_LOCAL|detail=hash_lf_secret_media_dependency_gates_pass|json=0
+STAGE|seq=02|id=GGUF_EXACT_VERIFY|status=PASS|evidence=MEASURED_LOCAL|detail=bytes=3174;samples=64;fields=18;source_video_bytes=0|json=0
+STAGE|seq=03|id=GGUF_FOUR_TESTS|status=PASS|evidence=MEASURED_LOCAL|detail=tests=4;failures=0|json=0
+STAGE|seq=04|id=PINNED_SOURCE_BYTES|status=PASS|evidence=MEASURED_GITHUB_PINNED|detail=six_public_sources_match_sha256|json=0
+STAGE|seq=05|id=GITRAM_CONTRACT|status=PASS|evidence=MEASURED_GITHUB_PINNED|detail=doctrine_template_path3_selftest_bound|sha256=55b10a07a4c8a7278cd4a95883216da6153c9d416acbd94c0a3dfa81e88ab813|json=0
+STAGE|seq=06|id=STREAMING_GITRAM_SGRAM_SOURCE|status=PASS|evidence=MEASURED_GITHUB_PINNED|detail=SGRAM_is_streaming_GitRAM_in_source_bytes|sha256=01a9372c0bcb9297b18af78ed83aa0586b60130fb36299e6dc919e69ba977dcc|json=0
+STAGE|seq=07|id=SGRAM_RAW_RESUME_BINDING|status=PENDING_UPSTREAM_FIX|evidence=CODE_AUDIT|detail=raw_receipts_not_bound_to_corpus_range_k_codec_decoder|json=0
+STAGE|seq=08|id=SGITRAM_NAMED_IMPLEMENTATION|status=PENDING_OWNING_SOURCE|evidence=OPERATOR_CANON_UNRESOLVED|detail=distinct_sGitRAM_name_not_aliased_to_SGRAM|json=0
+STAGE|seq=09|id=GITRAM_PATH3_SELFTEST|status=PASS|evidence=MEASURED_LOCAL|detail=pinned_bridge_compile_and_selftest|sha256=55b10a07a4c8a7278cd4a95883216da6153c9d416acbd94c0a3dfa81e88ab813|json=0
+STAGE|seq=10|id=SGRAM_STRICT_FRESH_ROUNDTRIP|status=PASS|evidence=MEASURED_LOCAL|detail=fresh=1;ranges_sha16_bound=1;sumN=1536;k=0;identity_probe=1;compression_benchmark=0|sha256=70dad2f8d1143c7fb425b370654af6df4c5529d798217c3306bd21b5622d19c5|json=0
+STAGE|seq=11|id=VC65_COMPILE_GATE|status=PASS|evidence=MEASURED_LOCAL|detail=compile=1;runtime_executed=0;functional_benchmark=0;TSIZE=1_lshift_28|sha256=64ae366fd87b71a21dde64e9156b997eb44c6d1743e2b944a4a63c492b56f94b|json=0
+STAGE|seq=12|id=NEST_DEPTH7_TAMPER|status=BLOCKED_TOOLCHAIN|evidence=MEASURED_LOCAL_BOUNDARY|detail=node_not_available|json=0
+TOURNAMENTFTR|verdict=PARTIAL_WITH_PENDING|pass=9|pending=2|blocked=1|fail=0|stage_count=12|REQUIRED_HIDDEN_DEPENDENCIES=0|source_video_bytes=0|secret_findings=0|json=0
