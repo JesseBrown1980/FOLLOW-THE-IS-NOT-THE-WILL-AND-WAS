@@ -261,10 +261,10 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
         feature_protected = "PROTECTED" if feature["protected"] else "UNPROTECTED"
         nodes.append(node("branch_universe_follow", "BRANCH", feature_name.replace("/", "."),
                           "MEASURED_GITHUB", feature_protected, "NONE",
-                          (0.0, 3.0, 1.0)))
+                          (-3.0, 3.0, 1.0)))
         nodes.append(node("commit_universe_follow", "COMMIT", "pr5_head",
                           "MEASURED_GITHUB", "CAPTURED_PARENT_REF", feature["sha"],
-                          (0.0, 4.0, 3.0)))
+                          (-3.0, 4.0, 3.0)))
         edges.append(edge("e_universe_contains_follow", "repo_universe",
                           "branch_universe_follow", "CONTAINS", "MEASURED_GITHUB"))
         edges.append(edge("e_universe_follow_points", "branch_universe_follow",
@@ -279,25 +279,50 @@ def repository_rows(gh: str) -> tuple[list[str], list[str], list[str]]:
         head_repo = head.get("repo") or {}
         if (
             base.get("ref") != "main"
-            or base.get("sha") != main_commits[UNIVERSE]
             or base_repo.get("full_name") != f"{OWNER}/{UNIVERSE}"
             or head.get("ref") != feature_name
             or head.get("sha") != feature["sha"]
             or head_repo.get("full_name") != f"{OWNER}/{UNIVERSE}"
         ):
             raise BuildError("pull request base/head differs from captured branch commits")
+        base_sha = str(base.get("sha", ""))
+        if not SHA40.fullmatch(base_sha):
+            raise BuildError("pull request base SHA is malformed")
+        merged = pull.get("merged") is True
+        if merged:
+            merge_sha = str(pull.get("merge_commit_sha", ""))
+            if (
+                pull.get("state") != "closed"
+                or not pull.get("merged_at")
+                or merge_sha != main_commits[UNIVERSE]
+            ):
+                raise BuildError("merged pull request does not bind current main")
+            nodes.append(node(
+                "commit_universe_pr5_base", "COMMIT", "pr5_base",
+                "MEASURED_GITHUB", "CAPTURED_HISTORICAL_REF", base_sha,
+                (-6.0, -4.0, 3.0),
+            ))
+            base_target = "commit_universe_pr5_base"
+        else:
+            if base_sha != main_commits[UNIVERSE]:
+                raise BuildError("open pull request base differs from current main")
+            base_target = "commit_universe_main"
         state_parts = [str(pull.get("state", "unknown")).upper()]
         state_parts.append("DRAFT" if pull.get("draft") else "READY")
         mergeable = pull.get("mergeable")
         state_parts.append("MERGEABLE" if mergeable is True else
                            "CONFLICTING" if mergeable is False else "MERGEABILITY_PENDING")
         state_parts.append(str(pull.get("mergeable_state", "unknown")).upper())
+        state_parts.append("MERGED" if merged else "UNMERGED")
         nodes.append(node("pr_universe_5", "PULL_REQUEST", "5", "MEASURED_GITHUB",
-                          "_".join(state_parts), "NONE", (0.0, 0.0, 5.0)))
-        edges.append(edge("e_pr5_base", "pr_universe_5", "commit_universe_main",
+                          "_".join(state_parts), "NONE", (-3.0, 0.0, 5.0)))
+        edges.append(edge("e_pr5_base", "pr_universe_5", base_target,
                           "PROPOSES_TO", "MEASURED_GITHUB"))
         edges.append(edge("e_pr5_head", "pr_universe_5", "commit_universe_follow",
                           "PROPOSES_FROM", "MEASURED_GITHUB"))
+        if merged:
+            edges.append(edge("e_pr5_merged", "pr_universe_5", "commit_universe_main",
+                              "MERGED_AS", "MEASURED_GITHUB"))
 
     harness = gh_json(
         gh,
@@ -337,7 +362,7 @@ def render(gh: str) -> bytes:
                           ("fabric_state", "STALE_FALLBACK"),
                           ("recall_state", "UNAVAILABLE"),
                           ("liris_behcs", "HEALTH_ONLY"))),
-        row("CAPTUREBOUNDARY", (("semantics", "PRE_PUBLICATION_PARENT_REFS"),
+        row("CAPTUREBOUNDARY", (("semantics", "CONTAINING_COMMIT_PARENT_REFS"),
                                 ("self_referential_final_head_embedded", 0),
                                 ("resume_action", "REMEASURE_CURRENT_REFS"))),
         *nodes,
@@ -388,7 +413,7 @@ def main() -> int:
         return 1
     print(
         f"G3DBUILD|PASS=1|file={output.name}|bytes={len(data)}|sha256={digest}"
-        "|capture=PRE_PUBLICATION_PARENT_REFS|active_json=0|json=0"
+        "|capture=CONTAINING_COMMIT_PARENT_REFS|active_json=0|json=0"
     )
     return 0
 
