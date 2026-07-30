@@ -16,6 +16,9 @@ authenticated public-only owner census
   -> additive V2 public image/video extension-metadata capture
   -> exact Rust 1.81 four-detector x three-direction outward waves
   -> static outward color SVG + stackable descriptor-only GGUF
+  -> complete public default-branch folder hierarchy
+  -> 3 exact-integer calming-OIL views per public folder occurrence
+  -> static folder SVG + descriptor-only folder GGUF
 ```
 
 The center is the unordered membership set
@@ -36,6 +39,13 @@ projection labels; they do not assert physical or clinical effects.
 The public rows contain aggregate repository commitments and public identifiers.
 They contain no raw repository contents, private-repository metadata, credentials,
 private keys, account cookies, or local response notebooks.
+
+The authenticated owner-visible census and public projection are kept separate:
+172 owner-visible repositories and 147 public repositories. The folder capture has
+93 branched and 54 unborn public repositories, 93 repository roots, 3,443 Git-folder
+occurrences, 3,536 total folder occurrences, and 3,438 unique Git-tree objects.
+Its public-set commitment is
+`253cff884edf54b18004c599b51282b8170354355557e20c9f1817faad297696`.
 
 ## Active commands
 
@@ -60,6 +70,8 @@ py -3.12 matrix/test_owner3d_to_public2d.py
 py -3.12 matrix/test_spherical_public_projection.py
 py -3.12 matrix/test_render_public_spherical_svg.py
 py -3.12 matrix/test_timed_chiral_gguf_monitor.py
+py -3.12 matrix/test_collect_public_folder_inventory.py
+cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin folder-calming-oils --release --locked -- matrix/PUBLIC-FOLDER-3D-TREE.hbp <empty-output-directory> --replace
 ```
 
 `PUBLIC-QPRISM-COLOR-LEAVES.svg` is the primary human view. It contains three
@@ -90,6 +102,16 @@ declared Git-object byte totals, unknown-size counts, and commitments. It stores
 zero media paths and zero media bodies. `PUBLIC-OUTWARD-TRUTH-WAVES.svg` renders
 the four detectors and three signed directions per repository; its GGUF contains
 metadata/color-wave descriptors, not pixels, frames, audio, or repository bodies.
+
+The folder capture recursively measures complete, untruncated public
+default-branch Git trees and validates every Git mode/type pair. It publishes opaque
+folder occurrence identities and hierarchy without raw paths or direct path hashes.
+Its 3,536 folder occurrences become 10,608 independent
+`BROWN`/`ANTI_BROWN`/`ANTI_ANTI_BROWN` leaves. The domain-separated Git-tree
+commitment is linkable integrity metadata, not a path-secrecy claim.
+
+Clean exact Rust `1.81.0` Windows GNU and Liris Ubuntu/WSL runs reproduced the
+folder HBP, HBI, SVG, GGUF, and all four sidecars byte for byte.
 
 ## Why JSON appears
 

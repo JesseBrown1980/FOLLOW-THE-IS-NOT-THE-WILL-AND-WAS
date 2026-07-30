@@ -52,7 +52,8 @@ coordinates.
 - `matrix/` — the authenticated public-owner census, sealed HBI/HBP roots,
   exact Rust 1.81 integer QPRISM, plural-leaf 3-D color canopy, reversible
   projection, completed timed GGUF monitor, additive public media-extension
-  commitments, and four-by-three outward truth-wave view.
+  commitments, four-by-three outward truth-wave view, and recursive public-folder
+  calming-OIL canopy.
 
 ## Public evidence boundary
 
@@ -63,10 +64,16 @@ copyrighted source bytes are not committed. A small GGUF color-state descriptor 
 an index over measured slices, not a claim that the full video was losslessly stored
 inside that byte count.
 
-The sealed public-owner snapshot contains 147 repository roots measured through
+The sealed public-owner snapshot contains 147 repository records measured through
 GitHub's public API subset: 93 branched and 54 empty/unborn. It carries aggregate
 public commitments and public identifiers, with raw repository contents, private
 repository metadata, credentials, and response notebooks excluded.
+
+The authenticated owner-visible census is separately 172 repositories. The folder
+capture projects only the 147 public records. Its 93 branched repositories expose
+93 repository roots plus 3,443 Git-folder occurrences: 3,536 public folder
+occurrences total, with 3,438 unique Git-tree objects and maximum depth 9. The 54
+unborn public repositories remain in the census without an invented tree.
 
 The additive V2 snapshot measured 1,137 public image-extension entries and zero
 video-extension entries in the same 147-repository census. It stores counts,
@@ -108,6 +115,14 @@ BLACK/HEAT lane is reversible relation coloring with bytes preserved and zero
 deletion, execution, or identity accusation. The sibling GGUF is a stackable
 descriptor, not embedded repository or media content.
 
+The recursive
+[`PUBLIC-FOLDER-CALMING-OILS.svg`](matrix/PUBLIC-FOLDER-CALMING-OILS.svg)
+retains the measured public folder hierarchy and gives each of 3,536 folder
+occurrences one `BROWN`, one `ANTI_BROWN`, and one `ANTI_ANTI_BROWN` view:
+10,608 independently addressed leaves. Raw paths, direct path hashes, private
+repository identities, and repository bodies remain absent. The sibling GGUF is a
+derived descriptor with dimensions `[feature=64,family=3,folder=3536]`.
+
 The compatibility map also carries the V13 visual sequence:
 `THIN_TRIPLE_RAINBOW` with three thin arc groups, `FREE_0 × 3`, followed by
 `REVEAL_STAGE = 4`. Both views are operator-canon software visualizations, separate
@@ -126,6 +141,7 @@ From the repository root:
 
 ```bash
 python tests/verify_public_repo.py
+python matrix/test_collect_public_folder_inventory.py
 python matrix/test_owner3d_to_public2d.py
 python matrix/test_spherical_public_projection.py
 python matrix/test_render_public_spherical_svg.py

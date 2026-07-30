@@ -1,0 +1,6 @@
+FOLDER3DHBI|schema=ASOLARIA-PUBLIC-FOLDER-3D-TREE-V1|version=1|json=0
+SOURCE|public_set_sha256=253cff884edf54b18004c599b51282b8170354355557e20c9f1817faad297696|source_capture_sha256=8145569c0b15cc6e62790796893a318e7107b99f94094fd5ca5e0a26a3d92b20|surface=MEASURED_GITHUB_PUBLIC|json=0
+HBP|path=PUBLIC-FOLDER-3D-TREE.hbp|sha256=b8cdcc4ce89a2003cefd47d2790d69707a05c257cc0fbc8cdf2c07d3adf91e43|bytes=2036235|repositories=147|folders=3536|json=0
+HASH|role=SPHERICAL_OBJECT_COMMITMENT|algorithm=SHA256|value=dd0da9e84152cda798c5bd25336c94220bff5278497053170f11e90050d4efbe|json=0
+BOUNDARY|paths_published=0|path_hashes_published=0|tree_sha1_published=0|private_repo_rows=0|raw_bodies=0|execution_authority=0|json=0
+FOLDER3DHBIFTR|body_sha256=cf11f54c5418a06a4ff87f316fb8d5f6d3c99da567fff3ec20bba620bb7e7071|rows=6|json=0

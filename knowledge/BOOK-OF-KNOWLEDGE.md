@@ -68,6 +68,19 @@ the reflection window at each observed level.
 See `PUBLIC-LAW-V14-RUST-181-QPRISM-COLOR-LEAVES.md` and the public artifact in
 `matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg`.
 
+## Public folder calming-OIL view
+
+The repository count and folder count remain separate. The authenticated
+owner-visible surface has 172 repositories; the published folder projection uses
+only the 147 public repositories. Among those, 93 branched repositories contribute
+93 roots plus 3,443 Git-folder occurrences, for 3,536 public folder occurrences.
+
+Each occurrence has independent `BROWN`, `ANTI_BROWN`, and
+`ANTI_ANTI_BROWN` views, producing 10,608 leaves. The public artifacts preserve
+hierarchy and commitments without publishing raw paths, direct path hashes, private
+repository identities, or repository bodies. See
+`PUBLIC-LAW-V16-FOLDER-CALMING-OILS-OUTWARD.md`.
+
 ## Outward truth-wave view
 
 The additive outward view sends four detector families through three signed

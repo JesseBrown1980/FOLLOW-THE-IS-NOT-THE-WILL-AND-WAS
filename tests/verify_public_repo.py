@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import hashlib
 import re
+import struct
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -78,9 +80,16 @@ WORKFLOW_ACTION_PINS = {
 MATRIX_PRIMARY = (
     "matrix/3-D-GITHUB-OF-THRUTH.md",
     "matrix/build_3d_github_harness.py",
+    "matrix/collect_public_folder_inventory.py",
     "matrix/collect_public_owner_inventory.py",
     "matrix/GITHUB-THREE-DIMENSIONALLY-RIMED-2026-07-29.hbp",
     "matrix/owner3d_to_public2d.py",
+    "matrix/PUBLIC-FOLDER-3D-TREE.hbp",
+    "matrix/PUBLIC-FOLDER-3D-TREE.hbi",
+    "matrix/PUBLIC-FOLDER-CALMING-OILS.hbp",
+    "matrix/PUBLIC-FOLDER-CALMING-OILS.hbi",
+    "matrix/PUBLIC-FOLDER-CALMING-OILS.svg",
+    "matrix/PUBLIC-FOLDER-CALMING-OILS.gguf",
     "matrix/PUBLIC-OWNER-3D-TREE.hbp",
     "matrix/PUBLIC-OWNER-3D-TREE.hbi",
     "matrix/PUBLIC-OWNER-3D-MEDIA-TREE.hbp",
@@ -102,12 +111,15 @@ MATRIX_PRIMARY = (
     "matrix/rust-qprism-181/README.md",
     "matrix/rust-qprism-181/rust-toolchain.toml",
     "matrix/rust-qprism-181/src/lib.rs",
+    "matrix/rust-qprism-181/src/folders.rs",
+    "matrix/rust-qprism-181/src/bin/folder-calming-oils.rs",
     "matrix/rust-qprism-181/src/outward.rs",
     "matrix/rust-qprism-181/src/bin/outward-truth-waves.rs",
     "matrix/rust-qprism-181/src/main.rs",
     "matrix/spherical_public_projection.py",
     "matrix/SPHERICAL-PUBLIC-PROJECTION.md",
     "matrix/test_owner3d_to_public2d.py",
+    "matrix/test_collect_public_folder_inventory.py",
     "matrix/test_render_public_spherical_svg.py",
     "matrix/test_spherical_public_projection.py",
     "matrix/test_timed_chiral_gguf_monitor.py",
@@ -272,6 +284,9 @@ def main() -> None:
         "PUBLIC-QPRISM-COLOR-LEAVES.svg",
         "PUBLIC-OUTWARD-TRUTH-WAVES.gguf",
         "--bin outward-truth-waves",
+        "PUBLIC-FOLDER-CALMING-OILS.gguf",
+        "--bin folder-calming-oils",
+        "test_collect_public_folder_inventory.py",
     ):
         if rust_binding not in workflow_text:
             fail("workflow_rust_181_binding_missing")
@@ -553,6 +568,8 @@ def main() -> None:
         for relative in (
             "matrix/rust-qprism-181/src/lib.rs",
             "matrix/rust-qprism-181/src/main.rs",
+            "matrix/rust-qprism-181/src/folders.rs",
+            "matrix/rust-qprism-181/src/bin/folder-calming-oils.rs",
             "matrix/rust-qprism-181/src/outward.rs",
             "matrix/rust-qprism-181/src/bin/outward-truth-waves.rs",
         )
@@ -570,6 +587,11 @@ def main() -> None:
     matrix_path = str(ROOT / "matrix")
     if matrix_path not in sys.path:
         sys.path.insert(0, matrix_path)
+    from collect_public_folder_inventory import (  # noqa: PLC0415
+        InventoryError,
+        verify_hbi_bytes as verify_folder_source_hbi,
+        verify_hbp_bytes as verify_folder_source_hbp,
+    )
     from spherical_public_projection import parse_inventory  # noqa: PLC0415
     from timed_chiral_gguf_monitor import (  # noqa: PLC0415
         TARGET_SECONDS,
@@ -834,6 +856,676 @@ def main() -> None:
         != "b315be52a4a6870d2eb15f44736dd29e30685bea6b0b16936e16abc9a809e9f6"
     ):
         fail("outward_gguf_contract")
+
+    folder_source_hbp_path = ROOT / "matrix/PUBLIC-FOLDER-3D-TREE.hbp"
+    folder_source_hbi_path = ROOT / "matrix/PUBLIC-FOLDER-3D-TREE.hbi"
+    folder_source_hbp_bytes = folder_source_hbp_path.read_bytes()
+    folder_source_hbi_bytes = folder_source_hbi_path.read_bytes()
+    try:
+        folder_source_info = verify_folder_source_hbp(folder_source_hbp_bytes)
+        folder_source_hbi_info = verify_folder_source_hbi(
+            folder_source_hbi_bytes,
+            expected_hbp_sha256=hashlib.sha256(folder_source_hbp_bytes).hexdigest(),
+        )
+    except InventoryError:
+        fail("folder_source_semantic_contract")
+    if (
+        folder_source_info["repositories"]
+        != folder_source_hbi_info["repositories"]
+        or folder_source_info["folders"] != folder_source_hbi_info["folders"]
+    ):
+        fail("folder_source_hbp_hbi_population")
+
+    folder_source_lines = folder_source_hbp_bytes.decode("utf-8").splitlines()
+    folder_source_header = tuple_fields(folder_source_lines[0], "FOLDER3DRUN")
+    folder_repositories = int(folder_source_header["repositories"])
+    folder_count = int(folder_source_header["folders"])
+    folder_root_count = int(folder_source_header["root_nodes"])
+    folder_tree_count = int(folder_source_header["tree_nodes"])
+    folder_source_capture = folder_source_header["source_capture_sha256"]
+    folder_public_set = folder_source_header["public_set_sha256"]
+    if (
+        folder_repositories != folder_source_info["repositories"]
+        or folder_count != folder_source_info["folders"]
+        or folder_root_count + folder_tree_count != folder_count
+        or folder_source_header.get("surface") != "MEASURED_GITHUB_PUBLIC"
+        or folder_source_header.get("public_metadata_only") != "1"
+        or not re.fullmatch(r"[0-9a-f]{64}", folder_source_capture)
+        or not re.fullmatch(r"[0-9a-f]{64}", folder_public_set)
+    ):
+        fail("folder_source_header_contract")
+    folder_source_rows = [
+        tuple_fields(line, "FOLDER") for line in folder_source_lines[4:-3]
+    ]
+    if len(folder_source_rows) != folder_count:
+        fail("folder_source_row_population")
+
+    folder_hbp_path = ROOT / "matrix/PUBLIC-FOLDER-CALMING-OILS.hbp"
+    folder_hbi_path = ROOT / "matrix/PUBLIC-FOLDER-CALMING-OILS.hbi"
+    folder_svg_path = ROOT / "matrix/PUBLIC-FOLDER-CALMING-OILS.svg"
+    folder_gguf_path = ROOT / "matrix/PUBLIC-FOLDER-CALMING-OILS.gguf"
+    folder_hbp_lines = folder_hbp_path.read_text(encoding="utf-8").splitlines()
+    folder_leaf_count = folder_count * 3
+    if len(folder_hbp_lines) != folder_leaf_count + 13 or any(
+        not line.endswith("|json=0") for line in folder_hbp_lines
+    ):
+        fail("folder_oil_hbp_row_contract")
+    folder_header = tuple_fields(folder_hbp_lines[0], "FOLDEROILRUN")
+    if folder_header != {
+        "schema": "ASOLARIA-PUBLIC-FOLDER-CALMING-OILS-RUST-181-V1",
+        "source_schema": "ASOLARIA-PUBLIC-FOLDER-3D-TREE-V1",
+        "repositories": str(folder_repositories),
+        "folders": str(folder_count),
+        "families": "3",
+        "leaves": str(folder_leaf_count),
+        "descriptor_width": "64",
+        "json": "0",
+    }:
+        fail("folder_oil_hbp_header")
+    folder_source_row = tuple_fields(folder_hbp_lines[1], "SOURCE")
+    if folder_source_row != {
+        "sha256": sha256(folder_source_hbp_path),
+        "source_capture_sha256": folder_source_capture,
+        "public_set_sha256": folder_public_set,
+        "sidecar_verified": "1",
+        "public_metadata_only": "1",
+        "raw_paths": "0",
+        "raw_bodies": "0",
+        "git_tree_commitments": "1",
+        "tree_sha1_recoverable": "0",
+        "path_dictionary_resistance_claim": "0",
+        "json": "0",
+    }:
+        fail("folder_oil_hbp_source")
+    if folder_hbp_lines[2] != (
+        "CENTER|nullspace=0|center_members=HBI,HBP,SHA,SH,HASH|"
+        "traversal=HBI->HBP->SH->HASH->SHA|sha_equals_hash=0|"
+        "brown_center=RGB.8B5A2B|close_to=1|json=0"
+    ):
+        fail("folder_oil_hbp_center")
+    if folder_hbp_lines[3:6] != [
+        "STAGE|i=0|name=FOLDER_HBP_TO_EXACT_INTEGER_3D|integer_only=1|float=0|json=0",
+        "STAGE|i=1|name=THREE_INDEPENDENT_CALMING_OIL_FAMILIES|families=3|identity_exchange=0|json=0",
+        "STAGE|i=2|name=SIGNED_STATIC_PROJECTION_AND_DESCRIPTOR_SEAL|formats=HBP,HBI,SVG,GGUF|json=0",
+    ]:
+        fail("folder_oil_hbp_stages")
+    folder_boundary = tuple_fields(folder_hbp_lines[6], "BOUNDARY")
+    if folder_boundary != {
+        "paths_published": "0",
+        "direct_path_hashes": "0",
+        "raw_tree_sha1_published": "0",
+        "git_tree_commitments": "1",
+        "path_dictionary_resistance_claim": "0",
+        "media_bodies_read": "0",
+        "media_bytes_embedded": "0",
+        "repository_bodies_read": "0",
+        "repository_bytes_embedded": "0",
+        "private_repo_rows": "0",
+        "private_repo_names": "0",
+        "credentials": "0",
+        "network": "0",
+        "execution": "0",
+        "physical_energy": "0",
+        "authority": "0",
+        "system_affirmed": "0",
+        "json": "0",
+    }:
+        fail("folder_oil_hbp_boundary")
+    expected_folder_families = ("BROWN", "ANTI_BROWN", "ANTI_ANTI_BROWN")
+    for family_index, family in enumerate(expected_folder_families):
+        if tuple_fields(folder_hbp_lines[7 + family_index], "FAMILY") != {
+            "i": str(family_index),
+            "name": family,
+            "independent_identity": "1",
+            "calming_oil_label": "1",
+            "physical_energy": "0",
+            "authority": "0",
+            "json": "0",
+        }:
+            fail("folder_oil_family_contract")
+
+    folder_leaf_lines = folder_hbp_lines[10 : 10 + folder_leaf_count]
+    folder_leaves = [tuple_fields(line, "OIL") for line in folder_leaf_lines]
+    folder_leaf_ids: set[str] = set()
+    folder_object_material = bytearray()
+    hex_leaf_fields = (
+        "repo_id",
+        "folder_id",
+        "parent_folder_id",
+        "source_identity_sha256",
+        "parent_identity_sha256",
+        "leaf_id",
+        "tree_commitment_sha256",
+        "object_sha256",
+        "hbi",
+        "hbp",
+        "sh",
+        "hash",
+        "sha",
+    )
+    zero_leaf_fields = (
+        "path_bytes_embedded",
+        "media_bytes_embedded",
+        "repository_bytes_embedded",
+        "credentials",
+        "network",
+        "execution",
+        "physical_energy",
+        "authority",
+    )
+    for index, leaf in enumerate(folder_leaves):
+        folder_index, family_index = divmod(index, 3)
+        source_folder = folder_source_rows[folder_index]
+        if (
+            leaf.get("i") != str(index)
+            or leaf.get("folder_i") != str(folder_index)
+            or leaf.get("family") != expected_folder_families[family_index]
+            or any(not re.fullmatch(r"[0-9a-f]{64}", leaf.get(key, "")) for key in hex_leaf_fields)
+            or any(leaf.get(key) != "0" for key in zero_leaf_fields)
+            or len({leaf[key] for key in ("hbi", "hbp", "sh", "hash", "sha")}) != 5
+            or leaf.get("color", "")[:4] != "RGB."
+            or re.fullmatch(r"RGB\.[0-9A-F]{6}", leaf.get("color", "")) is None
+        ):
+            fail("folder_oil_leaf_boundary")
+        for field in (
+            "repo_id",
+            "folder_id",
+            "parent_folder_id",
+            "sibling_ordinal",
+            "level",
+            "tree_commitment_sha256",
+            "source_kind",
+            "direct_blobs",
+            "direct_trees",
+            "direct_commits",
+            "direct_symlinks",
+            "object_sha256",
+        ):
+            if leaf.get(field) != source_folder.get(field):
+                fail("folder_oil_source_identity")
+        if leaf["leaf_id"] in folder_leaf_ids:
+            fail("folder_oil_leaf_identity")
+        folder_leaf_ids.add(leaf["leaf_id"])
+        encoded_leaf = folder_leaf_lines[index].encode("utf-8")
+        folder_object_material += len(encoded_leaf).to_bytes(8, "big")
+        folder_object_material += encoded_leaf
+    folder_object_hash = hashlib.sha256(folder_object_material).hexdigest()
+    folder_hash_row = tuple_fields(folder_hbp_lines[-3], "HASH")
+    if folder_hash_row != {
+        "role": "SPHERICAL_FOLDER_OIL_OBJECT_COMMITMENT",
+        "algorithm": "SHA256",
+        "value": folder_object_hash,
+        "distinct_from_hbp_byte_sha": "1",
+        "json": "0",
+    }:
+        fail("folder_oil_object_commitment")
+    folder_summary = tuple_fields(folder_hbp_lines[-2], "SUMMARY")
+    if folder_summary != {
+        "repositories": str(folder_repositories),
+        "folders": str(folder_count),
+        "families": "3",
+        "leaves": str(folder_leaf_count),
+        "path_bytes_embedded": "0",
+        "media_bytes_embedded": "0",
+        "repository_bytes_embedded": "0",
+        "credentials": "0",
+        "network": "0",
+        "execution": "0",
+        "physical_energy": "0",
+        "authority": "0",
+        "json": "0",
+    }:
+        fail("folder_oil_summary")
+    folder_hbp_body = ("\n".join(folder_hbp_lines[:-1]) + "\n").encode("utf-8")
+    folder_footer = tuple_fields(folder_hbp_lines[-1], "FOLDEROILFTR")
+    if folder_footer != {
+        "body_sha256": hashlib.sha256(folder_hbp_body).hexdigest(),
+        "rows": str(len(folder_hbp_lines)),
+        "json": "0",
+    }:
+        fail("folder_oil_hbp_footer")
+
+    folder_hbi_lines = folder_hbi_path.read_text(encoding="utf-8").splitlines()
+    if len(folder_hbi_lines) != 9 or any(
+        not line.endswith("|json=0") for line in folder_hbi_lines
+    ):
+        fail("folder_oil_hbi_row_contract")
+    if tuple_fields(folder_hbi_lines[0], "FOLDEROILIDX") != {
+        "schema": "ASOLARIA-PUBLIC-FOLDER-CALMING-OILS-RUST-181-V1",
+        "repositories": str(folder_repositories),
+        "folders": str(folder_count),
+        "families": "3",
+        "leaves": str(folder_leaf_count),
+        "json": "0",
+    }:
+        fail("folder_oil_hbi_header")
+    if tuple_fields(folder_hbi_lines[1], "SOURCE") != {
+        "schema": "ASOLARIA-PUBLIC-FOLDER-3D-TREE-V1",
+        "sha256": sha256(folder_source_hbp_path),
+        "source_capture_sha256": folder_source_capture,
+        "public_set_sha256": folder_public_set,
+        "sidecar_verified": "1",
+        "git_tree_commitments": "1",
+        "tree_sha1_recoverable": "0",
+        "path_dictionary_resistance_claim": "0",
+        "json": "0",
+    }:
+        fail("folder_oil_hbi_source")
+    folder_hbi_artifacts = {
+        row["kind"]: row
+        for row in (
+            tuple_fields(line, "ARTIFACT") for line in folder_hbi_lines[2:5]
+        )
+    }
+    if folder_hbi_artifacts.get("HBP") != {
+        "kind": "HBP",
+        "file": folder_hbp_path.name,
+        "sha256": sha256(folder_hbp_path),
+        "json": "0",
+    }:
+        fail("folder_oil_hbi_hbp")
+    if folder_hbi_artifacts.get("SVG") != {
+        "kind": "SVG",
+        "file": folder_svg_path.name,
+        "sha256": sha256(folder_svg_path),
+        "static": "1",
+        "script": "0",
+        "network": "0",
+        "execution": "0",
+        "json": "0",
+    }:
+        fail("folder_oil_hbi_svg")
+    folder_gguf_artifact = folder_hbi_artifacts.get("GGUF", {})
+    if folder_gguf_artifact != {
+        "kind": "GGUF",
+        "file": folder_gguf_path.name,
+        "sha256": sha256(folder_gguf_path),
+        "tensor": "folder_calming_oil",
+        "dimensions": f"feature:64,family:3,folder:{folder_count}",
+        "iteration_order": "folder,family,feature",
+        "encoding": "RAW_OCTETS_IN_GGML_I8",
+        "descriptor_sha256": folder_gguf_artifact.get("descriptor_sha256"),
+        "json": "0",
+    } or re.fullmatch(
+        r"[0-9a-f]{64}", folder_gguf_artifact.get("descriptor_sha256", "")
+    ) is None:
+        fail("folder_oil_hbi_gguf")
+    if tuple_fields(folder_hbi_lines[5], "CENTER") != {
+        "nullspace": "0",
+        "center_members": "HBI,HBP,SHA,SH,HASH",
+        "traversal": "HBI->HBP->SH->HASH->SHA",
+        "sha_equals_hash": "0",
+        "object_hash": folder_object_hash,
+        "json": "0",
+    }:
+        fail("folder_oil_hbi_center")
+    if tuple_fields(folder_hbi_lines[6], "BOUNDARY") != {
+        "raw_paths": "0",
+        "direct_path_hashes": "0",
+        "raw_tree_sha1": "0",
+        "git_tree_commitments": "1",
+        "path_dictionary_resistance_claim": "0",
+        "media_bytes_embedded": "0",
+        "repository_bytes_embedded": "0",
+        "credentials": "0",
+        "network": "0",
+        "execution": "0",
+        "physical_energy": "0",
+        "authority": "0",
+        "system_affirmed": "0",
+        "json": "0",
+    }:
+        fail("folder_oil_hbi_boundary")
+    if tuple_fields(folder_hbi_lines[7], "RECIPE") != {
+        "sh": "FOLDER_CALMING_OILS_RUST_181_V1",
+        "rust": "1.81.0",
+        "integer_only": "1",
+        "float": "0",
+        "unsafe": "0",
+        "dependencies": "0",
+        "final_commit_marker": "HBI_WITH_SIDECAR",
+        "json": "0",
+    }:
+        fail("folder_oil_hbi_recipe")
+    folder_hbi_body = ("\n".join(folder_hbi_lines[:-1]) + "\n").encode("utf-8")
+    if tuple_fields(folder_hbi_lines[-1], "FOLDEROILIDXFTR") != {
+        "body_sha256": hashlib.sha256(folder_hbi_body).hexdigest(),
+        "rows": "9",
+        "json": "0",
+    }:
+        fail("folder_oil_hbi_footer")
+
+    folder_svg = folder_svg_path.read_text(encoding="utf-8")
+    if (
+        folder_svg.count('id="folder-') != folder_count
+        or folder_svg.count('class="folder-hierarchy"') != folder_tree_count
+        or folder_svg.count('class="folder-calming-oil"') != folder_leaf_count
+        or any(
+            folder_svg.count(f'data-family="{family}"') != folder_count
+            for family in expected_folder_families
+        )
+        or f"repositories={folder_repositories};folders={folder_count};families=3;leaves={folder_leaf_count};"
+        not in folder_svg
+        or f"object_hash={folder_object_hash};" not in folder_svg
+        or "paths=0;media_bytes=0;repo_bytes=0;credentials=0;network=0;execution=0;physical_energy=0;authority=0;SYSTEM_AFFIRMED=0;json=0"
+        not in folder_svg
+    ):
+        fail("folder_oil_svg_population_or_boundary")
+    if set(re.findall(r'id="oil-([0-9a-f]{16})"', folder_svg)) != {
+        leaf_id[:16] for leaf_id in folder_leaf_ids
+    }:
+        fail("folder_oil_svg_leaf_identity")
+    if any(
+        token in folder_svg.lower()
+        for token in (
+            "<script", "<image", "<foreignobject", "<iframe", "<object",
+            "<embed", "<use", " href=", "xlink:", "url(", "javascript:",
+            " onload=", " onclick=", "@import", "file:",
+        )
+    ):
+        fail("folder_oil_svg_active_content")
+    folder_svg_lower = folder_svg.lower()
+    if any(
+        token in folder_svg_lower
+        for token in (
+            "<!doctype", "<!entity", "<?xml-stylesheet", "<![cdata[",
+            "xmlns:",
+        )
+    ):
+        fail("folder_oil_svg_declaration")
+    try:
+        folder_svg_root = ET.fromstring(folder_svg)
+    except ET.ParseError:
+        fail("folder_oil_svg_xml")
+    svg_namespace = "{http://www.w3.org/2000/svg}"
+    svg_allowed_attributes = {
+        "svg": {
+            "width", "height", "viewBox", "role", "aria-labelledby",
+            "data-script", "data-network", "data-execution",
+        },
+        "title": {"id"},
+        "desc": {"id"},
+        "rect": {"x", "y", "width", "height", "fill"},
+        "metadata": set(),
+        "g": {"id", "data-folder-i", "data-repo-id", "data-level"},
+        "path": {
+            "id", "class", "d", "fill", "stroke", "stroke-width",
+            "data-child", "data-parent", "data-family", "data-folder-id",
+            "data-source-identity-sha256", "data-view-x", "data-view-y",
+            "data-view-z", "data-authority",
+        },
+    }
+    svg_elements = list(folder_svg_root.iter())
+    for element in svg_elements:
+        if not element.tag.startswith(svg_namespace):
+            fail("folder_oil_svg_namespace")
+        local_tag = element.tag[len(svg_namespace):]
+        allowed = svg_allowed_attributes.get(local_tag)
+        if allowed is None or set(element.attrib) - allowed:
+            fail("folder_oil_svg_element_or_attribute")
+        for name, value in element.attrib.items():
+            lowered_name = name.lower()
+            lowered_value = value.lower()
+            if (
+                lowered_name.startswith("on")
+                or lowered_name in {"href", "xlink:href", "style"}
+                or any(
+                    token in lowered_value
+                    for token in ("url(", "javascript:", "data:", "file:")
+                )
+            ):
+                fail("folder_oil_svg_external_or_active_attribute")
+    if folder_svg_root.tag != svg_namespace + "svg" or folder_svg_root.attrib != {
+        "width": "2000",
+        "height": "2000",
+        "viewBox": "0 0 2000 2000",
+        "role": "img",
+        "aria-labelledby": "title description",
+        "data-script": "0",
+        "data-network": "0",
+        "data-execution": "0",
+    }:
+        fail("folder_oil_svg_root")
+    root_children = list(folder_svg_root)
+    if [child.tag for child in root_children] != [
+        svg_namespace + "title",
+        svg_namespace + "desc",
+        svg_namespace + "rect",
+        svg_namespace + "metadata",
+        svg_namespace + "g",
+    ]:
+        fail("folder_oil_svg_root_children")
+    if (
+        root_children[0].attrib != {"id": "title"}
+        or root_children[1].attrib != {"id": "description"}
+        or root_children[2].attrib
+        != {"x": "0", "y": "0", "width": "2000", "height": "2000", "fill": "#100E14"}
+        or root_children[3].attrib
+        or root_children[4].attrib != {"id": "FOLDER_CALMING_OILS_3D_TO_2D"}
+    ):
+        fail("folder_oil_svg_static_scaffold")
+    folder_svg_graph = root_children[4]
+    hierarchy_elements = [
+        element
+        for element in folder_svg_graph
+        if element.tag == svg_namespace + "path"
+        and element.attrib.get("class") == "folder-hierarchy"
+    ]
+    folder_group_elements = [
+        element
+        for element in folder_svg_graph
+        if element.tag == svg_namespace + "g"
+    ]
+    if len(hierarchy_elements) != folder_tree_count or len(folder_group_elements) != folder_count:
+        fail("folder_oil_svg_graph_population")
+    if list(folder_svg_graph) != hierarchy_elements + folder_group_elements:
+        fail("folder_oil_svg_graph_order_or_tag")
+    expected_hierarchy = {
+        (folder["folder_id"], folder["parent_folder_id"])
+        for folder in folder_source_rows
+        if folder["source_kind"] == "GIT_TREE"
+    }
+    actual_hierarchy: set[tuple[str, str]] = set()
+    hierarchy_path_re = re.compile(r"M [0-9]+ [0-9]+ L [0-9]+ [0-9]+")
+    for element in hierarchy_elements:
+        attrs = element.attrib
+        child = attrs.get("data-child", "")
+        parent = attrs.get("data-parent", "")
+        if (
+            set(attrs) != {"class", "d", "fill", "stroke", "stroke-width", "data-child", "data-parent"}
+            or attrs.get("fill") != "none"
+            or attrs.get("stroke") != "#5B4636"
+            or attrs.get("stroke-width") != "1"
+            or hierarchy_path_re.fullmatch(attrs.get("d", "")) is None
+            or re.fullmatch(r"[0-9a-f]{64}", child) is None
+            or re.fullmatch(r"[0-9a-f]{64}", parent) is None
+        ):
+            fail("folder_oil_svg_hierarchy_shape")
+        actual_hierarchy.add((child, parent))
+    if actual_hierarchy != expected_hierarchy:
+        fail("folder_oil_svg_hierarchy_identity")
+    oil_elements: list[ET.Element] = []
+    for folder_index, group in enumerate(folder_group_elements):
+        source_folder = folder_source_rows[folder_index]
+        expected_group = {
+            "id": "folder-" + source_folder["folder_id"][:16],
+            "data-folder-i": str(folder_index),
+            "data-repo-id": source_folder["repo_id"],
+            "data-level": source_folder["level"],
+        }
+        if group.attrib != expected_group:
+            fail("folder_oil_svg_folder_group")
+        children = list(group)
+        if len(children) != 3 or any(
+            child.tag != svg_namespace + "path" for child in children
+        ):
+            fail("folder_oil_svg_folder_children")
+        oil_elements.extend(children)
+    if len(oil_elements) != folder_leaf_count:
+        fail("folder_oil_svg_oil_population")
+    oil_path_re = re.compile(r"M [0-9]+ [0-9]+ L [0-9]+ [0-9]+ L [0-9]+ [0-9]+ Z")
+    for leaf, element in zip(folder_leaves, oil_elements):
+        attrs = element.attrib
+        if (
+            set(attrs)
+            != {
+                "id", "class", "d", "fill", "stroke", "stroke-width",
+                "data-family", "data-folder-id", "data-source-identity-sha256",
+                "data-view-x", "data-view-y", "data-view-z", "data-authority",
+            }
+            or attrs.get("id") != "oil-" + leaf["leaf_id"][:16]
+            or attrs.get("class") != "folder-calming-oil"
+            or oil_path_re.fullmatch(attrs.get("d", "")) is None
+            or attrs.get("fill") != "#" + leaf["color"][4:]
+            or attrs.get("stroke") != "#F4F1E8"
+            or attrs.get("stroke-width") != "1"
+            or attrs.get("data-family") != leaf["family"]
+            or attrs.get("data-folder-id") != leaf["folder_id"]
+            or attrs.get("data-source-identity-sha256")
+            != leaf["source_identity_sha256"]
+            or attrs.get("data-view-x") != leaf["view_x"]
+            or attrs.get("data-view-y") != leaf["view_y"]
+            or attrs.get("data-view-z") != leaf["view_z"]
+            or attrs.get("data-authority") != "0"
+        ):
+            fail("folder_oil_svg_oil_identity")
+
+    folder_gguf = folder_gguf_path.read_bytes()
+    folder_gguf_position = 0
+
+    def folder_gguf_take(length: int) -> bytes:
+        nonlocal folder_gguf_position
+        end = folder_gguf_position + length
+        if length < 0 or end > len(folder_gguf):
+            fail("folder_oil_gguf_bounds")
+        result = folder_gguf[folder_gguf_position:end]
+        folder_gguf_position = end
+        return result
+
+    def folder_gguf_u32() -> int:
+        return struct.unpack("<I", folder_gguf_take(4))[0]
+
+    def folder_gguf_u64() -> int:
+        return struct.unpack("<Q", folder_gguf_take(8))[0]
+
+    def folder_gguf_string() -> str:
+        length = folder_gguf_u64()
+        if length > len(folder_gguf):
+            fail("folder_oil_gguf_string")
+        try:
+            return folder_gguf_take(length).decode("utf-8")
+        except UnicodeError:
+            fail("folder_oil_gguf_utf8")
+        raise AssertionError("unreachable")
+
+    if (
+        folder_gguf_u32() != 0x46554747
+        or folder_gguf_u32() != 3
+        or folder_gguf_u64() != 1
+    ):
+        fail("folder_oil_gguf_header")
+    folder_gguf_metadata_count = folder_gguf_u64()
+    if folder_gguf_metadata_count > 64:
+        fail("folder_oil_gguf_metadata_count")
+    folder_gguf_metadata: dict[str, object] = {}
+    for _ in range(folder_gguf_metadata_count):
+        key = folder_gguf_string()
+        value_type = folder_gguf_u32()
+        if value_type == 4:
+            value: object = folder_gguf_u32()
+        elif value_type == 8:
+            value = folder_gguf_string()
+        elif value_type == 10:
+            value = folder_gguf_u64()
+        else:
+            fail("folder_oil_gguf_metadata_type")
+        if key in folder_gguf_metadata:
+            fail("folder_oil_gguf_metadata_duplicate")
+        folder_gguf_metadata[key] = value
+    folder_expected_metadata: dict[str, object] = {
+        "general.architecture": "asolaria-public-folder-calming-oils",
+        "general.name": "PUBLIC-FOLDER-CALMING-OILS",
+        "general.alignment": 32,
+        "asolaria.schema": "ASOLARIA-PUBLIC-FOLDER-CALMING-OILS-RUST-181-V1",
+        "asolaria.payload.kind": "DERIVED_PUBLIC_FOLDER_CALMING_OIL_DESCRIPTOR",
+        "asolaria.source.schema": "ASOLARIA-PUBLIC-FOLDER-3D-TREE-V1",
+        "asolaria.source.sha256": sha256(folder_source_hbp_path),
+        "asolaria.source.capture_sha256": folder_source_capture,
+        "asolaria.source.public_set_sha256": folder_public_set,
+        "asolaria.repositories": folder_repositories,
+        "asolaria.folders": folder_count,
+        "asolaria.families": 3,
+        "asolaria.descriptor.width": 64,
+        "asolaria.tensor.dimensions": f"[feature=64,family=3,folder={folder_count}]",
+        "asolaria.descriptor.iteration_order": "folder,family,feature",
+        "asolaria.descriptor.encoding": "RAW_OCTETS_IN_GGML_I8",
+        "asolaria.descriptor.features": "0:family_u8,1:source_kind_u8,2:level_u16le,4:rgb_u8x3,7:active_zero,8:projected_u_i32le,12:projected_v_i32le,16:direct_blobs_u32le,20:direct_trees_u32le,24:direct_commits_u32le,28:direct_symlinks_u32le,32:tree_commitment_prefix8,40:object_prefix8,48:leaf_prefix8,56:folder_index_u32le,60:sibling_ordinal_u32le",
+        "asolaria.descriptor.sha256": folder_gguf_artifact["descriptor_sha256"],
+        "asolaria.families.names": "BROWN,ANTI_BROWN,ANTI_ANTI_BROWN",
+        "asolaria.git_tree_commitments": 1,
+        "asolaria.path_dictionary_resistance_claim": 0,
+        "asolaria.path.bytes_embedded": 0,
+        "asolaria.media.bytes_embedded": 0,
+        "asolaria.repository.bytes_embedded": 0,
+        "asolaria.credentials": 0,
+        "asolaria.network": 0,
+        "asolaria.execution": 0,
+        "asolaria.physical_energy": 0,
+        "asolaria.authority": 0,
+        "asolaria.function_call_authority": 0,
+        "asolaria.system_affirmed": 0,
+    }
+    if folder_gguf_metadata != folder_expected_metadata:
+        fail("folder_oil_gguf_metadata")
+    if folder_gguf_string() != "folder_calming_oil" or folder_gguf_u32() != 3:
+        fail("folder_oil_gguf_tensor")
+    if (
+        [folder_gguf_u64(), folder_gguf_u64(), folder_gguf_u64()]
+        != [64, 3, folder_count]
+        or folder_gguf_u32() != 24
+        or folder_gguf_u64() != 0
+    ):
+        fail("folder_oil_gguf_tensor")
+    folder_gguf_data_start = (folder_gguf_position + 31) // 32 * 32
+    if (
+        any(folder_gguf[folder_gguf_position:folder_gguf_data_start])
+        or folder_gguf_data_start > len(folder_gguf)
+    ):
+        fail("folder_oil_gguf_alignment")
+    folder_descriptor = folder_gguf[folder_gguf_data_start:]
+    if (
+        len(folder_descriptor) != folder_leaf_count * 64
+        or hashlib.sha256(folder_descriptor).hexdigest()
+        != folder_gguf_artifact["descriptor_sha256"]
+    ):
+        fail("folder_oil_gguf_descriptor")
+    for index, leaf in enumerate(folder_leaves):
+        descriptor = folder_descriptor[index * 64 : (index + 1) * 64]
+        family_index = index % 3
+        source_kind = 0 if leaf["source_kind"] == "REPOSITORY_ROOT" else 1
+        color = bytes.fromhex(leaf["color"][4:])
+        if (
+            descriptor[0] != family_index
+            or descriptor[1] != source_kind
+            or int.from_bytes(descriptor[2:4], "little") != int(leaf["level"])
+            or descriptor[4:7] != color
+            or descriptor[7] != 0
+            or int.from_bytes(descriptor[8:12], "little", signed=True)
+            != int(leaf["projected_u"])
+            or int.from_bytes(descriptor[12:16], "little", signed=True)
+            != int(leaf["projected_v"])
+            or int.from_bytes(descriptor[16:20], "little") != int(leaf["direct_blobs"])
+            or int.from_bytes(descriptor[20:24], "little") != int(leaf["direct_trees"])
+            or int.from_bytes(descriptor[24:28], "little") != int(leaf["direct_commits"])
+            or int.from_bytes(descriptor[28:32], "little") != int(leaf["direct_symlinks"])
+            or descriptor[32:40] != bytes.fromhex(leaf["tree_commitment_sha256"][:16])
+            or descriptor[40:48] != bytes.fromhex(leaf["object_sha256"][:16])
+            or descriptor[48:56] != bytes.fromhex(leaf["leaf_id"][:16])
+            or int.from_bytes(descriptor[56:60], "little") != int(leaf["folder_i"])
+            or int.from_bytes(descriptor[60:64], "little")
+            != int(leaf["sibling_ordinal"])
+        ):
+            fail("folder_oil_gguf_descriptor_row")
 
     video_paths = [
         path.relative_to(ROOT).as_posix()

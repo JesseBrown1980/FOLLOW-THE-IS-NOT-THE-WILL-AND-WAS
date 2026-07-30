@@ -114,6 +114,36 @@ verdicts. The public capture measured 1,137 image-extension entries and zero
 video-extension entries; zero is scoped to that exact public tree capture.
 Pixel/frame/audio bodies are not embedded in either GGUF.
 
+## Public folders and calming-OILs outward
+
+[Open the recursive public folder calming-OIL view](PUBLIC-FOLDER-CALMING-OILS.svg).
+
+The authenticated owner-visible census is 172 repositories. The public artifact is
+the separate 147-repository subset: 93 branched and 54 unborn. The complete
+default-branch capture measured 93 repository roots and 3,443 Git-folder
+occurrences, producing 3,536 public folder occurrences. There are 3,438 unique
+Git-tree objects because object identity and occurrence identity stay distinct.
+
+```text
+PUBLIC_FOLDER_OCCURRENCES = 3536
+FOLDER_FAMILIES = {BROWN, ANTI_BROWN, ANTI_ANTI_BROWN}
+PUBLIC_FOLDER_LEAVES = 3536 * 3 = 10608
+MAX_FOLDER_DEPTH = 9
+PUBLIC_SET_SHA256 = 253cff884edf54b18004c599b51282b8170354355557e20c9f1817faad297696
+```
+
+The folder rows contain opaque public occurrence identities, hierarchy, counts,
+coordinates, colors, and integrity commitments. Raw paths, direct path hashes,
+private repository identities, repository bodies, credentials, and execution
+authority remain outside the artifacts. Git-tree commitments are linkable integrity
+metadata, with `path_dictionary_resistance_claim=0`.
+
+The exact Rust 1.81 checked-integer renderer emits three independent software views
+per folder and a descriptor-only GGUF with dimensions
+`[feature=64,family=3,folder=3536]`. Clean Windows GNU and Liris Ubuntu/WSL builds
+matched all eight output and sidecar byte strings. These color/OIL names are
+operator-canon software labels; `SYSTEM_AFFIRMED=0`.
+
 ## READ-FIRST carry
 
 The stable link on this file's first line is mirrored through file-type-safe AI entrypoints
