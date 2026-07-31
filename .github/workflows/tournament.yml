@@ -156,6 +156,9 @@ jobs:
             cmp "${RUNNER_TEMP}/flowes-x3x3-a/${name}" "${RUNNER_TEMP}/flowes-x3x3-b/${name}"
           done
 
+      - name: Verify the compact final FLOWes witness tool
+        run: python matrix/test_finalize_timed_86400_flowes_x3x3.py
+
       - name: Run the fixed public tournament
         run: >-
           python tournament/run_tournament.py
