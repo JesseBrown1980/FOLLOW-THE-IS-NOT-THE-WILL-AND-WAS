@@ -127,33 +127,40 @@ python matrix/build_timed_86400_flowes_x3x3.py matrix OUTPUT_DIR --watch
 ### Compact final publication gate
 
 The running journal and expanded bundle remain local until the SystemClock-owned
-watch reaches its nineteenth sealed checkpoint at 86,400 seconds and finishes
-writing every artifact/sidecar pair. The current public-gate state is:
+watch reaches its nineteenth sealed checkpoint at 86,400 seconds, finishes writing
+every artifact/sidecar pair, exits naturally, and releases its OS-held writer lock.
+The current public-gate state is:
 
 ```text
 COMPACT_FINAL_WITNESS_REQUIRED=0
 ```
 
-After completion, use the exact launched-builder source and a separate empty public
-destination. The production finalizer accepts no duration or timing override:
+After that exit, use the exact launched-builder source and a separate absent or empty
+public destination. The production finalizer accepts no duration or timing override:
 
 ```bash
 python -B matrix/build_timed_86400_flowes_x3x3.py matrix <completed-local-output-directory> --verify
 python -B matrix/finalize_timed_86400_flowes_x3x3.py mint matrix <completed-local-output-directory> matrix/timed-86400-flowes-x3x3-final
 python -B matrix/finalize_timed_86400_flowes_x3x3.py verify-public matrix matrix/timed-86400-flowes-x3x3-final
+python -B matrix/test_build_timed_86400_flowes_x3x3.py
+python -B matrix/test_finalize_timed_86400_flowes_x3x3.py
 python -B tests/verify_public_repo.py
 python -B matrix/verify_3d_github_harness.py
 ```
 
-`mint` requires the completed local directory to contain exactly the six expanded
-artifacts and their six SHA-256 sidecars. It rebuilds the five derived artifacts
-twice, requires both rebuilds to equal the live bytes, and publishes only six compact
-files: the journal/HBP/HBI plus their sidecars. `verify-public` reconstructs the five
-expanded artifacts from the public source and compact journal and checks the final
-HBP/HBI and artifact-root commitments.
+Builder `--verify` is a preliminary structural/rebuild check; production `mint` is
+the gate that additionally requires `REAL_MONOTONIC`, all nineteen checkpoints, and
+the exact completed file set. `mint` requires the completed local directory to
+contain exactly the six expanded artifacts and their six SHA-256 sidecars. It rebuilds
+the five derived artifacts twice, requires both rebuilds to equal the live bytes, and
+publishes only six compact files: the journal/HBP/HBI plus their sidecars.
+`verify-public` reconstructs the five expanded artifacts from the public source and
+compact journal and checks the final HBP/HBI and artifact-root commitments. Run
+`mint` once, then run `verify-public` and both focused/public verifier suites from
+Windows and Ubuntu over the same LF-pinned checkout.
 
-Only after both commands and the Windows and Ubuntu public test surfaces pass may the
-activation row's final digit change from zero to one in `README.md`,
+Only after `mint`, cross-platform `verify-public`, and the Windows and Ubuntu test
+surfaces pass may the activation row's final digit change from zero to one in `README.md`,
 `matrix/README.md`, and `matrix/3-D-GITHUB-OF-THRUTH.md`. That change makes absence or
 partial publication fail closed. Keep `independent_time_attestation=0`,
 `SYSTEM_AFFIRMED=0`, `credentials=0`, `network=0`, `execution=0`, `authority=0`, and

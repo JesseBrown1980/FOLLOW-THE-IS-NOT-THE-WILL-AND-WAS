@@ -88,6 +88,10 @@ folder goal (three calming-OIL families by three signed directions, 31,824 cells
 is now `RUNNING_LOCAL` from public builder commit `cf4f760`; it remains pending
 the sealed 86,400-second checkpoint and final publication gate.
 
+```text
+COMPACT_FINAL_WITNESS_REQUIRED=0
+```
+
 ## Center and traversal
 
 The nullspace center is an unordered membership set:
