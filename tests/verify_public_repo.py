@@ -214,6 +214,18 @@ COMPACT_FINAL_CREDENTIAL_FIELD = re.compile(
 )
 MATRIX_CENTER = "HBI,HBP,SHA,SH,HASH"
 MATRIX_TRAVERSAL_ENCODED = "HBI-%3EHBP-%3ESH-%3EHASH-%3ESHA"
+GRADIENT_AUDIT_HBP = (
+    "receipts/LIRIS-RUST-181-GRADIENT-SEMANTICS-2026-07-31.hbp"
+)
+GRADIENT_AUDIT_HBI = (
+    "receipts/LIRIS-RUST-181-GRADIENT-SEMANTICS-2026-07-31.hbi"
+)
+GRADIENT_AUDIT_HBP_SHA256 = (
+    "707f73b6013f8152adc9e524e9131716f8ccaa881857fc990ef793167b302896"
+)
+GRADIENT_AUDIT_HBI_SHA256 = (
+    "8281bdaf2901b0d376a88bcf2c6f53e731c36edd3cac65ae47b56761790f80c9"
+)
 MAX_GIT_FILE_LIST_BYTES = 4 * 1024 * 1024
 
 
@@ -1118,6 +1130,280 @@ def verify_compact_final_gate(root: Path) -> tuple[bool, bool]:
     return present, required
 
 
+def verify_rust_181_gradient_semantics_receipt() -> None:
+    """Require the sealed non-binary Rust 1.81 gradient evidence pair."""
+    hbp_path = ROOT / GRADIENT_AUDIT_HBP
+    hbi_path = ROOT / GRADIENT_AUDIT_HBI
+    for path in (hbp_path, hbi_path):
+        sidecar = path.with_name(path.name + ".sha256")
+        if not path.is_file() or not sidecar.is_file():
+            fail("gradient_audit_required_missing:" + path.name)
+        verify_exact_sidecar(path, "gradient_audit_" + path.suffix[1:])
+
+    hbp_lines = strict_tuple_receipt(
+        hbp_path,
+        rows=18,
+        footer_kind="GRADIENTAUDITFTR",
+        error_prefix="gradient_audit_hbp",
+    )
+    hbi_lines = strict_tuple_receipt(
+        hbi_path,
+        rows=6,
+        footer_kind="GRADIENTAUDITIDXFTR",
+        error_prefix="gradient_audit_hbi",
+    )
+
+    expected_hbp_rows = (
+        (
+            "GRADIENTAUDITHDR",
+            {
+                "schema": "ASOLARIA-RUST-181-INTEGER-GRADIENT-SEMANTICS-V1",
+                "date": "2026-07-31",
+                "seat": "LIRIS",
+                "evidence": "MEASURED",
+                "format": "HBP_TUPLE_TEXT",
+                "json": "0",
+            },
+        ),
+        (
+            "SOURCE",
+            {
+                "repo": "JesseBrown1980%2FFOLLOW-THE-IS-NOT-THE-WILL-AND-WAS",
+                "branch": "agent%2Ftimed-86400-flowes-x3x3-20260731",
+                "parent_commit": "a514517034edcd5fc2be1f554d654fc1949f731b",
+                "worktree_dirty_rows": "0",
+                "json": "0",
+            },
+        ),
+        (
+            "TOOLCHAIN",
+            {
+                "rustc": "1.81.0",
+                "cargo": "1.81.0",
+                "tests_passed": "12",
+                "tests_failed": "0",
+                "clippy_warnings_denied": "1",
+                "clippy_float_arithmetic_denied": "1",
+                "json": "0",
+            },
+        ),
+        (
+            "SOURCECODE",
+            {
+                "rust_files": "6",
+                "f32_f64_tokens": "0",
+                "checked_integer_sites": "76",
+                "unsafe": "0",
+                "json": "0",
+            },
+        ),
+        (
+            "REBUILD",
+            {
+                "surface": "LIRIS_UBUNTU_WSL",
+                "repositories": "147",
+                "folders": "3536",
+                "leaves": "10608",
+                "all_artifact_sidecars_match": "1",
+                "byte_identical_to_public_artifacts": "1",
+                "json": "0",
+            },
+        ),
+        (
+            "GRADIENT",
+            {
+                "families": "3",
+                "family_complete": "1",
+                "distinct_family_identity": "1",
+                "unique_colors": "10586",
+                "colors_gt_2": "1",
+                "unique_3d_positions": "10608",
+                "unique_2d_projections": "10397",
+                "integer_fields_only": "1",
+                "json": "0",
+            },
+        ),
+        (
+            "CENTER",
+            {
+                "members": MATRIX_CENTER,
+                "traversal": MATRIX_TRAVERSAL_ENCODED,
+                "all_five_distinct_per_leaf": "1",
+                "json": "0",
+            },
+        ),
+        (
+            "OPENN",
+            {
+                "finite_capture": "1",
+                "actual_infinite_capture": "0",
+                "n_level_open": "1",
+                "logical_identity_ceiling": "0",
+                "reflection_window_per_observed_level": "60",
+                "json": "0",
+            },
+        ),
+        (
+            "SEMANTICS",
+            {
+                "transport": "OCTETS",
+                "semantic_binary": "0",
+                "semantic_families": "3",
+                "gradient_states": "10586",
+                "identity_exchange": "0",
+                "json": "0",
+            },
+        ),
+        (
+            "BOUNDARY",
+            {
+                "system_affirmed": "0",
+                "physical_energy": "0",
+                "clinical_claim": "0",
+                "network": "0",
+                "execution": "0",
+                "private_paths": "0",
+                "credentials": "0",
+                "json": "0",
+            },
+        ),
+    )
+
+    for line_index, (kind, expected) in zip(
+        (0, 1, 2, 3, 4, 9, 13, 14, 15, 16), expected_hbp_rows,
+    ):
+        actual = strict_tuple_fields(
+            hbp_lines[line_index], kind, f"gradient_audit_hbp_{line_index}",
+        )
+        if actual != expected:
+            fail(f"gradient_audit_hbp_{kind.lower()}_contract")
+
+    expected_artifacts = (
+        (
+            "HBP", "14686931",
+            "43300780cac2b85e3ed6cfa10398052f530ccbf76c43b404e650c26c9ed8b006",
+        ),
+        (
+            "HBI", "1889",
+            "9920d5cb2031d6453fba2d410e4b2f6e0136a4537fa6ea2ea9385c163503a28b",
+        ),
+        (
+            "SVG", "6053339",
+            "feb18cc1e5034620a0ce78787df22683ccd662409df8b8af0752438c07d6a63b",
+        ),
+        (
+            "GGUF", "681184",
+            "fa266f1bf527d3757b6825d97b65653c547d8f1557a1ba516cee1598facd2bcf",
+        ),
+    )
+    for line_index, (kind, byte_count, digest) in zip(
+        range(5, 9), expected_artifacts,
+    ):
+        if strict_tuple_fields(
+            hbp_lines[line_index], "ARTIFACT",
+            f"gradient_audit_hbp_artifact_{kind.lower()}",
+        ) != {
+            "kind": kind,
+            "bytes": byte_count,
+            "sha256": digest,
+            "json": "0",
+        }:
+            fail("gradient_audit_hbp_artifact_contract:" + kind)
+
+    expected_families = (
+        ("BROWN", "3529"),
+        ("ANTI_BROWN", "3529"),
+        ("ANTI_ANTI_BROWN", "3534"),
+    )
+    for line_index, (name, unique_colors) in zip(
+        range(10, 13), expected_families,
+    ):
+        if strict_tuple_fields(
+            hbp_lines[line_index], "FAMILY",
+            f"gradient_audit_hbp_family_{name.lower()}",
+        ) != {
+            "name": name,
+            "rows": "3536",
+            "unique_colors": unique_colors,
+            "unique_leaf_ids": "3536",
+            "json": "0",
+        }:
+            fail("gradient_audit_hbp_family_contract:" + name)
+
+    if strict_tuple_fields(
+        hbi_lines[0], "GRADIENTAUDITIDX", "gradient_audit_hbi_header",
+    ) != {
+        "schema": "ASOLARIA-RUST-181-INTEGER-GRADIENT-SEMANTICS-V1",
+        "hbp_file": hbp_path.name,
+        "hbp_bytes": str(hbp_path.stat().st_size),
+        "hbp_sha256": sha256(hbp_path),
+        "hbp_rows": "18",
+        "format": "HBI_TUPLE_TEXT",
+        "json": "0",
+    }:
+        fail("gradient_audit_hbi_header_contract")
+
+    if strict_tuple_fields(
+        hbi_lines[1], "MEASURE", "gradient_audit_hbi_measure",
+    ) != {
+        "rust": "1.81.0",
+        "folders": "3536",
+        "leaves": "10608",
+        "families": "3",
+        "unique_colors": "10586",
+        "semantic_binary": "0",
+        "integer_only": "1",
+        "json": "0",
+    }:
+        fail("gradient_audit_hbi_measure_contract")
+
+    for line_index, kind, expected in (
+        (
+            2,
+            "OPENN",
+            {
+                "finite_capture": "1",
+                "actual_infinite_capture": "0",
+                "n_level_open": "1",
+                "logical_identity_ceiling": "0",
+                "json": "0",
+            },
+        ),
+        (
+            3,
+            "CENTER",
+            {
+                "members": MATRIX_CENTER,
+                "traversal": MATRIX_TRAVERSAL_ENCODED,
+                "all_five_distinct_per_leaf": "1",
+                "json": "0",
+            },
+        ),
+        (
+            4,
+            "BOUNDARY",
+            {
+                "evidence": "MEASURED_LIRIS_LOCAL",
+                "system_affirmed": "0",
+                "physical_energy": "0",
+                "credentials": "0",
+                "execution": "0",
+                "json": "0",
+            },
+        ),
+    ):
+        if strict_tuple_fields(
+            hbi_lines[line_index], kind,
+            f"gradient_audit_hbi_{kind.lower()}",
+        ) != expected:
+            fail("gradient_audit_hbi_" + kind.lower() + "_contract")
+
+    if sha256(hbp_path) != GRADIENT_AUDIT_HBP_SHA256:
+        fail("gradient_audit_hbp_seal")
+    if sha256(hbi_path) != GRADIENT_AUDIT_HBI_SHA256:
+        fail("gradient_audit_hbi_seal")
+
+
 def verify_qprism_on_demand_binding() -> None:
     hbp_path = ROOT / "matrix/QPRISM-ON-DEMAND-PUBLIC-BINDING.hbp"
     hbi_path = ROOT / "matrix/QPRISM-ON-DEMAND-PUBLIC-BINDING.hbi"
@@ -1680,6 +1966,7 @@ def main() -> None:
     compact_final_witness_present, compact_final_required = (
         verify_compact_final_gate(ROOT)
     )
+    verify_rust_181_gradient_semantics_receipt()
     verify_snow_on_demand_selector()
 
     for relative in (

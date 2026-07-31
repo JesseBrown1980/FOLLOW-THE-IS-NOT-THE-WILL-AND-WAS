@@ -10,6 +10,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 MATRIX_DIR = ROOT_DIR / "matrix"
@@ -178,6 +179,133 @@ class CompactFinalGateTests(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
                     verifier.verify_compact_final_gate(root)
+
+
+class GradientAuditGateTests(unittest.TestCase):
+    @staticmethod
+    def copy_pair(root: Path) -> None:
+        for relative in (
+            verifier.GRADIENT_AUDIT_HBP,
+            verifier.GRADIENT_AUDIT_HBI,
+        ):
+            source = ROOT_DIR / relative
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source.read_bytes())
+            source_sidecar = source.with_name(source.name + ".sha256")
+            target_sidecar = target.with_name(target.name + ".sha256")
+            target_sidecar.write_bytes(source_sidecar.read_bytes())
+
+    @staticmethod
+    def reseal(path: Path, footer_kind: str) -> None:
+        lines = path.read_text(encoding="utf-8").splitlines()
+        body = ("\n".join(lines[:-1]) + "\n").encode("utf-8")
+        lines[-1] = (
+            f"{footer_kind}|body_sha256={hashlib.sha256(body).hexdigest()}"
+            f"|rows={len(lines)}|json=0"
+        )
+        data = ("\n".join(lines) + "\n").encode("utf-8")
+        path.write_bytes(data)
+        path.with_name(path.name + ".sha256").write_text(
+            f"{hashlib.sha256(data).hexdigest()}  {path.name}\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+
+    def test_exact_gradient_pair_is_required_and_passes(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.copy_pair(root)
+            with mock.patch.object(verifier, "ROOT", root):
+                verifier.verify_rust_181_gradient_semantics_receipt()
+
+    def test_each_gradient_receipt_and_sidecar_is_required(self) -> None:
+        relatives = (
+            verifier.GRADIENT_AUDIT_HBP,
+            verifier.GRADIENT_AUDIT_HBP + ".sha256",
+            verifier.GRADIENT_AUDIT_HBI,
+            verifier.GRADIENT_AUDIT_HBI + ".sha256",
+        )
+        for relative in relatives:
+            with self.subTest(relative=relative):
+                with tempfile.TemporaryDirectory() as temporary:
+                    root = Path(temporary)
+                    self.copy_pair(root)
+                    (root / relative).unlink()
+                    with mock.patch.object(verifier, "ROOT", root):
+                        with contextlib.redirect_stderr(io.StringIO()):
+                            with self.assertRaises(SystemExit):
+                                verifier.verify_rust_181_gradient_semantics_receipt()
+
+    def test_resealed_binary_semantics_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.copy_pair(root)
+            hbp = root / verifier.GRADIENT_AUDIT_HBP
+            text = hbp.read_text(encoding="utf-8")
+            self.assertIn("|semantic_binary=0|", text)
+            hbp.write_text(
+                text.replace("|semantic_binary=0|", "|semantic_binary=1|", 1),
+                encoding="utf-8",
+                newline="\n",
+            )
+            self.reseal(hbp, "GRADIENTAUDITFTR")
+            with mock.patch.object(verifier, "ROOT", root):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        verifier.verify_rust_181_gradient_semantics_receipt()
+
+    def test_resealed_closed_n_level_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.copy_pair(root)
+            hbi = root / verifier.GRADIENT_AUDIT_HBI
+            text = hbi.read_text(encoding="utf-8")
+            self.assertIn("|n_level_open=1|", text)
+            hbi.write_text(
+                text.replace("|n_level_open=1|", "|n_level_open=0|", 1),
+                encoding="utf-8",
+                newline="\n",
+            )
+            self.reseal(hbi, "GRADIENTAUDITIDXFTR")
+            with mock.patch.object(verifier, "ROOT", root):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        verifier.verify_rust_181_gradient_semantics_receipt()
+
+    def test_resealed_gradient_and_hbi_binding_tampers_are_rejected(self) -> None:
+        mutations = (
+            (
+                verifier.GRADIENT_AUDIT_HBP,
+                "|unique_colors=10586|",
+                "|unique_colors=2|",
+                "GRADIENTAUDITFTR",
+            ),
+            (
+                verifier.GRADIENT_AUDIT_HBI,
+                "|hbp_sha256=" + verifier.GRADIENT_AUDIT_HBP_SHA256 + "|",
+                "|hbp_sha256=" + "0" * 64 + "|",
+                "GRADIENTAUDITIDXFTR",
+            ),
+        )
+        for relative, old, new, footer_kind in mutations:
+            with self.subTest(relative=relative):
+                with tempfile.TemporaryDirectory() as temporary:
+                    root = Path(temporary)
+                    self.copy_pair(root)
+                    path = root / relative
+                    text = path.read_text(encoding="utf-8")
+                    self.assertIn(old, text)
+                    path.write_text(
+                        text.replace(old, new, 1),
+                        encoding="utf-8",
+                        newline="\n",
+                    )
+                    self.reseal(path, footer_kind)
+                    with mock.patch.object(verifier, "ROOT", root):
+                        with contextlib.redirect_stderr(io.StringIO()):
+                            with self.assertRaises(SystemExit):
+                                verifier.verify_rust_181_gradient_semantics_receipt()
 
 
 if __name__ == "__main__":
