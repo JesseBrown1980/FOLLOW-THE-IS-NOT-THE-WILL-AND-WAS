@@ -159,7 +159,10 @@ class CompactFinalGateTests(unittest.TestCase):
             for relative in verifier.COMPACT_FINAL_ACTIVATION_FILES:
                 path = root / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_text("CURRENT_PROJECTION=RUNNING\n", encoding="utf-8")
+                path.write_text(
+                    verifier.COMPACT_FINAL_INACTIVE_MARKER + "\n",
+                    encoding="utf-8",
+                )
             self.assertEqual(
                 verifier.verify_compact_final_gate(root),
                 (False, False),
@@ -174,13 +177,77 @@ class CompactFinalGateTests(unittest.TestCase):
 
             (final_dir / verifier.COMPACT_FINAL_JOURNAL).unlink()
             final_dir.rmdir()
-            (root / "README.md").write_text(
-                verifier.COMPACT_FINAL_ACTIVATION_MARKER + "\n",
-                encoding="utf-8",
-            )
+            for relative in verifier.COMPACT_FINAL_ACTIVATION_FILES:
+                (root / relative).write_text(
+                    verifier.COMPACT_FINAL_ACTIVATION_MARKER + "\n",
+                    encoding="utf-8",
+                )
             with contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
                     verifier.verify_compact_final_gate(root)
+
+    def test_activation_requires_exact_three_surface_agreement(self) -> None:
+        files = verifier.COMPACT_FINAL_ACTIVATION_FILES
+        all_enabled = (1 << len(files)) - 1
+        for mask in range(1 << len(files)):
+            with self.subTest(mask=mask), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                for index, relative in enumerate(files):
+                    path = root / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    marker = (
+                        verifier.COMPACT_FINAL_ACTIVATION_MARKER
+                        if mask & (1 << index)
+                        else verifier.COMPACT_FINAL_INACTIVE_MARKER
+                    )
+                    path.write_text(marker + "\n", encoding="utf-8")
+                if mask == 0:
+                    self.assertFalse(verifier.compact_final_witness_required(root))
+                elif mask == all_enabled:
+                    self.assertTrue(verifier.compact_final_witness_required(root))
+                else:
+                    with contextlib.redirect_stderr(io.StringIO()):
+                        with self.assertRaises(SystemExit):
+                            verifier.compact_final_witness_required(root)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for relative in files[:-1]:
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(
+                    verifier.COMPACT_FINAL_INACTIVE_MARKER + "\n",
+                    encoding="utf-8",
+                )
+            with contextlib.redirect_stderr(io.StringIO()):
+                with self.assertRaises(SystemExit):
+                    verifier.compact_final_witness_required(root)
+
+    def test_activation_rejects_missing_or_duplicate_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            paths = []
+            for relative in verifier.COMPACT_FINAL_ACTIVATION_FILES:
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(
+                    verifier.COMPACT_FINAL_INACTIVE_MARKER + "\n",
+                    encoding="utf-8",
+                )
+                paths.append(path)
+            for invalid in (
+                "CURRENT_PROJECTION=RUNNING\n",
+                "COMPACT_FINAL_WITNESS_REQUIRED=10\n",
+                (
+                    verifier.COMPACT_FINAL_INACTIVE_MARKER + "\n"
+                    + verifier.COMPACT_FINAL_ACTIVATION_MARKER + "\n"
+                ),
+                (verifier.COMPACT_FINAL_INACTIVE_MARKER + "\n") * 2,
+            ):
+                paths[0].write_text(invalid, encoding="utf-8")
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit):
+                        verifier.compact_final_witness_required(root)
 
     def test_present_gate_always_runs_owning_deterministic_rebuild(self) -> None:
         root = Path("bounded-test-root")

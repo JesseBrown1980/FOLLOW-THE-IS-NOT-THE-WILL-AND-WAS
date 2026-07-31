@@ -155,6 +155,7 @@ HISTORICAL_FOLDER_OIL_SNAPSHOT = (
 )
 COMPACT_FINAL_DIRECTORY = "matrix/timed-86400-flowes-x3x3-final"
 COMPACT_FINAL_ACTIVATION_MARKER = "COMPACT_FINAL_WITNESS_REQUIRED=1"
+COMPACT_FINAL_INACTIVE_MARKER = "COMPACT_FINAL_WITNESS_REQUIRED=0"
 COMPACT_FINAL_ACTIVATION_FILES = (
     "README.md",
     "matrix/README.md",
@@ -1271,11 +1272,22 @@ def verify_compact_final_deterministic_rebuild(
 
 
 def compact_final_witness_required(root: Path) -> bool:
-    return any(
-        COMPACT_FINAL_ACTIVATION_MARKER
-        in (root / relative).read_text(encoding="utf-8")
-        for relative in COMPACT_FINAL_ACTIVATION_FILES
-    )
+    states: list[bool] = []
+    for relative in COMPACT_FINAL_ACTIVATION_FILES:
+        path = root / relative
+        if not path.exists():
+            fail("compact_final_activation_file_missing:" + relative)
+        if path.is_symlink() or not path.is_file():
+            fail("compact_final_activation_file_shape:" + relative)
+        lines = path.read_text(encoding="utf-8").splitlines()
+        enabled = lines.count(COMPACT_FINAL_ACTIVATION_MARKER)
+        inactive = lines.count(COMPACT_FINAL_INACTIVE_MARKER)
+        if enabled + inactive != 1:
+            fail("compact_final_activation_marker_contract:" + relative)
+        states.append(enabled == 1)
+    if any(states) and not all(states):
+        fail("compact_final_activation_state_mismatch")
+    return all(states)
 
 
 def verify_compact_final_gate(root: Path) -> tuple[bool, bool]:
@@ -2102,6 +2114,10 @@ def main() -> None:
     for compact_final_binding in (
         "matrix/timed-86400-flowes-x3x3-final",
         COMPACT_FINAL_ACTIVATION_MARKER,
+        COMPACT_FINAL_INACTIVE_MARKER,
+        "final_enabled=0",
+        "final_disabled=0",
+        "COMPACT_FINAL_ACTIVATION|state=MISMATCH",
         "python matrix/finalize_timed_86400_flowes_x3x3.py verify-public",
         '"${RUNNER_TEMP}/folder-calming-oils-a"',
         "COMPACT_FINAL_OPTIONAL|state=ABSENT|json=0",

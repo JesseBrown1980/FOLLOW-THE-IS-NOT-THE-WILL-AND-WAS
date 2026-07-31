@@ -126,15 +126,32 @@ jobs:
         run: |
           final_dir="matrix/timed-86400-flowes-x3x3-final"
           final_required=0
+          final_enabled=0
+          final_disabled=0
           for marker_file in \
             README.md \
             matrix/README.md \
             matrix/3-D-GITHUB-OF-THRUTH.md
           do
-            if grep -Fq 'COMPACT_FINAL_WITNESS_REQUIRED=1' "${marker_file}"; then
-              final_required=1
+            if [ ! -f "${marker_file}" ] || [ -L "${marker_file}" ]; then
+              printf '%s\n' "COMPACT_FINAL_ACTIVATION|state=MISSING_OR_SYMLINK|file=${marker_file}|json=0" >&2
+              exit 1
             fi
+            enabled_count="$(grep -Fxc 'COMPACT_FINAL_WITNESS_REQUIRED=1' "${marker_file}" || true)"
+            disabled_count="$(grep -Fxc 'COMPACT_FINAL_WITNESS_REQUIRED=0' "${marker_file}" || true)"
+            if [ "$((enabled_count + disabled_count))" -ne 1 ]; then
+              printf '%s\n' "COMPACT_FINAL_ACTIVATION|state=MARKER_CONTRACT|file=${marker_file}|json=0" >&2
+              exit 1
+            fi
+            final_enabled="$((final_enabled + enabled_count))"
+            final_disabled="$((final_disabled + disabled_count))"
           done
+          if [ "${final_enabled}" -eq 3 ] && [ "${final_disabled}" -eq 0 ]; then
+            final_required=1
+          elif [ "${final_enabled}" -ne 0 ] || [ "${final_disabled}" -ne 3 ]; then
+            printf '%s\n' "COMPACT_FINAL_ACTIVATION|state=MISMATCH|enabled=${final_enabled}|disabled=${final_disabled}|json=0" >&2
+            exit 1
+          fi
           if [ -e "${final_dir}" ] || [ -L "${final_dir}" ]; then
             test -d "${final_dir}"
             test ! -L "${final_dir}"
