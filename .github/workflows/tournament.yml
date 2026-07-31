@@ -122,6 +122,32 @@ jobs:
           ASOLARIA_FLOWES_SOURCE_DIR="${RUNNER_TEMP}/folder-calming-oils-a" \
             python matrix/test_build_timed_86400_flowes_x3x3.py
 
+      - name: Verify the optional compact final FLOWes witness
+        run: |
+          final_dir="matrix/timed-86400-flowes-x3x3-final"
+          final_required=0
+          for marker_file in \
+            README.md \
+            matrix/README.md \
+            matrix/3-D-GITHUB-OF-THRUTH.md
+          do
+            if grep -Fq 'COMPACT_FINAL_WITNESS_REQUIRED=1' "${marker_file}"; then
+              final_required=1
+            fi
+          done
+          if [ -e "${final_dir}" ] || [ -L "${final_dir}" ]; then
+            test -d "${final_dir}"
+            test ! -L "${final_dir}"
+            python matrix/finalize_timed_86400_flowes_x3x3.py verify-public \
+              "${RUNNER_TEMP}/folder-calming-oils-a" \
+              "${final_dir}"
+          elif [ "${final_required}" -eq 1 ]; then
+            printf '%s\n' 'COMPACT_FINAL_OPTIONAL|state=REQUIRED_MISSING|json=0' >&2
+            exit 1
+          else
+            printf '%s\n' 'COMPACT_FINAL_OPTIONAL|state=ABSENT|json=0'
+          fi
+
       - name: Verify the 86,400-second FLOWes x3 x3 builder
         run: |
           mkdir "${RUNNER_TEMP}/flowes-x3x3-a"

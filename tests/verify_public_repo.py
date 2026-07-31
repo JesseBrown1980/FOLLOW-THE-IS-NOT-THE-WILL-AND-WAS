@@ -153,6 +153,65 @@ HISTORICAL_FOLDER_OIL_SNAPSHOT = (
     "matrix/PUBLIC-FOLDER-CALMING-OILS.svg",
     "matrix/PUBLIC-FOLDER-CALMING-OILS.gguf",
 )
+COMPACT_FINAL_DIRECTORY = "matrix/timed-86400-flowes-x3x3-final"
+COMPACT_FINAL_ACTIVATION_MARKER = "COMPACT_FINAL_WITNESS_REQUIRED=1"
+COMPACT_FINAL_ACTIVATION_FILES = (
+    "README.md",
+    "matrix/README.md",
+    "matrix/3-D-GITHUB-OF-THRUTH.md",
+)
+COMPACT_FINAL_JOURNAL = (
+    "TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-JOURNAL.hbp"
+)
+COMPACT_FINAL_HBP = "LIRIS-TIMED-86400-FLOWes-X3-X3-FINAL.hbp"
+COMPACT_FINAL_HBI = "LIRIS-TIMED-86400-FLOWes-X3-X3-FINAL.hbi"
+COMPACT_FINAL_ARTIFACTS = (
+    COMPACT_FINAL_JOURNAL,
+    COMPACT_FINAL_HBP,
+    COMPACT_FINAL_HBI,
+)
+COMPACT_FINAL_FILES = tuple(
+    name
+    for artifact in COMPACT_FINAL_ARTIFACTS
+    for name in (artifact, artifact + ".sha256")
+)
+COMPACT_FINAL_CHECKPOINTS = (
+    1, 2, 3, 4, 8, 16, 32, 64, 128, 256,
+    512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 86400,
+)
+COMPACT_FINAL_EXPANDED = (
+    (
+        "EXPANDED_HBP",
+        "TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbp",
+    ),
+    (
+        "EXPANDED_HBI",
+        "TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbi",
+    ),
+    (
+        "SVG",
+        "TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.svg",
+    ),
+    (
+        "GGUF",
+        "TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.gguf",
+    ),
+    (
+        "STDOUT_HBP",
+        "TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-STDOUT.hbp",
+    ),
+)
+COMPACT_FINAL_SAFE_BASENAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
+COMPACT_FINAL_ARTIFACT_ROOT_DOMAIN = (
+    "ASOLARIA-TIMED-86400-FLOWes-X3-X3-FINAL-V1.LOCAL-ARTIFACTS"
+)
+COMPACT_FINAL_PRIVATE_PATH = re.compile(
+    r"(?i)(?:[a-z]:[\\/]|[a-z]%3a(?:%5c|%2f)|/home/|/mnt/[a-z]/|"
+    r"\\\\|%5c%5c|file://)"
+)
+COMPACT_FINAL_CREDENTIAL_FIELD = re.compile(
+    r"(?i)(?:password|passwd|secret|token|api[_-]?key|private[_-]?key)="
+)
 MATRIX_CENTER = "HBI,HBP,SHA,SH,HASH"
 MATRIX_TRAVERSAL_ENCODED = "HBI-%3EHBP-%3ESH-%3EHASH-%3ESHA"
 MAX_GIT_FILE_LIST_BYTES = 4 * 1024 * 1024
@@ -298,6 +357,765 @@ def optional_snapshot_group_present(
         missing = [path.relative_to(ROOT).as_posix() for path in required if not path.is_file()]
         fail("historical_snapshot_partial:" + name + ":" + ",".join(missing))
     return len(present) == len(required)
+
+
+def strict_variable_tuple_receipt(
+    path: Path,
+    *,
+    footer_kind: str,
+    error_prefix: str,
+) -> tuple[bytes, list[str]]:
+    data = path.read_bytes()
+    if not data.endswith(b"\n") or b"\r" in data:
+        fail(error_prefix + "_lf_bytes")
+    try:
+        lines = data.decode("utf-8").splitlines()
+    except UnicodeError:
+        fail(error_prefix + "_utf8")
+    if len(lines) < 3 or any(not line.endswith("|json=0") for line in lines):
+        fail(error_prefix + "_row_contract")
+    body = ("\n".join(lines[:-1]) + "\n").encode("utf-8")
+    footer = strict_tuple_fields(lines[-1], footer_kind, error_prefix + "_footer")
+    if footer != {
+        "body_sha256": hashlib.sha256(body).hexdigest(),
+        "rows": str(len(lines)),
+        "json": "0",
+    }:
+        fail(error_prefix + "_footer_commitment")
+    return data, lines
+
+
+def require_exact_keys(
+    fields: dict[str, str], expected: set[str], error_prefix: str,
+) -> None:
+    if set(fields) != expected:
+        fail(error_prefix + "_field_set")
+
+
+def require_values(
+    fields: dict[str, str], expected: dict[str, str], error_prefix: str,
+) -> None:
+    if any(fields.get(key) != value for key, value in expected.items()):
+        fail(error_prefix + "_values")
+
+
+def strict_uint(value: str, error_prefix: str) -> int:
+    if re.fullmatch(r"0|[1-9][0-9]*", value) is None:
+        fail(error_prefix + "_uint")
+    return int(value)
+
+
+def require_sha256(value: str, error_prefix: str) -> None:
+    if re.fullmatch(r"[0-9a-f]{64}", value) is None:
+        fail(error_prefix + "_sha256")
+
+
+def compact_final_domain_hash(domain: str, *parts: object) -> str:
+    """Reproduce the launched builder's length-delimited SHA-256 domain hash."""
+    digest = hashlib.sha256()
+    domain_bytes = domain.encode("utf-8")
+    digest.update(len(domain_bytes).to_bytes(8, "big"))
+    digest.update(domain_bytes)
+    for part in parts:
+        raw = part if isinstance(part, bytes) else str(part).encode("utf-8")
+        digest.update(len(raw).to_bytes(8, "big"))
+        digest.update(raw)
+    return digest.hexdigest()
+
+
+def compact_final_checkpoint_hash(
+    source_hbp_sha256: str,
+    target_seconds: int,
+    checkpoint_i: int,
+    checkpoint_seconds: int,
+    session_i: int,
+    session_credited_seconds: int,
+    previous_hash: str,
+) -> str:
+    return compact_final_domain_hash(
+        (
+            "ASOLARIA-TIMED-86400-FOLDER-CALMING-OILS-"
+            "FLOWes-X3-X3-V2|JOURNAL_CHECKPOINT"
+        ),
+        source_hbp_sha256,
+        target_seconds,
+        checkpoint_i,
+        checkpoint_seconds,
+        session_i,
+        session_credited_seconds,
+        previous_hash,
+    )
+
+
+def compact_final_artifact_root(records: list[dict[str, str]]) -> str:
+    """Commit the five ordered expanded-artifact descriptors exactly as minted."""
+    digest = hashlib.sha256()
+    digest.update(COMPACT_FINAL_ARTIFACT_ROOT_DOMAIN.encode("utf-8") + b"\0")
+    for record in records:
+        digest.update(record["kind"].encode("utf-8") + b"\0")
+        digest.update(record["file"].encode("utf-8") + b"\0")
+        digest.update(record["bytes"].encode("ascii") + b"\0")
+        digest.update(record["sha256"].encode("ascii") + b"\n")
+    return digest.hexdigest()
+
+
+def require_safe_basename(value: str, error_prefix: str) -> None:
+    if (
+        COMPACT_FINAL_SAFE_BASENAME.fullmatch(value) is None
+        or value in {".", ".."}
+    ):
+        fail(error_prefix + "_basename")
+
+
+def verify_exact_sidecar(path: Path, error_prefix: str) -> None:
+    sidecar = path.with_name(path.name + ".sha256")
+    expected = f"{sha256(path)}  {path.name}\n".encode("utf-8")
+    if sidecar.read_bytes() != expected:
+        fail(error_prefix + "_sidecar")
+
+
+def reject_compact_final_private_material(data: bytes, error_prefix: str) -> None:
+    try:
+        text = data.decode("utf-8")
+    except UnicodeError:
+        fail(error_prefix + "_utf8")
+    if COMPACT_FINAL_PRIVATE_PATH.search(text):
+        fail(error_prefix + "_private_path")
+    if COMPACT_FINAL_CREDENTIAL_FIELD.search(text):
+        fail(error_prefix + "_credential_field")
+
+
+def verify_compact_final_journal(
+    path: Path,
+) -> tuple[bytes, dict[str, str], list[dict[str, str]], list[dict[str, str]]]:
+    data, lines = strict_variable_tuple_receipt(
+        path,
+        footer_kind="FLOWEX9JOURNALFTR",
+        error_prefix="compact_final_journal",
+    )
+    tags = tuple(line.split("|", 1)[0] for line in lines)
+    header = strict_tuple_fields(
+        lines[0], "FLOWEX9JOURNAL", "compact_final_journal_header",
+    )
+    require_exact_keys(
+        header,
+        {
+            "schema", "target_seconds", "timing_mode", "source_hbp_sha256",
+            "source_hbi_sha256", "sessions", "checkpoint_count",
+            "accumulated_seconds", "state", "network", "execution",
+            "authority", "physical_energy", "json",
+        },
+        "compact_final_journal_header",
+    )
+    require_values(
+        header,
+        {
+            "schema": (
+                "ASOLARIA-TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2"
+            ),
+            "target_seconds": "86400",
+            "timing_mode": "REAL_MONOTONIC",
+            "source_hbp_sha256": (
+                "43300780cac2b85e3ed6cfa10398052f530ccbf76c43b404e650c26c9ed8b006"
+            ),
+            "source_hbi_sha256": (
+                "9920d5cb2031d6453fba2d410e4b2f6e0136a4537fa6ea2ea9385c163503a28b"
+            ),
+            "checkpoint_count": "19",
+            "accumulated_seconds": "86400",
+            "state": "COMPLETE",
+            "network": "0",
+            "execution": "0",
+            "authority": "0",
+            "physical_energy": "0",
+            "json": "0",
+        },
+        "compact_final_journal_header",
+    )
+    session_count = strict_uint(header["sessions"], "compact_final_sessions")
+    if session_count < 1:
+        fail("compact_final_sessions_empty")
+    expected_tags = (
+        ("FLOWEX9JOURNAL",)
+        + ("SESSION",) * session_count
+        + ("CHECKPOINT",) * len(COMPACT_FINAL_CHECKPOINTS)
+        + ("BOUNDARY", "FLOWEX9JOURNALFTR")
+    )
+    if tags != expected_tags:
+        fail("compact_final_journal_row_order")
+
+    sessions: list[dict[str, str]] = []
+    for index, line in enumerate(lines[1:1 + session_count]):
+        row = strict_tuple_fields(
+            line, "SESSION", "compact_final_journal_session",
+        )
+        require_exact_keys(
+            row,
+            {
+                "i", "baseline_seconds", "wall_clock_credit",
+                "cross_process_gap_credit", "json",
+            },
+            "compact_final_journal_session",
+        )
+        require_values(
+            row,
+            {
+                "i": str(index), "wall_clock_credit": "0",
+                "cross_process_gap_credit": "0", "json": "0",
+            },
+            "compact_final_journal_session",
+        )
+        baseline = strict_uint(
+            row["baseline_seconds"], "compact_final_session_baseline",
+        )
+        if baseline > 86400:
+            fail("compact_final_session_baseline_range")
+        sessions.append(row)
+
+    checkpoint_start = 1 + session_count
+    checkpoints: list[dict[str, str]] = []
+    last_session = 0
+    previous_hash = compact_final_domain_hash(
+        header["schema"] + "|JOURNAL_GENESIS",
+        header["source_hbp_sha256"],
+        int(header["target_seconds"]),
+    )
+    for index, seconds in enumerate(COMPACT_FINAL_CHECKPOINTS):
+        row = strict_tuple_fields(
+            lines[checkpoint_start + index],
+            "CHECKPOINT",
+            "compact_final_journal_checkpoint",
+        )
+        require_exact_keys(
+            row,
+            {
+                "i", "checkpoint_seconds", "session_i",
+                "session_credited_seconds", "previous_hash", "checkpoint_hash",
+                "monotonic_session_only", "json",
+            },
+            "compact_final_journal_checkpoint",
+        )
+        require_values(
+            row,
+            {
+                "i": str(index), "checkpoint_seconds": str(seconds),
+                "monotonic_session_only": "1", "json": "0",
+            },
+            "compact_final_journal_checkpoint",
+        )
+        session_index = strict_uint(
+            row["session_i"], "compact_final_checkpoint_session",
+        )
+        if session_index >= session_count or session_index < last_session:
+            fail("compact_final_checkpoint_session_order")
+        last_session = session_index
+        baseline = strict_uint(
+            sessions[session_index]["baseline_seconds"],
+            "compact_final_checkpoint_baseline",
+        )
+        credited = strict_uint(
+            row["session_credited_seconds"],
+            "compact_final_checkpoint_credit",
+        )
+        if credited != seconds - baseline:
+            fail("compact_final_checkpoint_credit_value")
+        require_sha256(row["previous_hash"], "compact_final_checkpoint_previous")
+        require_sha256(row["checkpoint_hash"], "compact_final_checkpoint_hash")
+        if row["previous_hash"] != previous_hash:
+            fail("compact_final_checkpoint_previous_domain")
+        expected_checkpoint_hash = compact_final_checkpoint_hash(
+            header["source_hbp_sha256"],
+            int(header["target_seconds"]),
+            index,
+            seconds,
+            session_index,
+            credited,
+            previous_hash,
+        )
+        if row["checkpoint_hash"] != expected_checkpoint_hash:
+            fail("compact_final_checkpoint_domain_hash")
+        previous_hash = expected_checkpoint_hash
+        checkpoints.append(row)
+
+    if strict_uint(sessions[0]["baseline_seconds"], "compact_final_baseline") != 0:
+        fail("compact_final_first_session_baseline")
+    for session_index in range(1, session_count):
+        prior_seconds = [
+            int(row["checkpoint_seconds"])
+            for row in checkpoints
+            if int(row["session_i"]) < session_index
+        ]
+        if not prior_seconds or int(sessions[session_index]["baseline_seconds"]) != prior_seconds[-1]:
+            fail("compact_final_session_baseline_chain")
+
+    boundary = strict_tuple_fields(
+        lines[-2], "BOUNDARY", "compact_final_journal_boundary",
+    )
+    if boundary != {
+        "wall_clock": "0",
+        "supplied_start_time": "0",
+        "cross_process_gap_credit": "0",
+        "uncheckpointed_credit": "0",
+        "network": "0",
+        "execution": "0",
+        "authority": "0",
+        "physical_energy": "0",
+        "json": "0",
+    }:
+        fail("compact_final_journal_boundary_contract")
+    reject_compact_final_private_material(data, "compact_final_journal")
+    return data, header, sessions, checkpoints
+
+
+def verify_compact_final_hbp(
+    path: Path,
+    journal_data: bytes,
+    journal_header: dict[str, str],
+    sessions: list[dict[str, str]],
+    checkpoints: list[dict[str, str]],
+) -> tuple[bytes, str]:
+    lines = strict_tuple_receipt(
+        path,
+        rows=19,
+        footer_kind="LIRISFLOWEX9FINALFTR",
+        error_prefix="compact_final_hbp",
+    )
+    expected_tags = (
+        "LIRISFLOWEX9FINALHDR", "BUILDER", "SOURCE", "SOURCE",
+        "REGENERATOR", "JOURNAL", "CLOCK",
+        "LOCALARTIFACT", "LOCALARTIFACT", "LOCALARTIFACT",
+        "LOCALARTIFACT", "LOCALARTIFACT", "ARTIFACTROOT",
+        "REGENERATION", "SHAPE", "CENTER", "SUPERSEDES", "BOUNDARY",
+        "LIRISFLOWEX9FINALFTR",
+    )
+    if tuple(line.split("|", 1)[0] for line in lines) != expected_tags:
+        fail("compact_final_hbp_row_order")
+    header = strict_tuple_fields(
+        lines[0], "LIRISFLOWEX9FINALHDR", "compact_final_hbp_header",
+    )
+    if header != {
+        "schema": "ASOLARIA-TIMED-86400-FLOWes-X3-X3-FINAL-V1",
+        "evidence": "MEASURED_LIRIS_LOCAL",
+        "status": "COMPLETE",
+        "timing_mode": "REAL_MONOTONIC",
+        "target_seconds": "86400",
+        "checkpoints": "19",
+        "independent_time_attestation": "0",
+        "system_affirmed": "0",
+        "json": "0",
+    }:
+        fail("compact_final_hbp_header_contract")
+
+    builder = strict_tuple_fields(lines[1], "BUILDER", "compact_final_builder")
+    if builder != {
+        "repo": "JesseBrown1980%2FFOLLOW-THE-IS-NOT-THE-WILL-AND-WAS",
+        "commit": "cf4f760f943087d312894cef5a683d99fc0119df",
+        "path": "matrix%2Fbuild_timed_86400_flowes_x3x3.py",
+        "git_blob": "a38ffd2f5b00d2b0008c5be4265f173a1e2e926c",
+        "bytes": "65159",
+        "sha256": "8d63fb45f05cd411861e2cac7a1f8abaa352ffd26fc4af32ca21a921c4b507e1",
+        "sidecar_verified": "1",
+        "json": "0",
+    }:
+        fail("compact_final_builder_contract")
+
+    expected_sources = (
+        (
+            "HBP", "PUBLIC-FOLDER-CALMING-OILS.hbp",
+            "43300780cac2b85e3ed6cfa10398052f530ccbf76c43b404e650c26c9ed8b006",
+        ),
+        (
+            "HBI", "PUBLIC-FOLDER-CALMING-OILS.hbi",
+            "9920d5cb2031d6453fba2d410e4b2f6e0136a4537fa6ea2ea9385c163503a28b",
+        ),
+    )
+    for line, (kind, name, digest) in zip(lines[2:4], expected_sources):
+        row = strict_tuple_fields(line, "SOURCE", "compact_final_source")
+        require_exact_keys(
+            row,
+            {
+                "kind", "file", "bytes", "sha256", "source_mode",
+                "sidecar_verified", "json",
+            },
+            "compact_final_source",
+        )
+        require_values(
+            row,
+            {
+                "kind": kind, "file": name, "sha256": digest,
+                "source_mode": "ON_DEMAND", "sidecar_verified": "1",
+                "json": "0",
+            },
+            "compact_final_source",
+        )
+        require_safe_basename(row["file"], "compact_final_source_file")
+        if strict_uint(row["bytes"], "compact_final_source_bytes") < 1:
+            fail("compact_final_source_empty")
+    if (
+        journal_header["source_hbp_sha256"] != expected_sources[0][2]
+        or journal_header["source_hbi_sha256"] != expected_sources[1][2]
+    ):
+        fail("compact_final_source_journal_binding")
+
+    regenerator = strict_tuple_fields(
+        lines[4], "REGENERATOR", "compact_final_regenerator",
+    )
+    if regenerator != {
+        "input": "PUBLIC-FOLDER-3D-TREE.hbp",
+        "generator": "matrix%2Frust-qprism-181%2Fsrc%2Fbin%2Ffolder-calming-oils.rs",
+        "rust": "1.81.0",
+        "qprism_binding_hbp_sha256": (
+            "3c58554b0a9abd52f658ecc96cb115cb42da3e7642b06a989585da269128c3ff"
+        ),
+        "qprism_binding_hbi_sha256": (
+            "1514470eec0a3c6cd8ce091fabe08c33e136f7dd849f10c75e1f949e2a17c0d9"
+        ),
+        "preexpanded_source_required": "0",
+        "json": "0",
+    }:
+        fail("compact_final_regenerator_contract")
+
+    journal = strict_tuple_fields(lines[5], "JOURNAL", "compact_final_hbp_journal")
+    require_exact_keys(
+        journal,
+        {
+            "file", "bytes", "sha256", "sidecar_verified", "sessions",
+            "checkpoint_count", "accumulated_monotonic_session_seconds",
+            "final_checkpoint_seconds", "final_checkpoint_hash",
+            "wall_clock_credit", "cross_process_gap_credit",
+            "uncheckpointed_credit", "published", "json",
+        },
+        "compact_final_hbp_journal",
+    )
+    require_values(
+        journal,
+        {
+            "file": COMPACT_FINAL_JOURNAL,
+            "bytes": str(len(journal_data)),
+            "sha256": hashlib.sha256(journal_data).hexdigest(),
+            "sidecar_verified": "1",
+            "sessions": str(len(sessions)),
+            "checkpoint_count": "19",
+            "accumulated_monotonic_session_seconds": "86400",
+            "final_checkpoint_seconds": "86400",
+            "final_checkpoint_hash": checkpoints[-1]["checkpoint_hash"],
+            "wall_clock_credit": "0",
+            "cross_process_gap_credit": "0",
+            "uncheckpointed_credit": "0",
+            "published": "1",
+            "json": "0",
+        },
+        "compact_final_hbp_journal",
+    )
+    require_safe_basename(journal["file"], "compact_final_journal_file")
+
+    clock = strict_tuple_fields(lines[6], "CLOCK", "compact_final_clock")
+    if clock != {
+        "clock": "PYTHON_TIME_MONOTONIC_NS",
+        "owner": "SystemClock",
+        "timing_evidence": "MEASURED_MONOTONIC_SESSION_SECONDS",
+        "independent_time_attestation": "0",
+        "wall_clock_attestation": "0",
+        "json": "0",
+    }:
+        fail("compact_final_clock_contract")
+
+    local_artifacts: list[dict[str, str]] = []
+    for line, (kind, name) in zip(lines[7:12], COMPACT_FINAL_EXPANDED):
+        row = strict_tuple_fields(
+            line, "LOCALARTIFACT", "compact_final_local_artifact",
+        )
+        expected_keys = {
+            "kind", "file", "bytes", "sha256", "sidecar_verified",
+            "published", "regenerable", "json",
+        }
+        if kind == "SVG":
+            expected_keys.update({"static", "script", "network", "execution"})
+        if kind == "GGUF":
+            expected_keys.add("descriptor_only")
+        require_exact_keys(row, expected_keys, "compact_final_local_artifact")
+        require_values(
+            row,
+            {
+                "kind": kind, "file": name, "sidecar_verified": "1",
+                "published": "0", "regenerable": "1", "json": "0",
+            },
+            "compact_final_local_artifact",
+        )
+        require_safe_basename(row["file"], "compact_final_local_artifact_file")
+        if strict_uint(row["bytes"], "compact_final_local_artifact_bytes") < 1:
+            fail("compact_final_local_artifact_empty")
+        require_sha256(row["sha256"], "compact_final_local_artifact")
+        if kind == "SVG":
+            require_values(
+                row,
+                {"static": "1", "script": "0", "network": "0", "execution": "0"},
+                "compact_final_svg",
+            )
+        if kind == "GGUF" and row["descriptor_only"] != "1":
+            fail("compact_final_gguf_descriptor")
+        local_artifacts.append(row)
+
+    artifact_root = strict_tuple_fields(
+        lines[12], "ARTIFACTROOT", "compact_final_artifact_root",
+    )
+    require_exact_keys(
+        artifact_root,
+        {"algorithm", "domain", "order", "value", "json"},
+        "compact_final_artifact_root",
+    )
+    require_values(
+        artifact_root,
+        {
+            "algorithm": "SHA256_DOMAIN_UTF8_V1",
+            "domain": "ASOLARIA-TIMED-86400-FLOWes-X3-X3-FINAL-V1.LOCAL-ARTIFACTS",
+            "order": "EXPANDED_HBP,EXPANDED_HBI,SVG,GGUF,STDOUT_HBP",
+            "json": "0",
+        },
+        "compact_final_artifact_root",
+    )
+    require_sha256(artifact_root["value"], "compact_final_artifact_root")
+    if artifact_root["value"] != compact_final_artifact_root(local_artifacts):
+        fail("compact_final_artifact_root_recomputed")
+
+    regeneration = strict_tuple_fields(
+        lines[13], "REGENERATION", "compact_final_regeneration",
+    )
+    if regeneration != {
+        "inputs": "PINNED_BUILDER,ON_DEMAND_PUBLIC_SOURCE,FINAL_REAL_JOURNAL",
+        "runs": "2",
+        "a_equals_b": "1",
+        "a_equals_live": "1",
+        "expanded_artifacts": "5",
+        "a_equals_live_scope": "MINT_LOCAL_PROVENANCE",
+        "required_hidden_dependencies": "0",
+        "json": "0",
+    }:
+        fail("compact_final_regeneration_contract")
+
+    shape = strict_tuple_fields(lines[14], "SHAPE", "compact_final_shape")
+    if shape != {
+        "folders": "3536",
+        "families": "3",
+        "directions": "3",
+        "final_cells": "31824",
+        "checkpoints": "19",
+        "ring_summaries": "171",
+        "observation_limit": "60",
+        "json": "0",
+    }:
+        fail("compact_final_shape_contract")
+
+    center = strict_tuple_fields(lines[15], "CENTER", "compact_final_center")
+    require_exact_keys(
+        center,
+        {
+            "members", "traversal", "commitments_per_cell", "domain_separated",
+            "sha_equals_hash", "expanded_object_hash", "ring_commitment",
+            "cell_commitment", "json",
+        },
+        "compact_final_center",
+    )
+    require_values(
+        center,
+        {
+            "members": MATRIX_CENTER,
+            "traversal": MATRIX_TRAVERSAL_ENCODED,
+            "commitments_per_cell": "5",
+            "domain_separated": "1",
+            "sha_equals_hash": "0",
+            "json": "0",
+        },
+        "compact_final_center",
+    )
+    for field in ("expanded_object_hash", "ring_commitment", "cell_commitment"):
+        require_sha256(center[field], "compact_final_center_" + field)
+
+    supersedes = strict_tuple_fields(
+        lines[16], "SUPERSEDES", "compact_final_supersedes",
+    )
+    if supersedes != {
+        "historical_pointer": "TIMED-86400-FLOWes-X3-X3-RUNNING.hbi",
+        "historical_pointer_retained": "1",
+        "current_pointer": COMPACT_FINAL_HBI,
+        "json": "0",
+    }:
+        fail("compact_final_supersedes_contract")
+    require_safe_basename(
+        supersedes["historical_pointer"], "compact_final_historical_pointer",
+    )
+    require_safe_basename(
+        supersedes["current_pointer"], "compact_final_current_pointer",
+    )
+
+    boundary = strict_tuple_fields(lines[17], "BOUNDARY", "compact_final_boundary")
+    if boundary != {
+        "local_output_path": "0",
+        "private_paths": "0",
+        "credentials": "0",
+        "raw_console_published": "0",
+        "expanded_artifacts_published": "0",
+        "network": "0",
+        "execution_authority": "0",
+        "physical_energy": "0",
+        "independent_time_attestation": "0",
+        "system_affirmed": "0",
+        "json": "0",
+    }:
+        fail("compact_final_boundary_contract")
+    data = path.read_bytes()
+    reject_compact_final_private_material(data, "compact_final_hbp")
+    return data, artifact_root["value"]
+
+
+def verify_compact_final_hbi(
+    path: Path,
+    journal_data: bytes,
+    final_hbp_data: bytes,
+    artifact_root: str,
+) -> bytes:
+    lines = strict_tuple_receipt(
+        path,
+        rows=6,
+        footer_kind="FLOWEX9FINALIDXFTR",
+        error_prefix="compact_final_hbi",
+    )
+    if tuple(line.split("|", 1)[0] for line in lines) != (
+        "FLOWEX9FINALIDX", "PUBLIC", "REGENERATION", "CENTER", "BOUNDARY",
+        "FLOWEX9FINALIDXFTR",
+    ):
+        fail("compact_final_hbi_row_order")
+    index = strict_tuple_fields(lines[0], "FLOWEX9FINALIDX", "compact_final_hbi_index")
+    if index != {
+        "schema": "ASOLARIA-TIMED-86400-FLOWes-X3-X3-FINAL-V1",
+        "status": "COMPLETE",
+        "hbp_file": COMPACT_FINAL_HBP,
+        "hbp_bytes": str(len(final_hbp_data)),
+        "hbp_sha256": hashlib.sha256(final_hbp_data).hexdigest(),
+        "journal_file": COMPACT_FINAL_JOURNAL,
+        "journal_bytes": str(len(journal_data)),
+        "journal_sha256": hashlib.sha256(journal_data).hexdigest(),
+        "artifact_root_sha256": artifact_root,
+        "json": "0",
+    }:
+        fail("compact_final_hbi_index_contract")
+    require_safe_basename(index["hbp_file"], "compact_final_hbi_hbp_file")
+    require_safe_basename(index["journal_file"], "compact_final_hbi_journal_file")
+
+    public = strict_tuple_fields(lines[1], "PUBLIC", "compact_final_hbi_public")
+    if public != {
+        "journal": "1",
+        "final_hbp": "1",
+        "final_hbi": "1",
+        "expanded_hbp": "0",
+        "expanded_hbi": "0",
+        "svg": "0",
+        "gguf": "0",
+        "stdout_hbp": "0",
+        "json": "0",
+    }:
+        fail("compact_final_hbi_public_contract")
+
+    regeneration = strict_tuple_fields(
+        lines[2], "REGENERATION", "compact_final_hbi_regeneration",
+    )
+    if regeneration != {
+        "builder_commit": "cf4f760f943087d312894cef5a683d99fc0119df",
+        "builder_sha256": "8d63fb45f05cd411861e2cac7a1f8abaa352ffd26fc4af32ca21a921c4b507e1",
+        "source_hbp_sha256": (
+            "43300780cac2b85e3ed6cfa10398052f530ccbf76c43b404e650c26c9ed8b006"
+        ),
+        "source_hbi_sha256": (
+            "9920d5cb2031d6453fba2d410e4b2f6e0136a4537fa6ea2ea9385c163503a28b"
+        ),
+        "regenerable": "1",
+        "required_hidden_dependencies": "0",
+        "json": "0",
+    }:
+        fail("compact_final_hbi_regeneration_contract")
+
+    center = strict_tuple_fields(lines[3], "CENTER", "compact_final_hbi_center")
+    if center != {
+        "members": MATRIX_CENTER,
+        "traversal": MATRIX_TRAVERSAL_ENCODED,
+        "sha_equals_hash": "0",
+        "json": "0",
+    }:
+        fail("compact_final_hbi_center_contract")
+
+    boundary = strict_tuple_fields(lines[4], "BOUNDARY", "compact_final_hbi_boundary")
+    if boundary != {
+        "local_output_path": "0",
+        "private_paths": "0",
+        "credentials": "0",
+        "independent_time_attestation": "0",
+        "system_affirmed": "0",
+        "json": "0",
+    }:
+        fail("compact_final_hbi_boundary_contract")
+    data = path.read_bytes()
+    reject_compact_final_private_material(data, "compact_final_hbi")
+    return data
+
+
+def optional_compact_final_witness_present(final_dir: Path) -> bool:
+    if not final_dir.exists() and not final_dir.is_symlink():
+        return False
+    if final_dir.is_symlink() or not final_dir.is_dir():
+        fail("compact_final_directory_shape")
+    entries = tuple(final_dir.iterdir())
+    if any(path.is_symlink() or not path.is_file() for path in entries):
+        fail("compact_final_non_file")
+    actual_names = {path.name for path in entries}
+    expected_names = set(COMPACT_FINAL_FILES)
+    if actual_names != expected_names or len(entries) != len(COMPACT_FINAL_FILES):
+        missing = sorted(expected_names - actual_names)
+        extra = sorted(actual_names - expected_names)
+        fail(
+            "compact_final_partial:missing=" + ",".join(missing)
+            + ":extra=" + ",".join(extra)
+        )
+    for name in COMPACT_FINAL_ARTIFACTS:
+        require_safe_basename(name, "compact_final_public_name")
+        verify_exact_sidecar(final_dir / name, "compact_final_" + name)
+
+    journal_data, journal_header, sessions, checkpoints = (
+        verify_compact_final_journal(final_dir / COMPACT_FINAL_JOURNAL)
+    )
+    final_hbp_data, artifact_root = verify_compact_final_hbp(
+        final_dir / COMPACT_FINAL_HBP,
+        journal_data,
+        journal_header,
+        sessions,
+        checkpoints,
+    )
+    verify_compact_final_hbi(
+        final_dir / COMPACT_FINAL_HBI,
+        journal_data,
+        final_hbp_data,
+        artifact_root,
+    )
+    # This gate proves byte/tuple structure only. The owning finalizer performs the
+    # deterministic rebuild; neither gate independently attests elapsed time.
+    return True
+
+
+def compact_final_witness_required(root: Path) -> bool:
+    return any(
+        COMPACT_FINAL_ACTIVATION_MARKER
+        in (root / relative).read_text(encoding="utf-8")
+        for relative in COMPACT_FINAL_ACTIVATION_FILES
+    )
+
+
+def verify_compact_final_gate(root: Path) -> tuple[bool, bool]:
+    required = compact_final_witness_required(root)
+    present = optional_compact_final_witness_present(
+        root / COMPACT_FINAL_DIRECTORY
+    )
+    if required and not present:
+        fail("compact_final_required_missing")
+    return present, required
 
 
 def verify_qprism_on_demand_binding() -> None:
@@ -835,6 +1653,15 @@ def main() -> None:
     ):
         if rust_binding not in workflow_text:
             fail("workflow_rust_181_binding_missing")
+    for compact_final_binding in (
+        "matrix/timed-86400-flowes-x3x3-final",
+        COMPACT_FINAL_ACTIVATION_MARKER,
+        "python matrix/finalize_timed_86400_flowes_x3x3.py verify-public",
+        '"${RUNNER_TEMP}/folder-calming-oils-a"',
+        "COMPACT_FINAL_OPTIONAL|state=ABSENT|json=0",
+    ):
+        if compact_final_binding not in workflow_text:
+            fail("workflow_compact_final_binding_missing")
 
     for relative in MATRIX_PRIMARY:
         path = ROOT / relative
@@ -849,6 +1676,9 @@ def main() -> None:
     )
     folder_oil_snapshot_present = optional_snapshot_group_present(
         "PUBLIC_FOLDER_CALMING_OILS", HISTORICAL_FOLDER_OIL_SNAPSHOT,
+    )
+    compact_final_witness_present, compact_final_required = (
+        verify_compact_final_gate(ROOT)
     )
     verify_snow_on_demand_selector()
 
@@ -2602,6 +3432,9 @@ def main() -> None:
         f"|receipts={len(receipts)}"
         f"|named_sidecars={len(named_sidecars)}"
         f"|workflow_pins={len(WORKFLOW_ACTION_PINS)}"
+        f"|compact_final_structural={int(compact_final_witness_present)}"
+        f"|compact_final_required={int(compact_final_required)}"
+        "|compact_final_independent_time_attestation=0"
         "|source_video_bytes=0"
         "|secret_findings=0"
         "|default_binding_contradictions=0"
