@@ -604,7 +604,9 @@ def verify_snow_on_demand_selector() -> None:
         "other_label": "OTHER",
         "anti_other_label": "ANTI_OTHER",
         "anti_anti_other_label": "ANTI_ANTI_OTHER",
-        "identities": "4",
+        "family_labels": "4",
+        "logical_identity_ceiling": "0",
+        "n_level_open": "1",
         "identity_exchange": "0",
         "key_material_embedded": "0",
         "credentials": "0",
@@ -623,7 +625,11 @@ def verify_snow_on_demand_selector() -> None:
             "anti_anti_other_label",
         )
     )
-    if len(set(key_labels)) != 4:
+    if (
+        len(set(key_labels)) != int(expected_keyspace["family_labels"])
+        or expected_keyspace["logical_identity_ceiling"] != "0"
+        or expected_keyspace["n_level_open"] != "1"
+    ):
         fail("snow_selector_keyspace_identity")
 
     expected_qprism = {
@@ -719,7 +725,9 @@ def verify_snow_on_demand_selector() -> None:
         "sign_coordinate": expected_selector["sign_coordinate"],
         "zero_coordinate": expected_selector["zero_coordinate"],
         "matrix_coordinate": expected_selector["matrix_coordinate"],
-        "key_identities": expected_keyspace["identities"],
+        "key_family_labels": expected_keyspace["family_labels"],
+        "logical_identity_ceiling": expected_keyspace["logical_identity_ceiling"],
+        "n_level_open": expected_keyspace["n_level_open"],
         "mode": "ON_DEMAND",
         "fixed_projection_required": "0",
         "json": "0",
