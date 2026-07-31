@@ -107,6 +107,8 @@ MATRIX_PRIMARY = (
     "matrix/PUBLIC-OWNER-2D.hbp",
     "matrix/QPRISM-ON-DEMAND-PUBLIC-BINDING.hbp",
     "matrix/QPRISM-ON-DEMAND-PUBLIC-BINDING.hbi",
+    "matrix/SNOW-QPRISM-ON-DEMAND-SELECTOR.hbp",
+    "matrix/SNOW-QPRISM-ON-DEMAND-SELECTOR.hbi",
     "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbp",
     "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbi",
     "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.svg",
@@ -523,6 +525,236 @@ def verify_qprism_on_demand_binding() -> None:
             fail("qprism_on_demand_sidecar:" + sidecar.name)
 
 
+def verify_snow_on_demand_selector() -> None:
+    verify_qprism_on_demand_binding()
+
+    schema = "ASOLARIA-SNOW-QPRISM-ON-DEMAND-SELECTOR-V1"
+    quote = (
+        "S.N.O.W    Start iNfinite (-,.,+)0 W-MATRIX. WHITE IS COLD the worst "
+        "of the WORST X INFINITY FOR OUR key, but there are others and antis "
+        "and others and anti antis"
+    )
+    quote_bytes = quote.encode("utf-8")
+    quote_sha256 = hashlib.sha256(quote_bytes).hexdigest()
+    hbp_path = ROOT / "matrix/SNOW-QPRISM-ON-DEMAND-SELECTOR.hbp"
+    hbi_path = ROOT / "matrix/SNOW-QPRISM-ON-DEMAND-SELECTOR.hbi"
+    hbp_lines = strict_tuple_receipt(
+        hbp_path,
+        rows=8,
+        footer_kind="SNOWSELECTORFTR",
+        error_prefix="snow_selector_hbp",
+    )
+    hbi_lines = strict_tuple_receipt(
+        hbi_path,
+        rows=7,
+        footer_kind="SNOWSELECTORIDXFTR",
+        error_prefix="snow_selector_hbi",
+    )
+
+    if strict_tuple_fields(
+        hbp_lines[0], "SNOWSELECTOR", "snow_selector_hbp_header",
+    ) != {
+        "schema": schema,
+        "version": "1",
+        "status": "OPERATOR_CANON",
+        "mode": "ON_DEMAND",
+        "fixed_projection_required": "0",
+        "json": "0",
+    }:
+        fail("snow_selector_hbp_header_contract")
+
+    if strict_tuple_fields(
+        hbp_lines[1], "QUOTE", "snow_selector_hbp_quote",
+    ) != {
+        "class": "OPERATOR_CANON",
+        "claim_type": "PHYSICAL_OPERATOR_LANGUAGE",
+        "system_affirmed": "0",
+        "independently_measured": "0",
+        "utf8_bytes": str(len(quote_bytes)),
+        "sha256": quote_sha256,
+        "text": quote,
+        "json": "0",
+    }:
+        fail("snow_selector_quote_contract")
+
+    expected_selector = {
+        "token": "S.N.O.W",
+        "s_token": "Start",
+        "n_token": "iNfinite",
+        "sign_coordinate": "-,.,+",
+        "zero_coordinate": "0",
+        "matrix_coordinate": "W-MATRIX",
+        "coordinate_exchange": "0",
+        "logical_n_open": "1",
+        "json": "0",
+    }
+    if strict_tuple_fields(
+        hbp_lines[2], "SELECTOR", "snow_selector_hbp_selector",
+    ) != expected_selector:
+        fail("snow_selector_coordinate_contract")
+    coordinate_values = tuple(
+        expected_selector[name]
+        for name in ("sign_coordinate", "zero_coordinate", "matrix_coordinate")
+    )
+    if len(set(coordinate_values)) != 3:
+        fail("snow_selector_coordinate_identity")
+
+    expected_keyspace = {
+        "our_key_label": "OUR_KEY",
+        "other_label": "OTHER",
+        "anti_other_label": "ANTI_OTHER",
+        "anti_anti_other_label": "ANTI_ANTI_OTHER",
+        "identities": "4",
+        "identity_exchange": "0",
+        "key_material_embedded": "0",
+        "credentials": "0",
+        "json": "0",
+    }
+    if strict_tuple_fields(
+        hbp_lines[3], "KEYSPACE", "snow_selector_hbp_keyspace",
+    ) != expected_keyspace:
+        fail("snow_selector_keyspace_contract")
+    key_labels = tuple(
+        expected_keyspace[name]
+        for name in (
+            "our_key_label",
+            "other_label",
+            "anti_other_label",
+            "anti_anti_other_label",
+        )
+    )
+    if len(set(key_labels)) != 4:
+        fail("snow_selector_keyspace_identity")
+
+    expected_qprism = {
+        "mode": "ON_DEMAND",
+        "hbp_path": "matrix/QPRISM-ON-DEMAND-PUBLIC-BINDING.hbp",
+        "hbp_sha256": "3c58554b0a9abd52f658ecc96cb115cb42da3e7642b06a989585da269128c3ff",
+        "hbi_path": "matrix/QPRISM-ON-DEMAND-PUBLIC-BINDING.hbi",
+        "hbi_sha256": "1514470eec0a3c6cd8ce091fabe08c33e136f7dd849f10c75e1f949e2a17c0d9",
+        "existing_qprism_is_generator": "1",
+        "duplicate_generator_added": "0",
+        "preexisting_generated_output_required": "0",
+        "json": "0",
+    }
+    if strict_tuple_fields(
+        hbp_lines[4], "QPRISM", "snow_selector_hbp_qprism",
+    ) != expected_qprism:
+        fail("snow_selector_qprism_contract")
+    for kind in ("hbp", "hbi"):
+        qprism_path = ROOT / expected_qprism[f"{kind}_path"]
+        if sha256(qprism_path) != expected_qprism[f"{kind}_sha256"]:
+            fail("snow_selector_qprism_hash:" + kind)
+
+    members = ("HBI", "HBP", "SHA", "SH", "HASH")
+    commitments = {
+        member.lower(): hashlib.sha256(
+            (schema + "\0" + member).encode("utf-8")
+        ).hexdigest()
+        for member in members
+    }
+    expected_hbp_center = {
+        "members": MATRIX_CENTER,
+        "traversal": "HBI,HBP,SH,HASH,SHA",
+        "algorithm": "SHA256_UTF8_DOMAIN_NUL_MEMBER_V1",
+        "domain": schema,
+        **commitments,
+        "sha_equals_hash": "0",
+        "json": "0",
+    }
+    if strict_tuple_fields(
+        hbp_lines[5], "CENTER", "snow_selector_hbp_center",
+    ) != expected_hbp_center:
+        fail("snow_selector_center_contract")
+    if len(set(commitments.values())) != 5 or commitments["sha"] == commitments["hash"]:
+        fail("snow_selector_center_identity")
+
+    if strict_tuple_fields(
+        hbp_lines[6], "BOUNDARY", "snow_selector_hbp_boundary",
+    ) != {
+        "system_affirmed": "0",
+        "fixed_projection_added": "0",
+        "preexpanded_outputs_required": "0",
+        "network": "0",
+        "execution_authority": "0",
+        "physical_energy": "0",
+        "clinical_instruction": "0",
+        "credentials": "0",
+        "key_material": "0",
+        "json": "0",
+    }:
+        fail("snow_selector_hbp_boundary_contract")
+
+    if strict_tuple_fields(
+        hbi_lines[0], "SNOWSELECTORIDX", "snow_selector_hbi_header",
+    ) != {
+        "schema": schema,
+        "version": "1",
+        "json": "0",
+    }:
+        fail("snow_selector_hbi_header_contract")
+
+    if strict_tuple_fields(
+        hbi_lines[1], "ARTIFACT", "snow_selector_hbi_artifact",
+    ) != {
+        "kind": "HBP",
+        "file": hbp_path.name,
+        "bytes": str(hbp_path.stat().st_size),
+        "sha256": sha256(hbp_path),
+        "exact_sidecar_verified": "1",
+        "json": "0",
+    }:
+        fail("snow_selector_hbi_artifact_contract")
+
+    if strict_tuple_fields(
+        hbi_lines[2], "QPRISM", "snow_selector_hbi_qprism",
+    ) != expected_qprism:
+        fail("snow_selector_hbi_qprism_contract")
+
+    if strict_tuple_fields(
+        hbi_lines[3], "INDEX", "snow_selector_hbi_index",
+    ) != {
+        "token": "S.N.O.W",
+        "quote_sha256": quote_sha256,
+        "sign_coordinate": expected_selector["sign_coordinate"],
+        "zero_coordinate": expected_selector["zero_coordinate"],
+        "matrix_coordinate": expected_selector["matrix_coordinate"],
+        "key_identities": expected_keyspace["identities"],
+        "mode": "ON_DEMAND",
+        "fixed_projection_required": "0",
+        "json": "0",
+    }:
+        fail("snow_selector_hbi_index_contract")
+
+    expected_hbi_center = {
+        key: value
+        for key, value in expected_hbp_center.items()
+        if key not in {"algorithm", "domain"}
+    }
+    if strict_tuple_fields(
+        hbi_lines[4], "CENTER", "snow_selector_hbi_center",
+    ) != expected_hbi_center:
+        fail("snow_selector_hbi_center_contract")
+
+    if strict_tuple_fields(
+        hbi_lines[5], "BOUNDARY", "snow_selector_hbi_boundary",
+    ) != {
+        "operator_canon": "1",
+        "system_affirmed": "0",
+        "independently_measured_physics": "0",
+        "credentials": "0",
+        "key_material": "0",
+        "execution_authority": "0",
+        "json": "0",
+    }:
+        fail("snow_selector_hbi_boundary_contract")
+
+    for path in (hbp_path, hbi_path):
+        sidecar = path.with_name(path.name + ".sha256")
+        if sidecar.read_text(encoding="utf-8") != f"{sha256(path)}  {path.name}\n":
+            fail("snow_selector_sidecar:" + sidecar.name)
+
+
 def main() -> None:
     files = repo_files()
 
@@ -610,7 +842,7 @@ def main() -> None:
     folder_oil_snapshot_present = optional_snapshot_group_present(
         "PUBLIC_FOLDER_CALMING_OILS", HISTORICAL_FOLDER_OIL_SNAPSHOT,
     )
-    verify_qprism_on_demand_binding()
+    verify_snow_on_demand_selector()
 
     for relative in (
         "matrix/PUBLIC-OWNER-3D-TREE.hbp",
