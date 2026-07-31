@@ -144,6 +144,33 @@ per folder and a descriptor-only GGUF with dimensions
 matched all eight output and sidecar byte strings. These color/OIL names are
 operator-canon software labels; `SYSTEM_AFFIRMED=0`.
 
+## Timed folder FLOWes ×3 ×3 V2
+
+The [public V17 law](../knowledge/PUBLIC-LAW-V17-TIMED-86400-FLOWes-X3-X3.md),
+[builder](build_timed_86400_flowes_x3x3.py), and
+[focused tests](test_build_timed_86400_flowes_x3x3.py) bind the full follow-on
+shape without exchanging it with the completed aggregate parent day:
+
+```text
+SOURCE = PUBLIC-FOLDER-CALMING-OILS.{HBP,HBI}
+FOLDERS = 3536
+FAMILIES = 3
+DIRECTIONS = 3
+FINAL_CELLS = 31824
+CHECKPOINTS = 19
+RING_SUMMARIES = 171
+CENTER = {HBI,HBP,SHA,SH,HASH}
+TRAVERSAL = HBI -> HBP -> SH -> HASH -> SHA
+REAL_MONOTONIC_86400 = READY_NOT_STARTED
+SYSTEM_AFFIRMED = 0
+```
+
+Windows and Ubuntu pass the same focused suite and deep-verify an identical full
+deterministic fixture. The fixture is labeled `DETERMINISTIC_FAKE_CLOCK`; it is
+not the measured day. Only the SystemClock-owned CLI watch can mint the separate
+real-monotonic evidence, using a restart journal, an OS-held single-writer lock,
+and zero credit for wall-clock gaps or uncheckpointed seconds.
+
 ## READ-FIRST carry
 
 The stable link on this file's first line is mirrored through file-type-safe AI entrypoints

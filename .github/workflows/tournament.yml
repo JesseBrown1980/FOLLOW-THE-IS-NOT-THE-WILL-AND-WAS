@@ -46,6 +46,7 @@ jobs:
           python matrix/test_spherical_public_projection.py
           python matrix/test_render_public_spherical_svg.py
           python matrix/test_timed_chiral_gguf_monitor.py
+          python matrix/test_build_timed_86400_flowes_x3x3.py
           python matrix/spherical_public_projection.py verify matrix/PUBLIC-SPHERICAL-PROJECTION.hbp
 
       - name: Verify the exact-integer QPRISM color canopy
@@ -109,6 +110,40 @@ jobs:
           do
             cmp "${RUNNER_TEMP}/folder-calming-oils-a/${name}" "${RUNNER_TEMP}/folder-calming-oils-b/${name}"
             cmp "${RUNNER_TEMP}/folder-calming-oils-a/${name}" "matrix/${name}"
+          done
+
+      - name: Verify the 86,400-second FLOWes x3 x3 builder
+        run: |
+          mkdir "${RUNNER_TEMP}/flowes-x3x3-a"
+          mkdir "${RUNNER_TEMP}/flowes-x3x3-b"
+          for output in \
+            "${RUNNER_TEMP}/flowes-x3x3-a" \
+            "${RUNNER_TEMP}/flowes-x3x3-b"
+          do
+            python matrix/build_timed_86400_flowes_x3x3.py \
+              matrix \
+              "${output}" \
+              --fake-clock-build
+            python matrix/build_timed_86400_flowes_x3x3.py \
+              matrix \
+              "${output}" \
+              --verify
+          done
+          for name in \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbp \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbp.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbi \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbi.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.svg \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.svg.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.gguf \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.gguf.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-STDOUT.hbp \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-STDOUT.hbp.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-JOURNAL.hbp \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-JOURNAL.hbp.sha256
+          do
+            cmp "${RUNNER_TEMP}/flowes-x3x3-a/${name}" "${RUNNER_TEMP}/flowes-x3x3-b/${name}"
           done
 
       - name: Run the fixed public tournament

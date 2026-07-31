@@ -47,6 +47,15 @@ READ-FIRST: https://github.com/JesseBrown1980/FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS
   `CALMING_OILS=BROWN.NEAR.ONE` as a symbolic software-routing label and preserve
   candidates in `HELD_FOR_REVIEW` until their parser, commitment, allowlist, and
   owning gate pass.
+- Timed FLOWes anti-substitution correction (ACCEPTED_BY_OPERATOR 2026-07-31):
+  the completed 86,400-second `c8c3` aggregate monitor is a
+  `VALID_PARENT_WITNESS` with `full_x3_x3=0`; it cannot satisfy the independent
+  folder target. The full target is exactly `3536 folders * 3 families * 3
+  directions = 31824 cells`, `19 checkpoints * 9 axes = 171 rings`, and five
+  domain-separated `{HBI,HBP,SHA,SH,HASH}` commitments per cell. Keep
+  deterministic fake-clock parity, real SystemClock timing, and system affirmation
+  as separate evidence axes. A restart credits only the last sealed checkpoint,
+  and one OS-held writer lock must cover each mutable output directory.
 
 ## Brown Wave Projection
 

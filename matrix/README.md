@@ -96,6 +96,32 @@ The reviewed immutable run is now committed as `TIMED-CHIRAL-MONITOR.hbi`,
 bound to the unchanged `f3a9ade5...` V1 PUBLIC2D source and reproduces byte for
 byte from a deterministic 7,200-second completion calculation.
 
+### Completed 86,400-second parent witness
+
+`timed-86400-parent-c8c3/` seals the completed real-monotonic one-day parent run
+over the unchanged `c8c3a6ba...` public media-position source. Its normalized
+trace contains all 19 scheduled checkpoints through 86,400 seconds; the final
+HBP, HBI, and 2,200-byte descriptor-only GGUF match a deterministic completion
+rebuild byte for byte.
+
+This stratum is explicitly `VALID_PARENT_WITNESS` with `full_x3_x3=0`. It has one
+aggregate spherical-outward row per checkpoint. It does not claim the separate
+full folder target of three calming-OIL families by three signed directions. That
+31,824-cell follow-on remains pending its own restart-aware 86,400-second run and
+publication gate; the valid parent bytes remain unchanged.
+
+The additive V2 builder is `build_timed_86400_flowes_x3x3.py`, with focused
+corruption/restart/locking tests in `test_build_timed_86400_flowes_x3x3.py`. It
+expands all 3,536 folders through three families and three directions, creates
+31,824 five-commitment cells, and chains 171 per-level ring summaries. The real
+watch is fixed to a SystemClock-owned 86,400 seconds; deterministic CI output is
+separately labeled and cannot claim measured timing. Before the exact public
+builder commit is launched, the real-run state remains `READY_NOT_STARTED`.
+
+```bash
+python matrix/build_timed_86400_flowes_x3x3.py matrix OUTPUT_DIR --watch
+```
+
 The additive media V2 capture leaves that V1 source unchanged. It classifies
 public Git-tree blob paths by extension and publishes only per-repository counts,
 declared Git-object byte totals, unknown-size counts, and commitments. It stores

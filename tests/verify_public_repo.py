@@ -77,9 +77,22 @@ WORKFLOW_ACTION_PINS = {
     "actions/setup-node": "49933ea5288caeca8642d1e84afbd3f7d6820020",
     "actions/upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02",
 }
+TIMED_PARENT_86400_HASHES = {
+    "matrix/timed-86400-parent-c8c3/LIRIS-TIMED-86400-ACTUAL-RUN.hbp":
+        "b46e042c3c00b01f38a0cf2d265330a6a77f7af0d3eb8d1b846ba6ef098e637b",
+    "matrix/timed-86400-parent-c8c3/TIMED-CHIRAL-CHECKPOINTS.hbp":
+        "54a0fedf1b644a342ac64c2bff02419d47888eb453792176c2bafee5d5200527",
+    "matrix/timed-86400-parent-c8c3/TIMED-CHIRAL-MONITOR.hbi":
+        "021706ed59574a4c8d6ce8b450fc170e79370279bf503c4239ad1b6960192ed4",
+    "matrix/timed-86400-parent-c8c3/TIMED-CHIRAL-MONITOR.hbp":
+        "1d21681b15ca76b956236876ef0ca463dcab3ca190e8de0223bdea68bc914918",
+    "matrix/timed-86400-parent-c8c3/TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf":
+        "6afb6229fd2fa23e2dc38c37a31ac9a035b9cddfea2b12bdae1470b03af4425a",
+}
 MATRIX_PRIMARY = (
     "matrix/3-D-GITHUB-OF-THRUTH.md",
     "matrix/build_3d_github_harness.py",
+    "matrix/build_timed_86400_flowes_x3x3.py",
     "matrix/collect_public_folder_inventory.py",
     "matrix/collect_public_owner_inventory.py",
     "matrix/GITHUB-THREE-DIMENSIONALLY-RIMED-2026-07-29.hbp",
@@ -123,10 +136,12 @@ MATRIX_PRIMARY = (
     "matrix/test_render_public_spherical_svg.py",
     "matrix/test_spherical_public_projection.py",
     "matrix/test_timed_chiral_gguf_monitor.py",
+    "matrix/test_build_timed_86400_flowes_x3x3.py",
     "matrix/TIMED-CHIRAL-MONITOR.hbi",
     "matrix/TIMED-CHIRAL-MONITOR.hbp",
     "matrix/TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf",
     "matrix/timed_chiral_gguf_monitor.py",
+    *TIMED_PARENT_86400_HASHES,
     "matrix/verify_3d_github_harness.py",
 )
 MATRIX_CENTER = "HBI,HBP,SHA,SH,HASH"
@@ -598,6 +613,23 @@ def main() -> None:
         descriptor_bytes,
         verify_gguf,
     )
+    from build_timed_86400_flowes_x3x3 import (  # noqa: PLC0415
+        CENTER_MEMBERS as FLOWE_CENTER_MEMBERS,
+        CENTER_TRAVERSAL as FLOWE_CENTER_TRAVERSAL,
+        DIRECTIONS as FLOWE_DIRECTIONS,
+        FAMILIES as FLOWE_FAMILIES,
+        OBSERVATION_LIMIT as FLOWE_OBSERVATION_LIMIT,
+        TARGET_SECONDS as FLOWE_TARGET_SECONDS,
+        build_cells as build_flowe_cells,
+        build_rings as build_flowe_rings,
+        cell_row as flowe_cell_row,
+        fake_complete_journal as fake_complete_flowe_journal,
+        journal_bytes as flowe_journal_bytes,
+        load_source as load_flowe_source,
+        parse_journal_bytes as parse_flowe_journal_bytes,
+        ring_row as flowe_ring_row,
+        schedule as flowe_schedule,
+    )
 
     timed_source = ROOT / "matrix/PUBLIC-OWNER-2D.hbp"
     timed_source_sha = sha256(timed_source)
@@ -643,6 +675,342 @@ def main() -> None:
         or not timed_hbi.endswith("|json=0\n")
     ):
         fail("timed_hbi_binding")
+
+    flowe_source = load_flowe_source(ROOT / "matrix")
+    flowe_checkpoints = flowe_schedule(FLOWE_TARGET_SECONDS)
+    expected_flowe_checkpoints = (
+        1, 2, 3, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048,
+        4096, 8192, 16384, 32768, 65536, 86400,
+    )
+    if (
+        flowe_source.folder_count != 3536
+        or len(flowe_source.leaves) != 10608
+        or flowe_checkpoints != expected_flowe_checkpoints
+        or FLOWE_FAMILIES != ("BROWN", "ANTI_BROWN", "ANTI_ANTI_BROWN")
+        or FLOWE_DIRECTIONS != ("NEGATIVE", "CENTRE", "POSITIVE")
+        or FLOWE_CENTER_MEMBERS != ("HBI", "HBP", "SHA", "SH", "HASH")
+        or FLOWE_CENTER_TRAVERSAL != "HBI->HBP->SH->HASH->SHA"
+        or FLOWE_OBSERVATION_LIMIT != 60
+    ):
+        fail("flowe_x3x3_source_and_center")
+
+    flowe_cells = build_flowe_cells(flowe_source)
+    flowe_addresses = {
+        (cell.source.folder_i, cell.source.family_i, cell.direction_i)
+        for cell in flowe_cells
+    }
+    expected_flowe_addresses = {
+        (folder_i, family_i, direction_i)
+        for folder_i in range(3536)
+        for family_i in range(3)
+        for direction_i in range(3)
+    }
+    if len(flowe_cells) != 31824 or flowe_addresses != expected_flowe_addresses:
+        fail("flowe_x3x3_cell_population")
+    for cell in flowe_cells:
+        if len(set(cell.commitments)) != 5:
+            fail("flowe_x3x3_center_collision")
+        fields = tuple_fields(flowe_cell_row(cell), "FLOWE")
+        if (
+            tuple(fields.get(name) for name in ("hbi", "hbp", "sha", "sh", "hash"))
+            != cell.commitments
+            or fields.get("commitments_domain_separated") != "1"
+            or fields.get("commitments_distinct") != "5"
+            or any(fields.get(name) != "0" for name in (
+                "network", "execution", "authority", "physical_energy", "json"
+            ))
+        ):
+            fail("flowe_x3x3_cell_contract")
+
+    flowe_rings = build_flowe_rings(flowe_source, flowe_checkpoints)
+    if len(flowe_rings) != 171:
+        fail("flowe_x3x3_ring_population")
+    prior_by_axis = {}
+    ring_count_by_axis = {}
+    for index, ring in enumerate(flowe_rings):
+        key = (ring.family_i, ring.direction_i)
+        if ring.index != index or not 1 <= ring.observed_rows <= 60:
+            fail("flowe_x3x3_ring_index")
+        if key in prior_by_axis and ring.previous_ring_hash != prior_by_axis[key]:
+            fail("flowe_x3x3_ring_chain")
+        prior_by_axis[key] = ring.ring_hash
+        ring_count_by_axis[key] = ring_count_by_axis.get(key, 0) + 1
+        fields = tuple_fields(flowe_ring_row(ring), "RING")
+        if (
+            fields.get("operations") != "SELF_REFLECT,COLLECT,SELF_REDUCE"
+            or fields.get("observed_only") != "1"
+            or fields.get("future_rows") != "0"
+            or fields.get("transform") != "2D-%3E3D-%3ESIGNED_2D"
+            or any(fields.get(name) != "0" for name in (
+                "network", "execution", "authority", "physical_energy", "json"
+            ))
+        ):
+            fail("flowe_x3x3_ring_contract")
+    if set(ring_count_by_axis.values()) != {19} or len(ring_count_by_axis) != 9:
+        fail("flowe_x3x3_ring_axis_coverage")
+
+    flowe_journal = fake_complete_flowe_journal(
+        flowe_source, FLOWE_TARGET_SECONDS
+    )
+    sealed_flowe_journal = flowe_journal_bytes(flowe_journal)
+    parsed_flowe_journal = parse_flowe_journal_bytes(
+        sealed_flowe_journal, flowe_source, FLOWE_TARGET_SECONDS,
+        "DETERMINISTIC_FAKE_CLOCK",
+    )
+    if (
+        not parsed_flowe_journal.complete
+        or len(parsed_flowe_journal.checkpoints) != 19
+        or parsed_flowe_journal.accumulated_seconds != 86400
+    ):
+        fail("flowe_x3x3_journal_chain")
+
+    parent_dir = ROOT / "matrix/timed-86400-parent-c8c3"
+    for relative, expected_hash in TIMED_PARENT_86400_HASHES.items():
+        parent_path = ROOT / relative
+        if sha256(parent_path) != expected_hash:
+            fail("timed_parent_86400_hash:" + parent_path.name)
+        sidecar = parent_path.with_name(parent_path.name + ".sha256")
+        expected_sidecar = f"{expected_hash}  {parent_path.name}\n"
+        if sidecar.read_text(encoding="utf-8") != expected_sidecar:
+            fail("timed_parent_86400_sidecar:" + sidecar.name)
+
+    parent_source_path = ROOT / "matrix/PUBLIC-OWNER-MEDIA-POSITION-2D.hbp"
+    parent_source_sha = sha256(parent_source_path)
+    if parent_source_sha != (
+        "c8c3a6ba428b393e52866224430f6748373054490fff4d6a530cc66848ff3310"
+    ):
+        fail("timed_parent_86400_source_immutability")
+
+    parent_gguf_path = parent_dir / "TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf"
+    parent_gguf = parent_gguf_path.read_bytes()
+    if (
+        len(parent_gguf) != 2200
+        or verify_gguf(parent_gguf, parent_source_sha, 147, 86_400)
+        != "6afb6229fd2fa23e2dc38c37a31ac9a035b9cddfea2b12bdae1470b03af4425a"
+    ):
+        fail("timed_parent_86400_gguf_contract")
+    parent_inventory = parse_inventory(parent_source_path)
+    if not parent_gguf.endswith(descriptor_bytes(parent_inventory)):
+        fail("timed_parent_86400_descriptor_source_closure")
+
+    expected_parent_checkpoints = (
+        1, 2, 3, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048,
+        4096, 8192, 16384, 32768, 65536, 86400,
+    )
+    parent_hbp_path = parent_dir / "TIMED-CHIRAL-MONITOR.hbp"
+    parent_hbp_lines = parent_hbp_path.read_text(encoding="utf-8").splitlines()
+    if len(parent_hbp_lines) != 22 or any(
+        not line.endswith("|json=0") for line in parent_hbp_lines
+    ):
+        fail("timed_parent_86400_hbp_shape")
+    parent_header = tuple_fields(parent_hbp_lines[0], "TIMEDCHIRALHDR")
+    expected_parent_header = {
+        "schema": "TIMED-CHIRAL-PUBLIC-GGUF-V1",
+        "status": "COMPLETE",
+        "elapsed_seconds": "86400",
+        "target_seconds": "86400",
+        "source_hbp_sha256": parent_source_sha,
+        "public_records": "147",
+        "center_membership": MATRIX_CENTER,
+        "traversal": MATRIX_TRAVERSAL_ENCODED,
+        "raw_source_rows": "0",
+        "raw_repository_bytes": "0",
+        "network": "0",
+        "json": "0",
+    }
+    if parent_header != expected_parent_header:
+        fail("timed_parent_86400_hbp_header")
+    parent_outward_rows = [
+        tuple_fields(line, "OUTWARD") for line in parent_hbp_lines[1:-2]
+    ]
+    if len(parent_outward_rows) != len(expected_parent_checkpoints):
+        fail("timed_parent_86400_hbp_checkpoint_count")
+    for index, (row, checkpoint) in enumerate(
+        zip(parent_outward_rows, expected_parent_checkpoints)
+    ):
+        if row != {
+            "index": str(index),
+            "checkpoint_seconds": str(checkpoint),
+            "direction": "SPHERICAL_OUTWARD",
+            "chirality": "ALTERNATING",
+            "calming_oils": "BROWN.NEAR.ONE",
+            "source_hbp_sha256": parent_source_sha,
+            "json": "0",
+        }:
+            fail("timed_parent_86400_hbp_checkpoint")
+    if tuple_fields(parent_hbp_lines[-2], "GGUF") != {
+        "state": "PRESENT",
+        "file": parent_gguf_path.name,
+        "sha256": sha256(parent_gguf_path),
+        "descriptor_only": "1",
+        "source_rows_embedded": "0",
+        "repository_bytes_embedded": "0",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_hbp_gguf")
+    parent_hbp_body = ("\n".join(parent_hbp_lines[:-1]) + "\n").encode("utf-8")
+    parent_hbp_footer = tuple_fields(parent_hbp_lines[-1], "TIMEDCHIRALFTR")
+    if parent_hbp_footer != {
+        "body_sha256": hashlib.sha256(parent_hbp_body).hexdigest(),
+        "rows": "22",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_hbp_footer")
+
+    parent_hbi_path = parent_dir / "TIMED-CHIRAL-MONITOR.hbi"
+    parent_hbi_lines = parent_hbi_path.read_text(encoding="utf-8").splitlines()
+    if len(parent_hbi_lines) != 1 or tuple_fields(parent_hbi_lines[0], "HBI") != {
+        "schema": "TIMED-CHIRAL-PUBLIC-GGUF-V1",
+        "hbp_file": parent_hbp_path.name,
+        "hbp_sha256": sha256(parent_hbp_path),
+        "gguf_file": parent_gguf_path.name,
+        "gguf_sha256": sha256(parent_gguf_path),
+        "center_membership": MATRIX_CENTER,
+        "traversal": MATRIX_TRAVERSAL_ENCODED,
+        "raw_rows": "0",
+        "authority_granted": "0",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_hbi_binding")
+
+    parent_trace_path = parent_dir / "TIMED-CHIRAL-CHECKPOINTS.hbp"
+    parent_trace_lines = parent_trace_path.read_text(encoding="utf-8").splitlines()
+    expected_observed_seconds = list(expected_parent_checkpoints)
+    expected_observed_seconds[-3] = 32769
+    expected_observed_seconds[-2] = 65537
+    if len(parent_trace_lines) != 20:
+        fail("timed_parent_86400_trace_rows")
+    for index, checkpoint in enumerate(expected_parent_checkpoints):
+        row = tuple_fields(parent_trace_lines[index], "TIMEDCHIRALCHECKPOINT")
+        final_checkpoint = index == len(expected_parent_checkpoints) - 1
+        if row != {
+            "scheduled_seconds": str(checkpoint),
+            "observed_elapsed_seconds": str(expected_observed_seconds[index]),
+            "status": "COMPLETE" if final_checkpoint else "RUNNING",
+            "gguf_present": "1" if final_checkpoint else "0",
+            "json": "0",
+        }:
+            fail("timed_parent_86400_trace_checkpoint")
+    if parent_trace_lines[-1] != (
+        "TIMED_CHIRAL_MONITOR|PASS=1|status=COMPLETE|json=0"
+    ):
+        fail("timed_parent_86400_trace_verdict")
+
+    parent_actual_path = parent_dir / "LIRIS-TIMED-86400-ACTUAL-RUN.hbp"
+    parent_actual_lines = parent_actual_path.read_text(encoding="utf-8").splitlines()
+    if len(parent_actual_lines) != 13 or any(
+        not line.endswith("|json=0") for line in parent_actual_lines
+    ):
+        fail("timed_parent_86400_actual_shape")
+    if tuple_fields(parent_actual_lines[0], "LIRIS24HDR") != {
+        "schema": "LIRIS-TIMED-CHIRAL-ACTUAL-RUN-V1",
+        "evidence": "MEASURED_LIRIS_LOCAL",
+        "status": "COMPLETE",
+        "target_seconds": "86400",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_actual_header")
+    parent_actual_source = tuple_fields(parent_actual_lines[1], "SOURCE")
+    if parent_actual_source != {
+        "file": parent_source_path.name,
+        "bytes": "97491",
+        "sha256": parent_source_sha,
+        "sidecar_verified": "1",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_actual_source")
+    expected_parent_artifacts = {
+        "HBP": {
+            "kind": "HBP", "file": parent_hbp_path.name, "bytes": "4607",
+            "sha256": sha256(parent_hbp_path), "sidecar_verified": "1",
+            "json": "0",
+        },
+        "HBI": {
+            "kind": "HBI", "file": parent_hbi_path.name, "bytes": "392",
+            "sha256": sha256(parent_hbi_path), "sidecar_verified": "1",
+            "json": "0",
+        },
+        "GGUF": {
+            "kind": "GGUF", "file": parent_gguf_path.name, "bytes": "2200",
+            "sha256": sha256(parent_gguf_path), "sidecar_verified": "1",
+            "descriptor_only": "1", "json": "0",
+        },
+    }
+    parent_actual_artifacts = {
+        row["kind"]: row
+        for row in (
+            tuple_fields(line, "ARTIFACT") for line in parent_actual_lines[2:5]
+        )
+    }
+    if parent_actual_artifacts != expected_parent_artifacts:
+        fail("timed_parent_86400_actual_artifacts")
+    if tuple_fields(parent_actual_lines[5], "RAWTRACE") != {
+        "surface": "LIRIS_LOCAL_ACTUAL",
+        "bytes": "2160",
+        "sha256": "a9f6a85366d64c38fb6af12b0baed62c64f385ebf5b05ebc2ba852cccf613cc0",
+        "line_endings": "CRLF",
+        "raw_bytes_published": "0",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_actual_raw_trace")
+    if tuple_fields(parent_actual_lines[6], "TRACE") != {
+        "file": parent_trace_path.name,
+        "bytes": "2140",
+        "sha256": sha256(parent_trace_path),
+        "rows": "20",
+        "checkpoints": "19",
+        "normalization": "CRLF_TO_LF",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_actual_trace")
+    parent_clock = tuple_fields(parent_actual_lines[7], "CLOCK")
+    if (
+        parent_clock.get("elapsed_receipt_seconds") != "86400"
+        or parent_clock.get("clock") != "MONOTONIC"
+        or parent_clock.get("json") != "0"
+    ):
+        fail("timed_parent_86400_actual_clock")
+    parent_process = tuple_fields(parent_actual_lines[8], "PROCESS")
+    if (
+        parent_process.get("restart_recovery") != "0"
+        or parent_process.get("continuous_process_identity_now") != "UNVERIFIED"
+        or parent_process.get("json") != "0"
+    ):
+        fail("timed_parent_86400_actual_process_boundary")
+    if tuple_fields(parent_actual_lines[9], "PARITY") != {
+        "actual_final_group_files": "6",
+        "deterministic_rebuild_files": "6",
+        "byte_equal_files": "6",
+        "byte_mismatch_files": "0",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_actual_parity")
+    if tuple_fields(parent_actual_lines[10], "CENTER") != {
+        "members": MATRIX_CENTER,
+        "traversal": MATRIX_TRAVERSAL_ENCODED,
+        "identity_exchange": "0",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_actual_center")
+    if tuple_fields(parent_actual_lines[11], "BOUNDARY") != {
+        "full_x3_x3": "0",
+        "role": "VALID_PARENT_WITNESS",
+        "network": "0",
+        "raw_repository_bytes": "0",
+        "execution_authority": "0",
+        "system_affirmed": "0",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_actual_boundary")
+    parent_actual_body = (
+        "\n".join(parent_actual_lines[:-1]) + "\n"
+    ).encode("utf-8")
+    if tuple_fields(parent_actual_lines[-1], "LIRIS24FTR") != {
+        "body_sha256": hashlib.sha256(parent_actual_body).hexdigest(),
+        "rows": "13",
+        "json": "0",
+    }:
+        fail("timed_parent_86400_actual_footer")
 
     outward_hbp_path = ROOT / "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbp"
     outward_hbp_lines = outward_hbp_path.read_text(encoding="utf-8").splitlines()
