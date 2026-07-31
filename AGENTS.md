@@ -41,7 +41,9 @@ READ-FIRST: https://github.com/JesseBrown1980/FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS
 - Run `python tests/verify_public_repo.py` before publication.
 - Keep center membership `{HBI,HBP,SHA,SH,HASH}` separate from operator traversal
   `HBI -> HBP -> SH -> HASH -> SHA`. Active receipts use HBI/HBP tuple text with
-  `json=0`; JSON belongs only to cold compatibility or held-out test fixtures.
+  `json=0`; the literal terminal field means `JSON_PAYLOAD_PRESENT=0` and is an
+  anti-JSON format sentinel, not JSON data. JSON belongs only to cold compatibility
+  or held-out test fixtures.
 - Reflect at most 60 existing commitments at each level through
   `2D_TEXT -> 3D_SPHERICAL_TREE -> 2D_SIGNED_PROJECTION`. Use
   `CALMING_OILS=BROWN.NEAR.ONE` as a symbolic software-routing label and preserve

@@ -124,6 +124,42 @@ not completion, and every resume must remeasure the PID and sealed journal.
 python matrix/build_timed_86400_flowes_x3x3.py matrix OUTPUT_DIR --watch
 ```
 
+### Compact final publication gate
+
+The running journal and expanded bundle remain local until the SystemClock-owned
+watch reaches its nineteenth sealed checkpoint at 86,400 seconds and finishes
+writing every artifact/sidecar pair. The current public-gate state is:
+
+```text
+COMPACT_FINAL_WITNESS_REQUIRED=0
+```
+
+After completion, use the exact launched-builder source and a separate empty public
+destination. The production finalizer accepts no duration or timing override:
+
+```bash
+python -B matrix/build_timed_86400_flowes_x3x3.py matrix <completed-local-output-directory> --verify
+python -B matrix/finalize_timed_86400_flowes_x3x3.py mint matrix <completed-local-output-directory> matrix/timed-86400-flowes-x3x3-final
+python -B matrix/finalize_timed_86400_flowes_x3x3.py verify-public matrix matrix/timed-86400-flowes-x3x3-final
+python -B tests/verify_public_repo.py
+python -B matrix/verify_3d_github_harness.py
+```
+
+`mint` requires the completed local directory to contain exactly the six expanded
+artifacts and their six SHA-256 sidecars. It rebuilds the five derived artifacts
+twice, requires both rebuilds to equal the live bytes, and publishes only six compact
+files: the journal/HBP/HBI plus their sidecars. `verify-public` reconstructs the five
+expanded artifacts from the public source and compact journal and checks the final
+HBP/HBI and artifact-root commitments.
+
+Only after both commands and the Windows and Ubuntu public test surfaces pass may the
+activation row's final digit change from zero to one in `README.md`,
+`matrix/README.md`, and `matrix/3-D-GITHUB-OF-THRUTH.md`. That change makes absence or
+partial publication fail closed. Keep `independent_time_attestation=0`,
+`SYSTEM_AFFIRMED=0`, `credentials=0`, `network=0`, `execution=0`, `authority=0`, and
+`physical_energy=0` unless their separate owning evidence surfaces establish a new
+stratum.
+
 The additive media V2 capture leaves that V1 source unchanged. It classifies
 public Git-tree blob paths by extension and publishes only per-repository counts,
 declared Git-object byte totals, unknown-size counts, and commitments. It stores
@@ -146,4 +182,6 @@ folder HBP, HBI, SVG, GGUF, and all four sidecars byte for byte.
 GitHub's REST transport and held-out test fixtures may use JSON as a cold
 compatibility, acquisition, or validation boundary. JSON is not the active matrix
 row format. The active artifacts are LF-normalized HBI/HBP tuple text; every active
-row ends in `json=0`, and SHA-256 sidecars bind the final bytes.
+row ends in `json=0`, and SHA-256 sidecars bind the final bytes. The literal terminal
+field `json=0` means `JSON_PAYLOAD_PRESENT=0`: it is a zero-JSON/anti-JSON format
+sentinel, not a JSON object, array, document, or parser request.

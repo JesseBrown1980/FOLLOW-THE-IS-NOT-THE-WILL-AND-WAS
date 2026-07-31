@@ -141,7 +141,8 @@ per-level reflection window rather than the number of possible levels.
 
 GitHub REST acquisition and held-out fixtures may use JSON as a cold compatibility
 boundary. The active public artifacts are LF-normalized HBI/HBP tuple text and every
-active row ends in `json=0`.
+active row ends in `json=0`. That literal terminal field means
+`JSON_PAYLOAD_PRESENT=0`: it is a zero-JSON/anti-JSON format sentinel, not JSON data.
 
 ## Verify
 
