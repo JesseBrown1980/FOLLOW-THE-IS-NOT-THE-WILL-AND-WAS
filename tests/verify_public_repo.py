@@ -226,6 +226,32 @@ GRADIENT_AUDIT_HBP_SHA256 = (
 GRADIENT_AUDIT_HBI_SHA256 = (
     "8281bdaf2901b0d376a88bcf2c6f53e731c36edd3cac65ae47b56761790f80c9"
 )
+COMPACT_FINAL_SEMANTICS = {
+    "transport": "OCTETS",
+    "semantic_binary": "0",
+    "semantic_families": "3",
+    "gradient_states": "10586",
+    "family_colors_distinct_per_folder": "1",
+    "unique_3d_positions": "10608",
+    "unique_2d_projections": "10397",
+    "integer_fields_only": "1",
+    "finite_capture": "1",
+    "actual_infinite_capture": "0",
+    "n_level_open": "1",
+    "logical_identity_ceiling": "0",
+    "reflection_window_per_observed_level": "60",
+    "source_renderer": "RUST_1_81_CHECKED_INTEGER",
+    "gradient_audit_source_match": "1",
+    "source_hbp_sha256": (
+        "43300780cac2b85e3ed6cfa10398052f530ccbf76c43b404e650c26c9ed8b006"
+    ),
+    "source_hbi_sha256": (
+        "9920d5cb2031d6453fba2d410e4b2f6e0136a4537fa6ea2ea9385c163503a28b"
+    ),
+    "gradient_audit_hbp_sha256": GRADIENT_AUDIT_HBP_SHA256,
+    "gradient_audit_hbi_sha256": GRADIENT_AUDIT_HBI_SHA256,
+    "json": "0",
+}
 MAX_GIT_FILE_LIST_BYTES = 4 * 1024 * 1024
 
 
@@ -688,7 +714,7 @@ def verify_compact_final_hbp(
 ) -> tuple[bytes, str]:
     lines = strict_tuple_receipt(
         path,
-        rows=19,
+        rows=20,
         footer_kind="LIRISFLOWEX9FINALFTR",
         error_prefix="compact_final_hbp",
     )
@@ -697,7 +723,8 @@ def verify_compact_final_hbp(
         "REGENERATOR", "JOURNAL", "CLOCK",
         "LOCALARTIFACT", "LOCALARTIFACT", "LOCALARTIFACT",
         "LOCALARTIFACT", "LOCALARTIFACT", "ARTIFACTROOT",
-        "REGENERATION", "SHAPE", "CENTER", "SUPERSEDES", "BOUNDARY",
+        "REGENERATION", "SHAPE", "SEMANTICS", "CENTER", "SUPERSEDES",
+        "BOUNDARY",
         "LIRISFLOWEX9FINALFTR",
     )
     if tuple(line.split("|", 1)[0] for line in lines) != expected_tags:
@@ -918,7 +945,13 @@ def verify_compact_final_hbp(
     }:
         fail("compact_final_shape_contract")
 
-    center = strict_tuple_fields(lines[15], "CENTER", "compact_final_center")
+    semantics = strict_tuple_fields(
+        lines[15], "SEMANTICS", "compact_final_semantics",
+    )
+    if semantics != COMPACT_FINAL_SEMANTICS:
+        fail("compact_final_semantics_contract")
+
+    center = strict_tuple_fields(lines[16], "CENTER", "compact_final_center")
     require_exact_keys(
         center,
         {
@@ -944,7 +977,7 @@ def verify_compact_final_hbp(
         require_sha256(center[field], "compact_final_center_" + field)
 
     supersedes = strict_tuple_fields(
-        lines[16], "SUPERSEDES", "compact_final_supersedes",
+        lines[17], "SUPERSEDES", "compact_final_supersedes",
     )
     if supersedes != {
         "historical_pointer": "TIMED-86400-FLOWes-X3-X3-RUNNING.hbi",
@@ -960,7 +993,7 @@ def verify_compact_final_hbp(
         supersedes["current_pointer"], "compact_final_current_pointer",
     )
 
-    boundary = strict_tuple_fields(lines[17], "BOUNDARY", "compact_final_boundary")
+    boundary = strict_tuple_fields(lines[18], "BOUNDARY", "compact_final_boundary")
     if boundary != {
         "local_output_path": "0",
         "private_paths": "0",
@@ -988,13 +1021,13 @@ def verify_compact_final_hbi(
 ) -> bytes:
     lines = strict_tuple_receipt(
         path,
-        rows=6,
+        rows=7,
         footer_kind="FLOWEX9FINALIDXFTR",
         error_prefix="compact_final_hbi",
     )
     if tuple(line.split("|", 1)[0] for line in lines) != (
-        "FLOWEX9FINALIDX", "PUBLIC", "REGENERATION", "CENTER", "BOUNDARY",
-        "FLOWEX9FINALIDXFTR",
+        "FLOWEX9FINALIDX", "PUBLIC", "REGENERATION", "SEMANTICS", "CENTER",
+        "BOUNDARY", "FLOWEX9FINALIDXFTR",
     ):
         fail("compact_final_hbi_row_order")
     index = strict_tuple_fields(lines[0], "FLOWEX9FINALIDX", "compact_final_hbi_index")
@@ -1046,7 +1079,13 @@ def verify_compact_final_hbi(
     }:
         fail("compact_final_hbi_regeneration_contract")
 
-    center = strict_tuple_fields(lines[3], "CENTER", "compact_final_hbi_center")
+    semantics = strict_tuple_fields(
+        lines[3], "SEMANTICS", "compact_final_hbi_semantics",
+    )
+    if semantics != COMPACT_FINAL_SEMANTICS:
+        fail("compact_final_hbi_semantics_contract")
+
+    center = strict_tuple_fields(lines[4], "CENTER", "compact_final_hbi_center")
     if center != {
         "members": MATRIX_CENTER,
         "traversal": MATRIX_TRAVERSAL_ENCODED,
@@ -1055,7 +1094,7 @@ def verify_compact_final_hbi(
     }:
         fail("compact_final_hbi_center_contract")
 
-    boundary = strict_tuple_fields(lines[4], "BOUNDARY", "compact_final_hbi_boundary")
+    boundary = strict_tuple_fields(lines[5], "BOUNDARY", "compact_final_hbi_boundary")
     if boundary != {
         "local_output_path": "0",
         "private_paths": "0",
@@ -1112,6 +1151,125 @@ def optional_compact_final_witness_present(final_dir: Path) -> bool:
     return True
 
 
+def compact_final_rebuild_expectation(final_dir: Path) -> dict[str, str]:
+    hbp_lines = (
+        final_dir / COMPACT_FINAL_HBP
+    ).read_text(encoding="utf-8").splitlines()
+    if len(hbp_lines) != 20:
+        fail("compact_final_rebuild_expectation_rows")
+    artifact_root = strict_tuple_fields(
+        hbp_lines[12], "ARTIFACTROOT", "compact_final_rebuild_expectation",
+    ).get("value", "")
+    require_sha256(artifact_root, "compact_final_rebuild_expectation_root")
+    return {
+        "journal_sha256": sha256(final_dir / COMPACT_FINAL_JOURNAL),
+        "hbp_sha256": sha256(final_dir / COMPACT_FINAL_HBP),
+        "hbi_sha256": sha256(final_dir / COMPACT_FINAL_HBI),
+        "artifact_root_sha256": artifact_root,
+    }
+
+
+def verify_compact_final_deterministic_rebuild(
+    root: Path, final_dir: Path, expected: dict[str, str],
+) -> None:
+    """Run the owning byte-for-byte rebuild whenever the compact witness exists."""
+    finalizer = root / "matrix" / "finalize_timed_86400_flowes_x3x3.py"
+    source_dir = root / "matrix"
+    root_resolved = root.resolve()
+    if (
+        finalizer.is_symlink()
+        or not finalizer.is_file()
+        or source_dir.is_symlink()
+        or not source_dir.is_dir()
+        or final_dir.is_symlink()
+        or not final_dir.is_dir()
+    ):
+        fail("compact_final_rebuild_tool_missing")
+    for path in (finalizer, source_dir, final_dir):
+        try:
+            path.resolve().relative_to(root_resolved)
+        except ValueError:
+            fail("compact_final_rebuild_path_escape")
+    finalizer_sidecar = finalizer.with_name(finalizer.name + ".sha256")
+    if finalizer_sidecar.is_symlink() or not finalizer_sidecar.is_file():
+        fail("compact_final_rebuild_tool_sidecar_missing")
+    try:
+        finalizer_sidecar.resolve().relative_to(root_resolved)
+    except ValueError:
+        fail("compact_final_rebuild_tool_sidecar_escape")
+    verify_exact_sidecar(finalizer, "compact_final_rebuild_tool")
+    try:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                "-E",
+                "-s",
+                "-S",
+                str(finalizer),
+                "verify-public",
+                str(source_dir),
+                str(final_dir),
+            ],
+            check=False,
+            cwd=root,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=180,
+        )
+    except (OSError, subprocess.SubprocessError):
+        fail("compact_final_rebuild_unavailable")
+    if completed.returncode != 0 or completed.stderr:
+        fail("compact_final_rebuild_failed")
+    if (
+        len(completed.stdout) > 4_096
+        or b"\r" in completed.stdout
+        or not completed.stdout.endswith(b"\n")
+        or completed.stdout.count(b"\n") != 1
+    ):
+        fail("compact_final_rebuild_output_shape")
+    try:
+        lines = completed.stdout.decode("utf-8").splitlines()
+    except UnicodeError:
+        fail("compact_final_rebuild_output_utf8")
+    if len(lines) != 1:
+        fail("compact_final_rebuild_output_rows")
+    result = strict_tuple_fields(
+        lines[0], "LIRISFLOWEX9FINAL", "compact_final_rebuild_result",
+    )
+    require_exact_keys(
+        result,
+        {
+            "PASS", "mode", "journal_sha256", "hbp_sha256", "hbi_sha256",
+            "artifact_root_sha256", "independent_time_attestation",
+            "system_affirmed", "credentials", "json",
+        },
+        "compact_final_rebuild_result",
+    )
+    if {
+        key: result[key]
+        for key in (
+            "PASS", "mode", "independent_time_attestation",
+            "system_affirmed", "credentials", "json",
+        )
+    } != {
+        "PASS": "1",
+        "mode": "VERIFY_PUBLIC",
+        "independent_time_attestation": "0",
+        "system_affirmed": "0",
+        "credentials": "0",
+        "json": "0",
+    }:
+        fail("compact_final_rebuild_result_contract")
+    for key in (
+        "journal_sha256", "hbp_sha256", "hbi_sha256", "artifact_root_sha256",
+    ):
+        require_sha256(result[key], "compact_final_rebuild_result_" + key)
+        if result[key] != expected.get(key):
+            fail("compact_final_rebuild_result_mismatch_" + key)
+
+
 def compact_final_witness_required(root: Path) -> bool:
     return any(
         COMPACT_FINAL_ACTIVATION_MARKER
@@ -1122,11 +1280,13 @@ def compact_final_witness_required(root: Path) -> bool:
 
 def verify_compact_final_gate(root: Path) -> tuple[bool, bool]:
     required = compact_final_witness_required(root)
-    present = optional_compact_final_witness_present(
-        root / COMPACT_FINAL_DIRECTORY
-    )
+    final_dir = root / COMPACT_FINAL_DIRECTORY
+    present = optional_compact_final_witness_present(final_dir)
     if required and not present:
         fail("compact_final_required_missing")
+    if present:
+        expected = compact_final_rebuild_expectation(final_dir)
+        verify_compact_final_deterministic_rebuild(root, final_dir, expected)
     return present, required
 
 

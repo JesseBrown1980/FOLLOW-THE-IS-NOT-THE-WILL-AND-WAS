@@ -6,6 +6,7 @@ from __future__ import annotations
 import contextlib
 import hashlib
 import io
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -19,6 +20,7 @@ sys.path.insert(0, str(MATRIX_DIR))
 sys.path.insert(0, str(TESTS_DIR))
 
 import build_timed_86400_flowes_x3x3 as flow
+import finalize_timed_86400_flowes_x3x3 as final
 import verify_public_repo as verifier
 
 
@@ -179,6 +181,113 @@ class CompactFinalGateTests(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
                     verifier.verify_compact_final_gate(root)
+
+    def test_present_gate_always_runs_owning_deterministic_rebuild(self) -> None:
+        root = Path("bounded-test-root")
+        final_dir = root / verifier.COMPACT_FINAL_DIRECTORY
+        expected = {
+            "journal_sha256": "a" * 64,
+            "hbp_sha256": "b" * 64,
+            "hbi_sha256": "c" * 64,
+            "artifact_root_sha256": "d" * 64,
+        }
+        with (
+            mock.patch.object(
+                verifier, "compact_final_witness_required", return_value=False,
+            ),
+            mock.patch.object(
+                verifier, "optional_compact_final_witness_present",
+                return_value=True,
+            ),
+            mock.patch.object(
+                verifier, "verify_compact_final_deterministic_rebuild",
+            ) as rebuild,
+            mock.patch.object(
+                verifier, "compact_final_rebuild_expectation",
+                return_value=expected,
+            ),
+        ):
+            self.assertEqual(
+                verifier.verify_compact_final_gate(root), (True, False),
+            )
+        rebuild.assert_called_once_with(root, final_dir, expected)
+
+    def test_rebuild_result_is_exact_tuple_text_and_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            matrix = root / "matrix"
+            matrix.mkdir()
+            tool = matrix / "finalize_timed_86400_flowes_x3x3.py"
+            tool.write_text("# bounded test tool\n", encoding="utf-8")
+            tool.with_name(tool.name + ".sha256").write_text(
+                f"{hashlib.sha256(tool.read_bytes()).hexdigest()}  {tool.name}\n",
+                encoding="utf-8",
+                newline="\n",
+            )
+            final_dir = matrix / "timed-86400-flowes-x3x3-final"
+            final_dir.mkdir()
+            digest = "a" * 64
+            expected = {
+                "journal_sha256": digest,
+                "hbp_sha256": digest,
+                "hbi_sha256": digest,
+                "artifact_root_sha256": digest,
+            }
+            valid = (
+                "LIRISFLOWEX9FINAL|PASS=1|mode=VERIFY_PUBLIC"
+                f"|journal_sha256={digest}|hbp_sha256={digest}"
+                f"|hbi_sha256={digest}|artifact_root_sha256={digest}"
+                "|independent_time_attestation=0|system_affirmed=0"
+                "|credentials=0|json=0\n"
+            ).encode("utf-8")
+            success = subprocess.CompletedProcess([], 0, valid, b"")
+            with mock.patch.object(
+                subprocess, "run", return_value=success,
+            ) as child:
+                verifier.verify_compact_final_deterministic_rebuild(
+                    root, final_dir, expected,
+                )
+            argv = child.call_args.args[0]
+            options = child.call_args.kwargs
+            self.assertEqual(
+                argv[:5], [sys.executable, "-B", "-E", "-s", "-S"],
+            )
+            self.assertNotIn("shell", options)
+            self.assertIs(options["stdin"], subprocess.DEVNULL)
+            self.assertEqual(options["timeout"], 180)
+
+            invalid = subprocess.CompletedProcess(
+                [], 0, valid.replace(b"json=0", b"json=1"), b"",
+            )
+            with (
+                mock.patch.object(subprocess, "run", return_value=invalid),
+                contextlib.redirect_stderr(io.StringIO()),
+                self.assertRaises(SystemExit),
+            ):
+                verifier.verify_compact_final_deterministic_rebuild(
+                    root, final_dir, expected,
+                )
+
+            tool.with_name(tool.name + ".sha256").unlink()
+            with (
+                contextlib.redirect_stderr(io.StringIO()),
+                self.assertRaises(SystemExit),
+            ):
+                verifier.verify_compact_final_deterministic_rebuild(
+                    root, final_dir, expected,
+                )
+
+
+class CompactFinalSemanticContractTests(unittest.TestCase):
+    def test_public_gate_matches_production_derived_semantics(self) -> None:
+        source = flow.load_source(MATRIX_DIR)
+        derived = {
+            key: str(value)
+            for key, value in final._semantic_fields(
+                source, final.PRODUCTION_POLICY,
+            ).items()
+        }
+        self.assertEqual(derived, verifier.COMPACT_FINAL_SEMANTICS)
 
 
 class GradientAuditGateTests(unittest.TestCase):

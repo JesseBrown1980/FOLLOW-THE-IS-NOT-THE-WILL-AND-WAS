@@ -68,8 +68,8 @@ class CompactFinalWitnessTests(unittest.TestCase):
         self.assertEqual(set(hashes), {flow.OUTPUT_JOURNAL, final.FINAL_HBP, final.FINAL_HBI, "artifact_root"})
         hbp = (evidence / final.FINAL_HBP).read_bytes()
         hbi = (evidence / final.FINAL_HBI).read_bytes()
-        self.assertEqual(len(hbp.decode("utf-8").splitlines()), 19)
-        self.assertEqual(len(hbi.decode("utf-8").splitlines()), 6)
+        self.assertEqual(len(hbp.decode("utf-8").splitlines()), 20)
+        self.assertEqual(len(hbi.decode("utf-8").splitlines()), 7)
         private = str(self.output_dir.resolve()).encode("utf-8")
         self.assertNotIn(private, hbp)
         self.assertNotIn(private, hbi)
@@ -94,6 +94,20 @@ class CompactFinalWitnessTests(unittest.TestCase):
         self.assertEqual(
             regeneration["a_equals_live_scope"], "MINT_LOCAL_PROVENANCE"
         )
+        semantics = flow.parse_tuple(lines[15], "SEMANTICS")
+        self.assertEqual(semantics["transport"], "OCTETS")
+        self.assertEqual(semantics["semantic_binary"], "0")
+        self.assertEqual(semantics["semantic_families"], "3")
+        self.assertEqual(semantics["gradient_states"], "3")
+        self.assertEqual(semantics["family_colors_distinct_per_folder"], "1")
+        self.assertEqual(semantics["integer_fields_only"], "1")
+        self.assertEqual(semantics["n_level_open"], "1")
+        self.assertEqual(semantics["logical_identity_ceiling"], "0")
+        self.assertEqual(semantics["gradient_audit_source_match"], "0")
+        hbi_semantics = flow.parse_tuple(
+            hbi.decode("utf-8").splitlines()[3], "SEMANTICS"
+        )
+        self.assertEqual(hbi_semantics, semantics)
 
     def test_artifact_root_exact_formula(self) -> None:
         evidence = self.mint()
@@ -160,6 +174,56 @@ class CompactFinalWitnessTests(unittest.TestCase):
         seal(fake_dir / flow.OUTPUT_JOURNAL, flow.journal_bytes(fake))
         with self.assertRaises(flow.FlowesError):
             final._load_complete_journal(self.source, fake_dir, production_test)
+
+    def test_production_gradient_semantics_are_exact_and_non_binary(self) -> None:
+        source = flow.load_source(Path(flow.__file__).resolve().parent)
+        semantics = final._semantic_fields(source, final.PRODUCTION_POLICY)
+        self.assertEqual(
+            semantics,
+            {
+                "transport": "OCTETS",
+                "semantic_binary": 0,
+                "semantic_families": 3,
+                "gradient_states": 10_586,
+                "family_colors_distinct_per_folder": 1,
+                "unique_3d_positions": 10_608,
+                "unique_2d_projections": 10_397,
+                "integer_fields_only": 1,
+                "finite_capture": 1,
+                "actual_infinite_capture": 0,
+                "n_level_open": 1,
+                "logical_identity_ceiling": 0,
+                "reflection_window_per_observed_level": 60,
+                "source_renderer": "RUST_1_81_CHECKED_INTEGER",
+                "gradient_audit_source_match": 1,
+                "source_hbp_sha256": flow.COMMITTED_SOURCE_HBP_SHA256,
+                "source_hbi_sha256": flow.COMMITTED_SOURCE_HBI_SHA256,
+                "gradient_audit_hbp_sha256": final.GRADIENT_AUDIT_HBP_SHA256,
+                "gradient_audit_hbi_sha256": final.GRADIENT_AUDIT_HBI_SHA256,
+                "json": 0,
+            },
+        )
+
+    def test_semantic_binary_gradient_and_cross_binding_tamper_are_rejected(self) -> None:
+        mutations = (
+            (final.FINAL_HBP, "semantic_binary=0", "semantic_binary=1", "LIRISFLOWEX9FINALFTR"),
+            (final.FINAL_HBP, "gradient_states=3", "gradient_states=2", "LIRISFLOWEX9FINALFTR"),
+            (final.FINAL_HBI, "n_level_open=1", "n_level_open=0", "FLOWEX9FINALIDXFTR"),
+        )
+        for index, (name, old, new, footer) in enumerate(mutations):
+            with self.subTest(name=name, old=old):
+                evidence = self.mint("semantic-tamper-" + str(index))
+
+                def mutate(rows: list[str]) -> None:
+                    row_index = next(
+                        i for i, row in enumerate(rows)
+                        if row.startswith("SEMANTICS|")
+                    )
+                    rows[row_index] = rows[row_index].replace(old, new, 1)
+
+                reseal_text(evidence / name, footer, mutate)
+                with self.assertRaises(flow.FlowesError):
+                    self.verify(evidence)
 
     def test_modified_session_checkpoint_and_hash_are_rejected(self) -> None:
         cases = {

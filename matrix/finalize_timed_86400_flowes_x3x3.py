@@ -44,6 +44,14 @@ QPRISM_BINDING_HBP_SHA256 = (
 QPRISM_BINDING_HBI_SHA256 = (
     "1514470eec0a3c6cd8ce091fabe08c33e136f7dd849f10c75e1f949e2a17c0d9"
 )
+GRADIENT_AUDIT_HBP = "LIRIS-RUST-181-GRADIENT-SEMANTICS-2026-07-31.hbp"
+GRADIENT_AUDIT_HBI = "LIRIS-RUST-181-GRADIENT-SEMANTICS-2026-07-31.hbi"
+GRADIENT_AUDIT_HBP_SHA256 = (
+    "707f73b6013f8152adc9e524e9131716f8ccaa881857fc990ef793167b302896"
+)
+GRADIENT_AUDIT_HBI_SHA256 = (
+    "8281bdaf2901b0d376a88bcf2c6f53e731c36edd3cac65ae47b56761790f80c9"
+)
 
 ARTIFACT_ROOT_DOMAIN = (
     "ASOLARIA-TIMED-86400-FLOWes-X3-X3-FINAL-V1.LOCAL-ARTIFACTS"
@@ -147,6 +155,91 @@ def _verify_launched_builder() -> None:
         or flow.CENTER_TRAVERSAL != "HBI->HBP->SH->HASH->SHA"
     ):
         raise flow.FlowesError("BUILDER_CONTRACT")
+    receipt_dir = matrix_dir.parent / "receipts"
+    for name, expected in (
+        (GRADIENT_AUDIT_HBP, GRADIENT_AUDIT_HBP_SHA256),
+        (GRADIENT_AUDIT_HBI, GRADIENT_AUDIT_HBI_SHA256),
+    ):
+        data = flow.verify_sidecar(receipt_dir / name)
+        if flow.sha256_bytes(data) != expected:
+            raise flow.FlowesError("GRADIENT_AUDIT_SHA256:" + name)
+
+
+def _semantic_fields(
+    source: flow.SourceBundle, policy: FinalPolicy,
+) -> dict[str, object]:
+    """Derive the finite gradient ledger without changing the launched builder."""
+    if len(source.leaves) != source.folder_count * len(flow.FAMILIES):
+        raise flow.FlowesError("SEMANTIC_SOURCE_POPULATION")
+    by_folder: dict[int, list[flow.SourceLeaf]] = {}
+    for leaf in source.leaves:
+        if re.fullmatch(r"RGB\.[0-9A-F]{6}", leaf.color) is None:
+            raise flow.FlowesError("SEMANTIC_COLOR_FORMAT")
+        numeric = (
+            leaf.index, leaf.folder_i, leaf.family_i, leaf.source_level,
+            leaf.view_x, leaf.view_y, leaf.view_z,
+            leaf.projected_u, leaf.projected_v,
+        )
+        if any(type(value) is not int for value in numeric):
+            raise flow.FlowesError("SEMANTIC_NON_INTEGER_FIELD")
+        by_folder.setdefault(leaf.folder_i, []).append(leaf)
+    if len(by_folder) != source.folder_count:
+        raise flow.FlowesError("SEMANTIC_FOLDER_POPULATION")
+    for folder_i in range(source.folder_count):
+        group = by_folder.get(folder_i, [])
+        if tuple(leaf.family for leaf in group) != flow.FAMILIES:
+            raise flow.FlowesError("SEMANTIC_FAMILY_COMPLETENESS")
+        if len({leaf.color for leaf in group}) != len(flow.FAMILIES):
+            raise flow.FlowesError("SEMANTIC_FAMILY_COLOR_COLLAPSE")
+
+    gradient_states = len({leaf.color for leaf in source.leaves})
+    unique_3d_positions = len(
+        {(leaf.view_x, leaf.view_y, leaf.view_z) for leaf in source.leaves}
+    )
+    unique_2d_projections = len(
+        {(leaf.projected_u, leaf.projected_v) for leaf in source.leaves}
+    )
+    if gradient_states <= 2:
+        raise flow.FlowesError("SEMANTIC_BINARY_COLLAPSE")
+    source_matches_audit = (
+        source.hbp_sha256 == flow.COMMITTED_SOURCE_HBP_SHA256
+        and source.hbi_sha256 == flow.COMMITTED_SOURCE_HBI_SHA256
+    )
+    if policy.require_committed_source and (
+        not source_matches_audit
+        or source.folder_count != 3_536
+        or len(source.leaves) != 10_608
+        or gradient_states != 10_586
+        or unique_3d_positions != 10_608
+        or unique_2d_projections != 10_397
+    ):
+        raise flow.FlowesError("PRODUCTION_GRADIENT_SEMANTICS")
+    return {
+        "transport": "OCTETS",
+        "semantic_binary": 0,
+        "semantic_families": len(flow.FAMILIES),
+        "gradient_states": gradient_states,
+        "family_colors_distinct_per_folder": 1,
+        "unique_3d_positions": unique_3d_positions,
+        "unique_2d_projections": unique_2d_projections,
+        "integer_fields_only": 1,
+        "finite_capture": 1,
+        "actual_infinite_capture": 0,
+        "n_level_open": 1,
+        "logical_identity_ceiling": 0,
+        "reflection_window_per_observed_level": flow.OBSERVATION_LIMIT,
+        "source_renderer": (
+            "RUST_1_81_CHECKED_INTEGER"
+            if source_matches_audit
+            else "INJECTED_INTEGER_TEST_SOURCE"
+        ),
+        "gradient_audit_source_match": int(source_matches_audit),
+        "source_hbp_sha256": source.hbp_sha256,
+        "source_hbi_sha256": source.hbi_sha256,
+        "gradient_audit_hbp_sha256": GRADIENT_AUDIT_HBP_SHA256,
+        "gradient_audit_hbi_sha256": GRADIENT_AUDIT_HBI_SHA256,
+        "json": 0,
+    }
 
 
 def _require_directory(path: Path, context: str) -> Path:
@@ -332,6 +425,7 @@ def _final_hbp(
     root: str,
     bundle: dict[str, bytes],
     policy: FinalPolicy,
+    semantics: dict[str, object],
 ) -> bytes:
     object_hash, ring_commitment, cell_commitment = _expanded_commitments(
         bundle[flow.OUTPUT_HBP], bundle[flow.OUTPUT_HBI]
@@ -420,6 +514,7 @@ def _final_hbp(
                 ring_summaries=checkpoints * 9,
                 observation_limit=flow.OBSERVATION_LIMIT, json=0,
             ),
+            flow.tuple_row("SEMANTICS", **semantics),
             flow.tuple_row(
                 "CENTER", members=",".join(flow.CENTER_MEMBERS),
                 traversal=flow.CENTER_TRAVERSAL, commitments_per_cell=5,
@@ -442,13 +537,13 @@ def _final_hbp(
             ),
         ]
     )
-    if len(rows) != 18:
+    if len(rows) != 19:
         raise AssertionError("final HBP body row count")
     body = ("\n".join(rows) + "\n").encode("utf-8")
     rows.append(
         flow.tuple_row(
             "LIRISFLOWEX9FINALFTR", body_sha256=flow.sha256_bytes(body),
-            rows=19, json=0,
+            rows=20, json=0,
         )
     )
     return ("\n".join(rows) + "\n").encode("utf-8")
@@ -459,6 +554,7 @@ def _final_hbi(
     journal_data: bytes,
     final_hbp: bytes,
     root: str,
+    semantics: dict[str, object],
 ) -> bytes:
     rows = [
         flow.tuple_row(
@@ -481,6 +577,7 @@ def _final_hbi(
             source_hbi_sha256=source.hbi_sha256,
             regenerable=1, required_hidden_dependencies=0, json=0,
         ),
+        flow.tuple_row("SEMANTICS", **semantics),
         flow.tuple_row(
             "CENTER", members=",".join(flow.CENTER_MEMBERS),
             traversal=flow.CENTER_TRAVERSAL, sha_equals_hash=0, json=0,
@@ -495,7 +592,7 @@ def _final_hbi(
     rows.append(
         flow.tuple_row(
             "FLOWEX9FINALIDXFTR", body_sha256=flow.sha256_bytes(body),
-            rows=6, json=0,
+            rows=7, json=0,
         )
     )
     return ("\n".join(rows) + "\n").encode("utf-8")
@@ -509,12 +606,13 @@ def _validate_final_text(hbp: bytes, hbi: bytes) -> None:
         "REGENERATOR", "JOURNAL", "CLOCK",
         "LOCALARTIFACT", "LOCALARTIFACT", "LOCALARTIFACT",
         "LOCALARTIFACT", "LOCALARTIFACT", "ARTIFACTROOT",
-        "REGENERATION", "SHAPE", "CENTER", "SUPERSEDES", "BOUNDARY",
+        "REGENERATION", "SHAPE", "SEMANTICS", "CENTER", "SUPERSEDES",
+        "BOUNDARY",
         "LIRISFLOWEX9FINALFTR",
     )
     expected_hbi_tags = (
-        "FLOWEX9FINALIDX", "PUBLIC", "REGENERATION", "CENTER", "BOUNDARY",
-        "FLOWEX9FINALIDXFTR",
+        "FLOWEX9FINALIDX", "PUBLIC", "REGENERATION", "SEMANTICS", "CENTER",
+        "BOUNDARY", "FLOWEX9FINALIDXFTR",
     )
     if tuple(line.split("|", 1)[0] for line in hbp_lines) != expected_hbp_tags:
         raise flow.FlowesError("FINAL_HBP_ROW_ORDER")
@@ -534,7 +632,57 @@ def _validate_final_text(hbp: bytes, hbi: bytes) -> None:
             {"published": "0", "regenerable": "1", "sidecar_verified": "1"},
             "FINAL_LOCAL_ARTIFACT",
         )
-    center = flow.parse_tuple(hbp_lines[15], "CENTER")
+    hbp_semantics = flow.parse_tuple(hbp_lines[15], "SEMANTICS")
+    hbi_semantics = flow.parse_tuple(hbi_lines[3], "SEMANTICS")
+    if hbp_semantics != hbi_semantics:
+        raise flow.FlowesError("FINAL_SEMANTICS_CROSS_BINDING")
+    flow.require_fields(
+        hbp_semantics,
+        {
+            "transport": "OCTETS",
+            "semantic_binary": "0",
+            "semantic_families": "3",
+            "family_colors_distinct_per_folder": "1",
+            "integer_fields_only": "1",
+            "finite_capture": "1",
+            "actual_infinite_capture": "0",
+            "n_level_open": "1",
+            "logical_identity_ceiling": "0",
+            "reflection_window_per_observed_level": str(flow.OBSERVATION_LIMIT),
+            "gradient_audit_hbp_sha256": GRADIENT_AUDIT_HBP_SHA256,
+            "gradient_audit_hbi_sha256": GRADIENT_AUDIT_HBI_SHA256,
+            "json": "0",
+        },
+        "FINAL_SEMANTICS",
+    )
+    for key in (
+        "gradient_states", "unique_3d_positions", "unique_2d_projections",
+    ):
+        if int(hbp_semantics.get(key, "0")) < 3:
+            raise flow.FlowesError("FINAL_SEMANTICS_CARDINALITY:" + key)
+    for key in (
+        "source_hbp_sha256", "source_hbi_sha256",
+        "gradient_audit_hbp_sha256", "gradient_audit_hbi_sha256",
+    ):
+        flow.require_hash(hbp_semantics.get(key, ""), "FINAL_SEMANTICS_" + key)
+    source_match = hbp_semantics.get("gradient_audit_source_match")
+    renderer = hbp_semantics.get("source_renderer")
+    if source_match == "1":
+        if (
+            renderer != "RUST_1_81_CHECKED_INTEGER"
+            or hbp_semantics.get("source_hbp_sha256")
+            != flow.COMMITTED_SOURCE_HBP_SHA256
+            or hbp_semantics.get("source_hbi_sha256")
+            != flow.COMMITTED_SOURCE_HBI_SHA256
+            or hbp_semantics.get("gradient_states") != "10586"
+            or hbp_semantics.get("unique_3d_positions") != "10608"
+            or hbp_semantics.get("unique_2d_projections") != "10397"
+        ):
+            raise flow.FlowesError("FINAL_SEMANTICS_PRODUCTION_BINDING")
+    elif source_match != "0" or renderer != "INJECTED_INTEGER_TEST_SOURCE":
+        raise flow.FlowesError("FINAL_SEMANTICS_SOURCE_MODE")
+
+    center = flow.parse_tuple(hbp_lines[16], "CENTER")
     flow.require_fields(
         center,
         {
@@ -554,10 +702,13 @@ def _build_final_files(
     bundle: dict[str, bytes],
     policy: FinalPolicy,
 ) -> tuple[bytes, bytes, tuple[ArtifactRecord, ...], str]:
+    semantics = _semantic_fields(source, policy)
     records = _records(bundle)
     root = artifact_root(records)
-    hbp = _final_hbp(source, journal, journal_data, records, root, bundle, policy)
-    hbi = _final_hbi(source, journal_data, hbp, root)
+    hbp = _final_hbp(
+        source, journal, journal_data, records, root, bundle, policy, semantics
+    )
+    hbi = _final_hbi(source, journal_data, hbp, root, semantics)
     _validate_final_text(hbp, hbi)
     return hbp, hbi, records, root
 
