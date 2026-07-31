@@ -242,6 +242,31 @@ class FlowesV2Tests(unittest.TestCase):
         self.assertEqual(len(flow.build_cells(self.committed)), 31_824)
         self.assertEqual(len(flow.build_rings(self.committed, checkpoints)), 171)
 
+    def test_committed_gradient_semantics_bind_all_final_cells(self) -> None:
+        colors = {leaf.color for leaf in self.committed.leaves}
+        self.assertEqual(len(colors), 10_586)
+        self.assertGreater(len(colors), 2)
+
+        by_folder: dict[int, list[flow.SourceLeaf]] = {}
+        for leaf in self.committed.leaves:
+            by_folder.setdefault(leaf.folder_i, []).append(leaf)
+        self.assertEqual(len(by_folder), 3_536)
+        for leaves in by_folder.values():
+            self.assertEqual(tuple(leaf.family for leaf in leaves), flow.FAMILIES)
+            self.assertEqual(len({leaf.color for leaf in leaves}), 3)
+
+        cells = flow.build_cells(self.committed)
+        self.assertEqual(len(cells), 31_824)
+        self.assertEqual(len({cell.flowe_id for cell in cells}), 31_824)
+        directions_by_leaf: dict[int, set[str]] = {}
+        for cell in cells:
+            directions_by_leaf.setdefault(cell.source.index, set()).add(cell.direction)
+            self.assertEqual(len(set(cell.commitments)), len(flow.COMMITMENT_LABELS))
+        self.assertEqual(len(directions_by_leaf), 10_608)
+        self.assertTrue(
+            all(directions == set(flow.DIRECTIONS) for directions in directions_by_leaf.values())
+        )
+
     def test_fake_bundle_population_json0_and_bindings(self) -> None:
         source_dir, output_dir, source = self.small_bundle()
         hashes = flow.verify_bundle(
