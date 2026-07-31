@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+pub mod folders;
 pub mod outward;
 
 use std::collections::{BTreeMap, BTreeSet};

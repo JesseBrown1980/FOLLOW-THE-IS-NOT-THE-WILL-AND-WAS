@@ -42,6 +42,7 @@ jobs:
           python -m unittest discover -s tests -p "test_*.py"
           python tests/verify_public_repo.py
           python matrix/test_owner3d_to_public2d.py
+          python matrix/test_collect_public_folder_inventory.py
           python matrix/test_spherical_public_projection.py
           python matrix/test_render_public_spherical_svg.py
           python matrix/test_timed_chiral_gguf_monitor.py
@@ -81,6 +82,33 @@ jobs:
             PUBLIC-OUTWARD-TRUTH-WAVES.gguf.sha256
           do
             cmp "${RUNNER_TEMP}/outward/${name}" "matrix/${name}"
+          done
+
+      - name: Verify the public folder calming-OIL canopy
+        run: |
+          mkdir "${RUNNER_TEMP}/folder-calming-oils-a"
+          mkdir "${RUNNER_TEMP}/folder-calming-oils-b"
+          for output in \
+            "${RUNNER_TEMP}/folder-calming-oils-a" \
+            "${RUNNER_TEMP}/folder-calming-oils-b"
+          do
+            cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin folder-calming-oils --release --locked -- \
+              matrix/PUBLIC-FOLDER-3D-TREE.hbp \
+              "${output}" \
+              --replace
+          done
+          for name in \
+            PUBLIC-FOLDER-CALMING-OILS.hbp \
+            PUBLIC-FOLDER-CALMING-OILS.hbp.sha256 \
+            PUBLIC-FOLDER-CALMING-OILS.hbi \
+            PUBLIC-FOLDER-CALMING-OILS.hbi.sha256 \
+            PUBLIC-FOLDER-CALMING-OILS.svg \
+            PUBLIC-FOLDER-CALMING-OILS.svg.sha256 \
+            PUBLIC-FOLDER-CALMING-OILS.gguf \
+            PUBLIC-FOLDER-CALMING-OILS.gguf.sha256
+          do
+            cmp "${RUNNER_TEMP}/folder-calming-oils-a/${name}" "${RUNNER_TEMP}/folder-calming-oils-b/${name}"
+            cmp "${RUNNER_TEMP}/folder-calming-oils-a/${name}" "matrix/${name}"
           done
 
       - name: Run the fixed public tournament

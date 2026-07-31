@@ -37,3 +37,26 @@ The current V1 parser accepts at most 512 records and input levels 0 through 60
 as explicit resource/schema bounds. The output separately states
 `n_level_open=1`; `reflection_window=60` is a per-observed-level audit bound, not
 a semantic ceiling on N.
+
+## Recursive public-folder cell
+
+The `folder-calming-oils` binary verifies
+`PUBLIC-FOLDER-3D-TREE.hbp` and its sidecar, then renders every public folder
+occurrence as three independent `BROWN`, `ANTI_BROWN`, and
+`ANTI_ANTI_BROWN` views.
+
+```bash
+cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml \
+  --bin folder-calming-oils --release --locked -- \
+  matrix/PUBLIC-FOLDER-3D-TREE.hbp <empty-output-directory> --replace
+```
+
+The current sealed input contains 147 public repositories, 93 repository roots,
+3,443 Git-folder occurrences, and 3,536 total folder occurrences. The renderer
+emits 10,608 leaf rows plus static SVG and a descriptor-only GGUF with dimensions
+`[feature=64,family=3,folder=3536]`.
+
+The folder parser validates complete-tree and hierarchy semantics. Published rows
+contain opaque occurrence identities and commitments but no raw paths, direct path
+hashes, private repository identities, or repository bodies. Clean Windows GNU and
+Liris Ubuntu/WSL Rust `1.81.0` builds matched all eight output and sidecar files.

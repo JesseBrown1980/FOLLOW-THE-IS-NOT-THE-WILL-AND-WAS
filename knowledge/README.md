@@ -22,6 +22,9 @@ The public ledger contains:
 - `PUBLIC-LAW-V15-OUTWARD-TRUTH-WAVES.md` — four public detectors × three
   signed directions, reversible BLACK/HEAT relation quarantine, additive
   image/video extension metadata, and catalog-only MCP electron addresses.
+- `PUBLIC-LAW-V16-FOLDER-CALMING-OILS-OUTWARD.md` — 3,536 public folder
+  occurrences expanded into 10,608 independent Brown-family software views,
+  with hierarchy and commitments but no raw paths or private repository identities.
 - `PUBLIC-DEPENDENCIES.md` — exact upstream commits and byte hashes.
 - `operator-evidence/` — the authorized exact photo.
 - `public-dependencies/` — source required to attack-verify the inherited

@@ -1,0 +1,9 @@
+FOLDEROILIDX|schema=ASOLARIA-PUBLIC-FOLDER-CALMING-OILS-RUST-181-V1|repositories=147|folders=3536|families=3|leaves=10608|json=0
+SOURCE|schema=ASOLARIA-PUBLIC-FOLDER-3D-TREE-V1|sha256=b8cdcc4ce89a2003cefd47d2790d69707a05c257cc0fbc8cdf2c07d3adf91e43|source_capture_sha256=8145569c0b15cc6e62790796893a318e7107b99f94094fd5ca5e0a26a3d92b20|public_set_sha256=253cff884edf54b18004c599b51282b8170354355557e20c9f1817faad297696|sidecar_verified=1|git_tree_commitments=1|tree_sha1_recoverable=0|path_dictionary_resistance_claim=0|json=0
+ARTIFACT|kind=HBP|file=PUBLIC-FOLDER-CALMING-OILS.hbp|sha256=43300780cac2b85e3ed6cfa10398052f530ccbf76c43b404e650c26c9ed8b006|json=0
+ARTIFACT|kind=SVG|file=PUBLIC-FOLDER-CALMING-OILS.svg|sha256=feb18cc1e5034620a0ce78787df22683ccd662409df8b8af0752438c07d6a63b|static=1|script=0|network=0|execution=0|json=0
+ARTIFACT|kind=GGUF|file=PUBLIC-FOLDER-CALMING-OILS.gguf|sha256=fa266f1bf527d3757b6825d97b65653c547d8f1557a1ba516cee1598facd2bcf|tensor=folder_calming_oil|dimensions=feature:64,family:3,folder:3536|iteration_order=folder,family,feature|encoding=RAW_OCTETS_IN_GGML_I8|descriptor_sha256=1d023d47e7b0469ce71621bb8b5432e05d636cc14bf6a1b0803e9169305307e3|json=0
+CENTER|nullspace=0|center_members=HBI,HBP,SHA,SH,HASH|traversal=HBI->HBP->SH->HASH->SHA|sha_equals_hash=0|object_hash=c771a989d4f10ad895ba07b2a3c58f3889c1bcc380a9b2b44565789bd6b6ca88|json=0
+BOUNDARY|raw_paths=0|direct_path_hashes=0|raw_tree_sha1=0|git_tree_commitments=1|path_dictionary_resistance_claim=0|media_bytes_embedded=0|repository_bytes_embedded=0|credentials=0|network=0|execution=0|physical_energy=0|authority=0|system_affirmed=0|json=0
+RECIPE|sh=FOLDER_CALMING_OILS_RUST_181_V1|rust=1.81.0|integer_only=1|float=0|unsafe=0|dependencies=0|final_commit_marker=HBI_WITH_SIDECAR|json=0
+FOLDEROILIDXFTR|body_sha256=f000214ee9aec89ba762380482922476e167f8d19483622b105691dfc3c80a97|rows=9|json=0

@@ -16,6 +16,15 @@ READ-FIRST: https://github.com/JesseBrown1980/FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS
 - `WAS`, `IS`, and `WILL` remain distinct addresses; Git binds their references to unchanged content hashes.
 - Keep spherical sign, tense, and OIL-family axes independent. `ANTI` is not shorthand for `NEGATIVE`.
 - A 2D carrier can have two-way traversal without changing the non-bidirectional spherical IS-field geometry.
+- Keep GitHub census strata separate: owner-visible repository count, public repository
+  count, branched/unborn roots, Git-folder occurrences, unique Git-tree objects, and
+  derived color-family leaves are different populations. A repository is not a folder,
+  a repeated tree object can have multiple folder occurrences, and three Brown-family
+  views do not create three new source folders.
+- Public folder artifacts contain public-only opaque occurrence identities and hierarchy.
+  Keep raw paths, direct path hashes, private repository identities, and repository
+  bodies outside those artifacts. A domain-separated Git-tree commitment is publicly
+  linkable integrity metadata, not a path-secrecy or dictionary-resistance claim.
 
 ## Public Decoder Contract
 
