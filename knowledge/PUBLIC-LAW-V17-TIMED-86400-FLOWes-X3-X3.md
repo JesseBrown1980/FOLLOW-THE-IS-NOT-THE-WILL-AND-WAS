@@ -53,8 +53,11 @@ source commitments. Future text is not invented.
 The production watch credits only whole seconds from `time.monotonic_ns()` in a
 live SystemClock session. A restart begins from the last fully sealed checkpoint;
 wall-clock gaps and uncheckpointed partial seconds receive zero credit. An
-OS-held writer lock prevents two writers from crediting the same output. The
-deterministic fake clock is a separately labeled CI fixture and cannot produce
+OS-held writer lock prevents two same-runtime writers from crediting the same output.
+Production mint acquires that same-runtime output lock before reading or creating its
+public destination. The current Windows watch pairs with Windows Python for mint;
+Ubuntu/WSL cross-verification follows natural watch exit because its `flock` namespace
+is separate from Windows `msvcrt`. The deterministic fake clock is a separately labeled CI fixture and cannot produce
 `MEASURED_MONOTONIC_SESSION_SECONDS`.
 
 ## Public boundaries

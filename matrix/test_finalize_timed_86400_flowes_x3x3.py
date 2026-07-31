@@ -109,6 +109,56 @@ class CompactFinalWitnessTests(unittest.TestCase):
         )
         self.assertEqual(hbi_semantics, semantics)
 
+    def test_mint_requires_released_writer_lock_before_destination_mutation(self) -> None:
+        absent = self.root / "evidence-while-writer-active"
+        occupied = self.root / "existing-evidence-while-writer-active"
+        occupied.mkdir()
+        sentinel = occupied / "keep.txt"
+        sentinel.write_bytes(b"unchanged\n")
+
+        with flow.WriterLock(self.output_dir, "active-watch"):
+            for evidence in (absent, occupied):
+                with self.subTest(evidence=evidence.name):
+                    with self.assertRaisesRegex(
+                        flow.FlowesError, "^WRITER_LOCK_ACTIVE$"
+                    ):
+                        final._mint(
+                            self.source_dir,
+                            self.output_dir,
+                            evidence,
+                            self.policy,
+                        )
+
+        self.assertFalse(absent.exists())
+        self.assertEqual(tuple(path.name for path in occupied.iterdir()), ("keep.txt",))
+        self.assertEqual(sentinel.read_bytes(), b"unchanged\n")
+
+        evidence = self.mint("evidence-after-writer-release")
+        self.assertEqual(
+            set(path.name for path in evidence.iterdir()), set(final.PUBLIC_NAMES)
+        )
+
+    def test_mint_cli_reports_lock_contention_without_private_path(self) -> None:
+        evidence = self.root / "cli-evidence-while-writer-active"
+        stderr = io.StringIO()
+        with flow.WriterLock(self.output_dir, "active-watch"):
+            with contextlib.redirect_stderr(stderr):
+                result = final.main(
+                    [
+                        "mint",
+                        str(self.source_dir),
+                        str(self.output_dir),
+                        str(evidence),
+                    ]
+                )
+        diagnostic = stderr.getvalue()
+        self.assertEqual(result, 1)
+        self.assertIn("LIRISFLOWEX9FINAL|PASS=0", diagnostic)
+        self.assertIn("error=WRITER_LOCK_ACTIVE", diagnostic)
+        self.assertNotIn("Traceback", diagnostic)
+        self.assertNotIn(str(self.root), diagnostic)
+        self.assertFalse(evidence.exists())
+
     def test_artifact_root_exact_formula(self) -> None:
         evidence = self.mint()
         hbp_lines = (evidence / final.FINAL_HBP).read_text(encoding="utf-8").splitlines()

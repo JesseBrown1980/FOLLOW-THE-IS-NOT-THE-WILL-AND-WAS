@@ -11,6 +11,11 @@ a target duration or timing-mode override.
 path requires ``SystemClock``.  The journal has no independent clock samples, so this
 tool validates that provenance chain without upgrading it to independent time
 attestation; every final receipt keeps ``independent_time_attestation=0``.
+
+``mint`` acquires the builder's nonblocking output lock before reading the completed
+bundle.  That lock is scoped to one OS/runtime namespace; the current Windows-owned
+watch therefore pairs with Windows Python for mint, while Ubuntu/WSL cross-verification
+runs after the watch has exited and released its Windows lock.
 """
 
 from __future__ import annotations
@@ -737,33 +742,39 @@ def _mint(
         source_path, evidence_candidate
     ):
         raise flow.FlowesError("PUBLIC_EVIDENCE_NOT_SEPARATE")
-    source = flow.load_source(
-        source_path, require_committed=policy.require_committed_source
-    )
-    journal, journal_data = _load_complete_journal(source, output_path, policy)
-    _require_exact_files(output_path, LOCAL_NAMES, "COMPLETED_OUTPUT")
-    first, second = _build_twice(source, journal)
-    if first != second:
-        raise flow.FlowesError("REBUILD_A_NE_B")
-    live: dict[str, bytes] = {}
-    for name in flow.OUTPUT_NAMES:
-        live[name] = flow.verify_sidecar(output_path / name)
-        if live[name] != first[name]:
-            raise flow.FlowesError("REBUILD_A_NE_LIVE:" + name)
-    if live[flow.OUTPUT_JOURNAL] != journal_data:
-        raise flow.FlowesError("LIVE_JOURNAL_CHANGED")
-    final_hbp, final_hbi, _, _ = _build_final_files(
-        source, journal, journal_data, live, policy
-    )
-    _assert_paths_absent(
-        (journal_data, final_hbp, final_hbi), (source_path, output_path)
-    )
-    evidence_path = _require_empty_destination(public_evidence_dir)
-    flow.write_sealed(evidence_path / flow.OUTPUT_JOURNAL, journal_data)
-    flow.write_sealed(evidence_path / FINAL_HBP, final_hbp)
-    flow.write_sealed(evidence_path / FINAL_HBI, final_hbi)
-    _require_exact_files(evidence_path, PUBLIC_NAMES, "PUBLIC_EVIDENCE")
-    return _verify_public(source_path, evidence_path, policy)
+    # Mint is a reader of the completed watch bundle, but it must still own the
+    # same nonblocking OS lock as the writer.  This prevents a complete-looking
+    # checkpoint from being read while the watch process remains able to mutate
+    # that output.  Lock contention occurs before the public destination is
+    # created or inspected for publication.
+    with flow.WriterLock(output_path, "compact-final-mint"):
+        source = flow.load_source(
+            source_path, require_committed=policy.require_committed_source
+        )
+        journal, journal_data = _load_complete_journal(source, output_path, policy)
+        _require_exact_files(output_path, LOCAL_NAMES, "COMPLETED_OUTPUT")
+        first, second = _build_twice(source, journal)
+        if first != second:
+            raise flow.FlowesError("REBUILD_A_NE_B")
+        live: dict[str, bytes] = {}
+        for name in flow.OUTPUT_NAMES:
+            live[name] = flow.verify_sidecar(output_path / name)
+            if live[name] != first[name]:
+                raise flow.FlowesError("REBUILD_A_NE_LIVE:" + name)
+        if live[flow.OUTPUT_JOURNAL] != journal_data:
+            raise flow.FlowesError("LIVE_JOURNAL_CHANGED")
+        final_hbp, final_hbi, _, _ = _build_final_files(
+            source, journal, journal_data, live, policy
+        )
+        _assert_paths_absent(
+            (journal_data, final_hbp, final_hbi), (source_path, output_path)
+        )
+        evidence_path = _require_empty_destination(public_evidence_dir)
+        flow.write_sealed(evidence_path / flow.OUTPUT_JOURNAL, journal_data)
+        flow.write_sealed(evidence_path / FINAL_HBP, final_hbp)
+        flow.write_sealed(evidence_path / FINAL_HBI, final_hbi)
+        _require_exact_files(evidence_path, PUBLIC_NAMES, "PUBLIC_EVIDENCE")
+        return _verify_public(source_path, evidence_path, policy)
 
 
 def _verify_public(

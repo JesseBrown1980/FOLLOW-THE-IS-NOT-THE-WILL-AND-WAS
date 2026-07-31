@@ -136,7 +136,10 @@ COMPACT_FINAL_WITNESS_REQUIRED=0
 ```
 
 After that exit, use the exact launched-builder source and a separate absent or empty
-public destination. The production finalizer accepts no duration or timing override:
+public destination. For this Windows-owned watch, run preliminary verify and `mint`
+with Windows Python. Windows `msvcrt` and Ubuntu/WSL `flock` occupy separate runtime
+lock namespaces; Ubuntu/WSL cross-verification begins after the watch exits naturally.
+The production finalizer accepts no duration or timing override:
 
 ```bash
 python -B matrix/build_timed_86400_flowes_x3x3.py matrix <completed-local-output-directory> --verify
@@ -150,7 +153,9 @@ python -B matrix/verify_3d_github_harness.py
 
 Builder `--verify` is a preliminary structural/rebuild check; production `mint` is
 the gate that additionally requires `REAL_MONOTONIC`, all nineteen checkpoints, and
-the exact completed file set. `mint` requires the completed local directory to
+the exact completed file set. `mint` first acquires the same-runtime nonblocking
+output lock and leaves the public destination unchanged when that lock is active.
+`mint` requires the completed local directory to
 contain exactly the six expanded artifacts and their six SHA-256 sidecars. It rebuilds
 the five derived artifacts twice, requires both rebuilds to equal the live bytes, and
 publishes only six compact files: the journal/HBP/HBI plus their sidecars.
