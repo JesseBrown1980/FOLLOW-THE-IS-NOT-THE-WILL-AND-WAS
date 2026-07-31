@@ -140,6 +140,7 @@ MATRIX_PRIMARY = (
     "matrix/TIMED-CHIRAL-MONITOR.hbi",
     "matrix/TIMED-CHIRAL-MONITOR.hbp",
     "matrix/TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf",
+    "matrix/TIMED-86400-FLOWes-X3-X3-RUNNING.hbi",
     "matrix/timed_chiral_gguf_monitor.py",
     *TIMED_PARENT_86400_HASHES,
     "matrix/verify_3d_github_harness.py",
@@ -763,6 +764,63 @@ def main() -> None:
         or parsed_flowe_journal.accumulated_seconds != 86400
     ):
         fail("flowe_x3x3_journal_chain")
+
+    running_hbi_path = ROOT / "matrix/TIMED-86400-FLOWes-X3-X3-RUNNING.hbi"
+    running_hbi_lines = running_hbi_path.read_text(encoding="utf-8").splitlines()
+    if len(running_hbi_lines) != 1:
+        fail("flowe_x3x3_running_hbi_rows")
+    running_hbi = tuple_fields(running_hbi_lines[0], "FLOWEX9RUNHBI")
+    if (
+        running_hbi.get("state") != "RUNNING_LOCAL"
+        or running_hbi.get("builder_commit")
+        != "cf4f760f943087d312894cef5a683d99fc0119df"
+        or running_hbi.get("launch_checkpoint_seconds") != "64"
+        or running_hbi.get("source_hbp_sha256") != flowe_source.hbp_sha256
+        or running_hbi.get("source_hbi_sha256") != flowe_source.hbi_sha256
+        or running_hbi.get("center") != MATRIX_CENTER
+        or running_hbi.get("traversal") != MATRIX_TRAVERSAL_ENCODED
+        or any(running_hbi.get(name) != "0" for name in (
+            "local_output_path", "credentials", "execution_authority",
+            "system_affirmed", "json",
+        ))
+    ):
+        fail("flowe_x3x3_running_hbi_contract")
+
+    launch_path = (
+        ROOT / "receipts/LIRIS-FLOWES-X3-X3-86400-LAUNCH-2026-07-31.hbp"
+    )
+    launch_lines = launch_path.read_text(encoding="utf-8").splitlines()
+    if len(launch_lines) != 15 or any(
+        not line.endswith("|json=0") for line in launch_lines
+    ):
+        fail("flowe_x3x3_launch_shape")
+    launch_header = tuple_fields(launch_lines[0], "LIRISFLOWEX9LAUNCHHDR")
+    launch_boundary = tuple_fields(launch_lines[-3], "BOUNDARY")
+    launch_center = tuple_fields(launch_lines[9], "CENTER")
+    launch_shape = tuple_fields(launch_lines[10], "SHAPE")
+    if (
+        launch_header.get("evidence") != "MEASURED_LIRIS_LOCAL"
+        or launch_header.get("status") != "RUNNING_LOCAL"
+        or launch_header.get("target_seconds") != "86400"
+        or launch_center.get("members") != MATRIX_CENTER
+        or launch_center.get("traversal") != MATRIX_TRAVERSAL_ENCODED
+        or launch_shape.get("final_cells") != "31824"
+        or launch_shape.get("ring_summaries_target") != "171"
+        or launch_boundary.get("complete") != "0"
+        or launch_boundary.get("final_artifacts_present") != "0"
+        or any(launch_boundary.get(name) != "0" for name in (
+            "credentials", "private_paths", "network_required",
+            "execution_authority", "physical_energy", "system_affirmed", "json",
+        ))
+    ):
+        fail("flowe_x3x3_launch_contract")
+    launch_body = ("\n".join(launch_lines[:-1]) + "\n").encode("utf-8")
+    if tuple_fields(launch_lines[-1], "LIRISFLOWEX9LAUNCHFTR") != {
+        "body_sha256": hashlib.sha256(launch_body).hexdigest(),
+        "rows": "15",
+        "json": "0",
+    }:
+        fail("flowe_x3x3_launch_footer")
 
     parent_dir = ROOT / "matrix/timed-86400-parent-c8c3"
     for relative, expected_hash in TIMED_PARENT_86400_HASHES.items():

@@ -115,8 +115,10 @@ corruption/restart/locking tests in `test_build_timed_86400_flowes_x3x3.py`. It
 expands all 3,536 folders through three families and three directions, creates
 31,824 five-commitment cells, and chains 171 per-level ring summaries. The real
 watch is fixed to a SystemClock-owned 86,400 seconds; deterministic CI output is
-separately labeled and cannot claim measured timing. Before the exact public
-builder commit is launched, the real-run state remains `READY_NOT_STARTED`.
+separately labeled and cannot claim measured timing. The real SystemClock watch
+launched from public commit `cf4f760f943087d312894cef5a683d99fc0119df`; its
+bounded pointer is `TIMED-86400-FLOWes-X3-X3-RUNNING.hbi`. `RUNNING_LOCAL` is
+not completion, and every resume must remeasure the PID and sealed journal.
 
 ```bash
 python matrix/build_timed_86400_flowes_x3x3.py matrix OUTPUT_DIR --watch

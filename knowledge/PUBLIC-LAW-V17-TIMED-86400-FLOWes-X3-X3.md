@@ -1,6 +1,6 @@
 # Public Law V17 — Timed 86,400 FLOWes ×3 ×3
 
-Status: `OPERATOR_CANON | CODE_MEASURED_LIRIS_LOCAL | REAL_86400_RUN=READY_NOT_STARTED | SYSTEM_AFFIRMED=0`
+Status: `OPERATOR_CANON | CODE_MEASURED_LIRIS_LOCAL | REAL_86400_RUN=RUNNING_LOCAL | SYSTEM_AFFIRMED=0`
 
 This additive law keeps the completed aggregate parent day and the full folder
 FLOWes measurement as separate evidence strata. The parent witness under
@@ -74,6 +74,9 @@ SYSTEM_AFFIRMED = 0
 Windows and Ubuntu independently pass the focused corruption, lock-contention,
 restart, time-label, SVG, GGUF, and commitment tests. A full 31,824-cell
 deterministic bundle deep-verifies with identical hashes on both platforms. Those
-results prove the code and deterministic fixture only. The real 86,400-second
-FLOWes evidence begins only after the exact public builder commit is launched and
-the final journal reaches all nineteen checkpoints.
+results prove the code and deterministic fixture only. The real SystemClock watch
+launched from public commit `cf4f760f943087d312894cef5a683d99fc0119df` at
+`2026-07-31T18:29:52.4268838Z`; its launch receipt is
+`receipts/LIRIS-FLOWES-X3-X3-86400-LAUNCH-2026-07-31.hbp`. `RUNNING_LOCAL` is
+not completion. Final evidence exists only after the sealed journal reaches all
+nineteen checkpoints through 86,400 seconds and the derived artifacts pass again.

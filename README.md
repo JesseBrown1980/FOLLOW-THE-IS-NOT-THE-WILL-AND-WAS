@@ -85,7 +85,8 @@ The completed one-day monitor in `matrix/timed-86400-parent-c8c3/` is a
 checkpoints reached 86,400 seconds and its six final artifact/sidecar files match
 the deterministic rebuild. Its receipt fixes `full_x3_x3=0`; the distinct full
 folder goal (three calming-OIL families by three signed directions, 31,824 cells)
-remains pending its own restart-aware one-day measurement and publication gate.
+is now `RUNNING_LOCAL` from public builder commit `cf4f760`; it remains pending
+the sealed 86,400-second checkpoint and final publication gate.
 
 ## Center and traversal
 

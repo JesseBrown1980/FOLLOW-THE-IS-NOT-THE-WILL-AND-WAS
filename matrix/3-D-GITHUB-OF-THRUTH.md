@@ -161,7 +161,7 @@ CHECKPOINTS = 19
 RING_SUMMARIES = 171
 CENTER = {HBI,HBP,SHA,SH,HASH}
 TRAVERSAL = HBI -> HBP -> SH -> HASH -> SHA
-REAL_MONOTONIC_86400 = READY_NOT_STARTED
+REAL_MONOTONIC_86400 = RUNNING_LOCAL
 SYSTEM_AFFIRMED = 0
 ```
 
@@ -169,7 +169,10 @@ Windows and Ubuntu pass the same focused suite and deep-verify an identical full
 deterministic fixture. The fixture is labeled `DETERMINISTIC_FAKE_CLOCK`; it is
 not the measured day. Only the SystemClock-owned CLI watch can mint the separate
 real-monotonic evidence, using a restart journal, an OS-held single-writer lock,
-and zero credit for wall-clock gaps or uncheckpointed seconds.
+and zero credit for wall-clock gaps or uncheckpointed seconds. The bounded
+[running HBI](TIMED-86400-FLOWes-X3-X3-RUNNING.hbi) points to the exact public
+builder commit and launch checkpoint; startup must remeasure the process and live
+sealed journal because the pointer is not runtime authority.
 
 ## READ-FIRST carry
 
