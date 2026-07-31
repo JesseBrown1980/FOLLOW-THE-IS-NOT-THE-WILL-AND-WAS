@@ -2120,6 +2120,14 @@ mod tests {
                 .len(),
             9
         );
+        assert!(
+            leaves
+                .iter()
+                .map(|leaf| leaf.color)
+                .collect::<BTreeSet<_>>()
+                .len()
+                > 2
+        );
         for chunk in leaves.chunks_exact(FAMILY_COUNT) {
             assert_eq!(
                 chunk
@@ -2127,6 +2135,14 @@ mod tests {
                     .map(|leaf| leaf.family)
                     .collect::<BTreeSet<_>>(),
                 Family::ALL.into_iter().collect()
+            );
+            assert_eq!(
+                chunk
+                    .iter()
+                    .map(|leaf| leaf.color)
+                    .collect::<BTreeSet<_>>()
+                    .len(),
+                FAMILY_COUNT
             );
             assert!(chunk
                 .iter()

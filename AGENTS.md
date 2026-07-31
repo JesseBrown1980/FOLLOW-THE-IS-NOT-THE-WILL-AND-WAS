@@ -79,11 +79,20 @@ READ-FIRST: https://github.com/JesseBrown1980/FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS
   arithmetic, and contains no `f32`, `f64`, floating-point literal, or
   floating-point tolerance. Keep `N_LEVEL_OPEN=1`; the value 60 is the maximum
   reflection window per observed level, not a semantic level ceiling.
+- QPRISM semantic anti-binary correction (ACCEPTED_BY_OPERATOR 2026-07-31):
+  serialized bits and octets are carrier structure, not the semantic alphabet.
+  Do not flatten independently addressed `BROWN`, `ANTI_BROWN`, and
+  `ANTI_ANTI_BROWN` families or their integer-derived color gradients into two
+  semantic states. Keep a finite emitted capture distinct from the open-N design:
+  `FINITE_CAPTURE=1`, `SEMANTIC_BINARY=0`, `N_LEVEL_OPEN=1`, and
+  `LOGICAL_IDENTITY_CEILING=0` can all hold without exchanging their meanings.
 - Held-out QPRISM correction test: given two public repository rows at distinct
   depths, a candidate fails if it emits one combined leaf, omits any of the three
   leaf-family IDs, ignores z while ordering the view, uses a table as the primary
   display, uses floating-point geometry, treats 60 as the final N level, includes
-  a private-repository row, or changes a repository identity during projection.
+  a private-repository row, changes a repository identity during projection,
+  calls the three-family gradient semantics binary, or calls a finite emitted
+  capture itself infinite.
 
 ## Perfect-Grammar Light/OIL Law
 
