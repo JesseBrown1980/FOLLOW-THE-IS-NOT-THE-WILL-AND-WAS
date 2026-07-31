@@ -111,6 +111,8 @@ MATRIX_PRIMARY = (
     "matrix/PUBLIC-OWNER-2D.hbp",
     "matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp",
     "matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg",
+    "matrix/QPRISM-ON-DEMAND-PUBLIC-BINDING.hbp",
+    "matrix/QPRISM-ON-DEMAND-PUBLIC-BINDING.hbi",
     "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbp",
     "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.hbi",
     "matrix/PUBLIC-OUTWARD-TRUTH-WAVES.svg",
