@@ -193,8 +193,13 @@ def crafted_journal(
 class FlowesV2Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.repo_matrix = Path(__file__).resolve().parent
-        cls.committed = flow.load_source(cls.repo_matrix)
+        source_override = os.environ.get("ASOLARIA_FLOWES_SOURCE_DIR")
+        cls.source_dir = (
+            Path(source_override).resolve()
+            if source_override
+            else Path(__file__).resolve().parent
+        )
+        cls.committed = flow.load_source(cls.source_dir)
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()

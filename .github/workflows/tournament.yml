@@ -46,7 +46,6 @@ jobs:
           python matrix/test_spherical_public_projection.py
           python matrix/test_render_public_spherical_svg.py
           python matrix/test_timed_chiral_gguf_monitor.py
-          python matrix/test_build_timed_86400_flowes_x3x3.py
           python matrix/spherical_public_projection.py verify matrix/PUBLIC-SPHERICAL-PROJECTION.hbp
 
       - name: Verify the exact-integer QPRISM color canopy
@@ -54,16 +53,26 @@ jobs:
           cargo +1.81.0 fmt --manifest-path matrix/rust-qprism-181/Cargo.toml -- --check
           cargo +1.81.0 test --manifest-path matrix/rust-qprism-181/Cargo.toml --locked
           cargo +1.81.0 clippy --manifest-path matrix/rust-qprism-181/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
-          mkdir "${RUNNER_TEMP}/qprism"
-          cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin rust-qprism-181 --release --locked -- \
-            matrix/PUBLIC-OWNER-2D.hbp \
-            "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.hbp" \
-            "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg" \
-            --replace
-          cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.hbp" matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp
-          cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.hbp.sha256" matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp.sha256
-          cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg" matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg
-          cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg.sha256" matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg.sha256
+          mkdir "${RUNNER_TEMP}/qprism-a"
+          mkdir "${RUNNER_TEMP}/qprism-b"
+          for output in \
+            "${RUNNER_TEMP}/qprism-a" \
+            "${RUNNER_TEMP}/qprism-b"
+          do
+            cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin rust-qprism-181 --release --locked -- \
+              matrix/PUBLIC-OWNER-2D.hbp \
+              "${output}/PUBLIC-QPRISM-COLOR-LEAVES.hbp" \
+              "${output}/PUBLIC-QPRISM-COLOR-LEAVES.svg" \
+              --replace
+          done
+          for name in \
+            PUBLIC-QPRISM-COLOR-LEAVES.hbp \
+            PUBLIC-QPRISM-COLOR-LEAVES.hbp.sha256 \
+            PUBLIC-QPRISM-COLOR-LEAVES.svg \
+            PUBLIC-QPRISM-COLOR-LEAVES.svg.sha256
+          do
+            cmp "${RUNNER_TEMP}/qprism-a/${name}" "${RUNNER_TEMP}/qprism-b/${name}"
+          done
 
       - name: Verify the four-by-three outward truth waves
         run: |
@@ -109,8 +118,9 @@ jobs:
             PUBLIC-FOLDER-CALMING-OILS.gguf.sha256
           do
             cmp "${RUNNER_TEMP}/folder-calming-oils-a/${name}" "${RUNNER_TEMP}/folder-calming-oils-b/${name}"
-            cmp "${RUNNER_TEMP}/folder-calming-oils-a/${name}" "matrix/${name}"
           done
+          ASOLARIA_FLOWES_SOURCE_DIR="${RUNNER_TEMP}/folder-calming-oils-a" \
+            python matrix/test_build_timed_86400_flowes_x3x3.py
 
       - name: Verify the 86,400-second FLOWes x3 x3 builder
         run: |
@@ -121,11 +131,11 @@ jobs:
             "${RUNNER_TEMP}/flowes-x3x3-b"
           do
             python matrix/build_timed_86400_flowes_x3x3.py \
-              matrix \
+              "${RUNNER_TEMP}/folder-calming-oils-a" \
               "${output}" \
               --fake-clock-build
             python matrix/build_timed_86400_flowes_x3x3.py \
-              matrix \
+              "${RUNNER_TEMP}/folder-calming-oils-a" \
               "${output}" \
               --verify
           done
