@@ -161,6 +161,71 @@ fn main() {
 |the_zero_is_the_centroid|the_zero_is_not_one_of_the_three|residual_of_third_arm=the_trit\
 |exact_in_thirds=1|machine_zero=0|json=0".into());
 
+    // ---- EXACT GEOMETRY: integers only, no sqrt, no trigonometry ----------
+    // 729 is odd, so the grid centre is the integer 364. Every displacement is
+    // an integer, so r^2 is exact and never needs a square root.
+    const C: i64 = 364;
+    let mut geo: Vec<(u32, i64, i64, i64, i64)> = Vec::new();
+    for &(s, x, y, r, g, b) in STARS.iter() {
+        let (dx, dy) = (x as i64 - C, y as i64 - C);
+        let r2 = dx * dx + dy * dy;
+        let (_, _, ab) = arms(r, g, b);
+        geo.push((s, dx, dy, r2, ab));
+        rows.push(format!(
+            "GEO|s={}|dx={}|dy={}|r2={}|trit={}|sqrt_taken=0|trig_used=0|json=0",
+            s, dx, dy, r2, ab
+        ));
+    }
+    rows.push(format!(
+        "GEOCENTRE|grid=729|centre=(729-1)/2={}|is_integer=1|float_used=0|json=0", C));
+    rows.push(format!(
+        "GEOS0|r2={}|equals_291_squared={}|dy=0_exactly_on_axis={}|json=0",
+        geo[0].3, geo[0].3 == 291 * 291, geo[0].2 == 0));
+
+    // exact mirror symmetry about y = C
+    let pairs = [(1usize, 8usize), (2, 7), (3, 6), (4, 5)];
+    let mut sym = 0;
+    let mut trit_breaks = 0;
+    for &(a, b2) in pairs.iter() {
+        let (pa, pb) = (geo[a], geo[b2]);
+        let mirrored = pa.1 == pb.1 && pa.2 == -pb.2 && pa.3 == pb.3;
+        if mirrored {
+            sym += 1;
+        }
+        if pa.4 != pb.4 {
+            trit_breaks += 1;
+        }
+        rows.push(format!(
+            "MIRROR|s{}<->s{}|dx_equal={}|dy_negated={}|r2_equal={}|exact={}|trit_a={}|trit_b={}|trit_equal={}|json=0",
+            a, b2, pa.1 == pb.1, pa.2 == -pb.2, pa.3 == pb.3, mirrored, pa.4, pb.4, pa.4 == pb.4));
+    }
+    rows.push(format!(
+        "MIRRORSUM|pairs={}|positions_exactly_symmetric={}|trit_differs_in={}\
+|positions_are_mirror_blind=1|the_trit_sees_the_difference={}|json=0",
+        pairs.len(), sym, trit_breaks, trit_breaks > 0));
+    assert_eq!(sym, pairs.len(), "mirror symmetry is not exact");
+
+    // single rotation, by exact integer cross products
+    let mut crosses: Vec<i64> = Vec::with_capacity(9);
+    for i in 0..9usize {
+        let a = geo[i];
+        let b2 = geo[(i + 1) % 9];
+        crosses.push(a.1 * b2.2 - a.2 * b2.1);
+    }
+    let all_pos = crosses.iter().all(|&c| c > 0);
+    let palindrome = crosses.iter().eq(crosses.iter().rev());
+    rows.push(format!(
+        "TURN|crosses={}|all_positive={}|single_rotation_no_backtrack={}|palindromic={}\
+|centre_value={}|json=0",
+        crosses.iter().map(|c| c.to_string()).collect::<Vec<_>>().join(","),
+        all_pos, all_pos, palindrome, crosses[4]));
+    assert!(all_pos, "the turn backtracked");
+
+    rows.push("RETRACT|k=float_derived_geometry|superseded=radius_290.5,spread_0.74,\
+angles_40.11_etc,cosine_offsets_126.56_126.78_126.89,amplitudes_101.62_101.60_71.93,\
+phases_0_89.98_45.02,amplitude_ratio_vs_sqrt2|reason=computed_with_hypot_atan2_and_float_multiply\
+|replaced_by=exact_integer_r2_mirror_pairs_and_cross_products|json=0".into());
+
     let body = rows.join("\n");
     let receipt = sha256(body.as_bytes());
     for r in &rows {

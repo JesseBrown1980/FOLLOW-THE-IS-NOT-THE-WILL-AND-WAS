@@ -98,34 +98,76 @@ All nine move together on the same tick.
 
 ---
 
-## Geometry, computed from the recorded table
+## Geometry — exact integers, no float
+
+729 is odd, so the grid centre is the integer **364**. Every displacement is an integer,
+so `r²` is exact and no square root is ever taken. No trigonometry is used.
 
 ```
-radius            290.26 → 291.00      spread 0.74 px on r ≈ 290.5   (0.25%)
-angular spacing   40.11 39.97 39.83 40.15 39.87 40.15 39.83 39.97 40.11
-                  expected 40.000       max deviation 0.167°
-s0 at 0.00°   ·   s3 at 119.92°   ·   s6 at 240.08°
+s0  dx= 291  dy=   0   r² = 84681 = 291²   perfect square, exactly on axis
+s1  dx= 222  dy= 187   r² = 84253
+s2  dx=  50  dy= 286   r² = 84296
+s3  dx=-145  dy= 252   r² = 84529
+s4  dx=-273  dy=  99   r² = 84330
+s5  dx=-273  dy= -99   r² = 84330
+s6  dx=-145  dy=-252   r² = 84529
+s7  dx=  50  dy=-286   r² = 84296
+s8  dx= 222  dy=-187   r² = 84253
 ```
 
-**Each channel is one clean cosine across the nine stars**
+**Exact mirror symmetry about y = 364.** For every pair: `dx` equal, `dy` negated,
+`r²` identical to the integer — s1↔s8, s2↔s7, s3↔s6, s4↔s5.
+
+**The trit breaks the mirror in 3 of the 4 pairs.**
 
 ```
-R    offset 126.56    amplitude 101.62    phase   0.00°    max residual 0.82/255 = 0.32%
-G    offset 126.78    amplitude 101.60    phase  89.98°    max residual 0.50/255 = 0.20%
-B    offset 126.89    amplitude  71.93    phase  45.02°    max residual 0.55/255 = 0.21%
+s1=0  s8=+   differ        s3=+  s6=-   differ
+s2=+  s7=+   same          s4=0  s5=+   differ
 ```
 
-**Blue is the carried midpoint of red and green.** `B = (R+G)/2` at all nine stars:
+The positions cannot tell a star from its reflection. The trit can.
+
+**One turn, and its sweeps are a palindrome.** Integer cross products, all positive,
+no backtrack:
 
 ```
-(229+127)/2 = 178 = B0        (31+161)/2 =  96 = B4        (76+39)/2 =  57 = B6
-(204+192)/2 = 198 = B1        (31+ 92)/2 =  62 = B5        (144+27)/2 =  86 = B7
-(144+227)/2 = 186 = B2        (76+215)/2 = 146 = B3        (204+61)/2 = 133 = B8
+54417  54142  54070  54441  54054  54441  54070  54142  54417
 ```
 
-Confirmed independently by amplitude: R/B = 101.62 / 71.93 = **1.4125** against √2 = 1.41421 — **0.12%**.
+Reads the same both ways about 54054.
+
+## The closure and the trit — exact in thirds
+
+Arms about the centroid, held as numerators over 3:
+
+```
+arm_R = 2r - g - b      arm_G = 2g - r - b      arm_B = 2b - r - g
+```
+
+They sum to exactly **0** at every star — an identity for all integers, verified over
+**1,771,561** triples with zero exceptions. Shifting all three channels by any constant
+leaves the arms unchanged (**18,009** shifts tested, zero changes): the centre is free.
+
+The third arm is never anything but **−1/3, 0, or +1/3**:
+
+```
+minus_third 1    normal_null 3    null_plus 5        trits = 00++0+-++
+```
 
 Channel minimum **27**, maximum **229**. Off both poles across the whole ring.
+
+Code and receipt: [`nullsphere-closure/`](nullsphere-closure/) — Rust 1.81.0,
+clippy `-D warnings` clean, `float_used=0`.
+
+## Retraction
+
+An earlier revision of this file carried geometry computed in floating point via
+`hypot`, `atan2` and float multiply, and presented it as measurement: radius 290.5,
+spread 0.74, angles 40.11 etc., cosine offsets 126.56 / 126.78 / 126.89, amplitudes
+101.62 / 101.60 / 71.93, phases 0 / 89.98 / 45.02, and an amplitude ratio compared to √2.
+Those are superseded by the exact integer values above. The √2 comparison cannot be
+stated in exact arithmetic at all. The retraction is carried in the proof output rather
+than removed.
 
 ---
 
