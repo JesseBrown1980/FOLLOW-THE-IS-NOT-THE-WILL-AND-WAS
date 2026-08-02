@@ -96,6 +96,85 @@ The reviewed immutable run is now committed as `TIMED-CHIRAL-MONITOR.hbi`,
 bound to the unchanged `f3a9ade5...` V1 PUBLIC2D source and reproduces byte for
 byte from a deterministic 7,200-second completion calculation.
 
+### Completed 86,400-second parent witness
+
+`timed-86400-parent-c8c3/` seals the completed real-monotonic one-day parent run
+over the unchanged `c8c3a6ba...` public media-position source. Its normalized
+trace contains all 19 scheduled checkpoints through 86,400 seconds; the final
+HBP, HBI, and 2,200-byte descriptor-only GGUF match a deterministic completion
+rebuild byte for byte.
+
+This stratum is explicitly `VALID_PARENT_WITNESS` with `full_x3_x3=0`. It has one
+aggregate spherical-outward row per checkpoint. It does not claim the separate
+full folder target of three calming-OIL families by three signed directions. That
+31,824-cell follow-on remains pending its own restart-aware 86,400-second run and
+publication gate; the valid parent bytes remain unchanged.
+
+The additive V2 builder is `build_timed_86400_flowes_x3x3.py`, with focused
+corruption/restart/locking tests in `test_build_timed_86400_flowes_x3x3.py`. It
+expands all 3,536 folders through three families and three directions, creates
+31,824 five-commitment cells, and chains 171 per-level ring summaries. The real
+watch is fixed to a SystemClock-owned 86,400 seconds; deterministic CI output is
+separately labeled and cannot claim measured timing. The real SystemClock watch
+launched from public commit `cf4f760f943087d312894cef5a683d99fc0119df`; its
+historical launch pointer is `TIMED-86400-FLOWes-X3-X3-RUNNING.hbi`. The watch
+reached all nineteen checkpoints and its compact verified witness is now under
+`timed-86400-flowes-x3x3-final/`.
+
+```bash
+python matrix/build_timed_86400_flowes_x3x3.py matrix OUTPUT_DIR --watch
+```
+
+### Compact final publication gate
+
+The running journal and expanded bundle remain local until the SystemClock-owned
+watch reaches its nineteenth sealed checkpoint at 86,400 seconds, finishes writing
+every artifact/sidecar pair, exits naturally, and releases its OS-held writer lock.
+The current public-gate state is:
+
+```text
+COMPACT_FINAL_WITNESS_REQUIRED=1
+```
+
+After that exit, use the exact launched-builder source and a separate absent or empty
+public destination. For this Windows-owned watch, run preliminary verify and `mint`
+with Windows Python. Windows `msvcrt` and Ubuntu/WSL `flock` occupy separate runtime
+lock namespaces; Ubuntu/WSL cross-verification begins after the watch exits naturally.
+The production finalizer accepts no duration or timing override:
+
+```bash
+python -B matrix/build_timed_86400_flowes_x3x3.py matrix <completed-local-output-directory> --verify
+python -B matrix/finalize_timed_86400_flowes_x3x3.py mint matrix <completed-local-output-directory> <separate-empty-staging-directory>
+python -B matrix/finalize_timed_86400_flowes_x3x3.py verify-public matrix <separate-empty-staging-directory>
+# Copy exactly the verified six-file staging set into matrix/timed-86400-flowes-x3x3-final, then verify it again:
+python -B matrix/finalize_timed_86400_flowes_x3x3.py verify-public matrix matrix/timed-86400-flowes-x3x3-final
+python -B matrix/test_build_timed_86400_flowes_x3x3.py
+python -B matrix/test_finalize_timed_86400_flowes_x3x3.py
+python -B tests/verify_public_repo.py
+python -B matrix/verify_3d_github_harness.py
+```
+
+Builder `--verify` is a preliminary structural/rebuild check; production `mint` is
+the gate that additionally requires `REAL_MONOTONIC`, all nineteen checkpoints, and
+the exact completed file set. `mint` first acquires the same-runtime nonblocking
+output lock and leaves the public destination unchanged when that lock is active.
+`mint` requires the completed local directory to
+contain exactly the six expanded artifacts and their six SHA-256 sidecars. It rebuilds
+the five derived artifacts twice, requires both rebuilds to equal the live bytes, and
+publishes only six compact files: the journal/HBP/HBI plus their sidecars.
+`verify-public` reconstructs the five expanded artifacts from the public source and
+compact journal and checks the final HBP/HBI and artifact-root commitments. Run
+`mint` once, then run `verify-public` and both focused/public verifier suites from
+Windows and Ubuntu over the same LF-pinned checkout.
+
+Only after `mint`, cross-platform `verify-public`, and the Windows and Ubuntu test
+surfaces pass may the activation row's final digit change from zero to one in `README.md`,
+`matrix/README.md`, and `matrix/3-D-GITHUB-OF-THRUTH.md`. That change makes absence or
+partial publication fail closed. Keep `independent_time_attestation=0`,
+`SYSTEM_AFFIRMED=0`, `credentials=0`, `network=0`, `execution=0`, `authority=0`, and
+`physical_energy=0` unless their separate owning evidence surfaces establish a new
+stratum.
+
 The additive media V2 capture leaves that V1 source unchanged. It classifies
 public Git-tree blob paths by extension and publishes only per-repository counts,
 declared Git-object byte totals, unknown-size counts, and commitments. It stores
@@ -118,4 +197,6 @@ folder HBP, HBI, SVG, GGUF, and all four sidecars byte for byte.
 GitHub's REST transport and held-out test fixtures may use JSON as a cold
 compatibility, acquisition, or validation boundary. JSON is not the active matrix
 row format. The active artifacts are LF-normalized HBI/HBP tuple text; every active
-row ends in `json=0`, and SHA-256 sidecars bind the final bytes.
+row ends in `json=0`, and SHA-256 sidecars bind the final bytes. The literal terminal
+field `json=0` means `JSON_PAYLOAD_PRESENT=0`: it is a zero-JSON/anti-JSON format
+sentinel, not a JSON object, array, document, or parser request.

@@ -1,0 +1,15 @@
+LIRISFLOWEX9LAUNCHHDR|schema=ASOLARIA-TIMED-86400-FLOWes-X3-X3-LAUNCH-V1|evidence=MEASURED_LIRIS_LOCAL|status=RUNNING_LOCAL|target_seconds=86400|json=0
+PUBLIC|repo=JesseBrown1980/FOLLOW-THE-IS-NOT-THE-WILL-AND-WAS|branch=agent/timed-86400-flowes-x3x3-20260731|builder_commit=cf4f760f943087d312894cef5a683d99fc0119df|pr=6|draft=1|json=0
+GITHUBGATE|push_run=30655228722|push_conclusion=SUCCESS|pr_run=30655247163|pr_conclusion=SUCCESS|head=cf4f760f943087d312894cef5a683d99fc0119df|json=0
+SOURCE|kind=HBP|sha256=43300780cac2b85e3ed6cfa10398052f530ccbf76c43b404e650c26c9ed8b006|sidecar_verified=1|json=0
+SOURCE|kind=HBI|sha256=9920d5cb2031d6453fba2d410e4b2f6e0136a4537fa6ea2ea9385c163503a28b|sidecar_verified=1|json=0
+PROCESS|seat=LIRIS|pid=16476|started_utc=2026-07-31T18%3A29%3A52.4268838Z|present=1|system_clock=1|local_output_path_published=0|json=0
+WRITERLOCK|os_held=1|exclusive=1|competing_writer_rejected=1|case_alias_guard=1|lock_bytes_authority=0|json=0
+EARLYCHECKPOINTS|count=8|seconds=1,2,3,4,8,16,32,64|last_seconds=64|last_hash=ea45a5da02f45820ab2b40c016eeba90d8845e0abb3cb239e9d8d477db193b7f|json=0
+JOURNAL|timing_mode=REAL_MONOTONIC|sessions=1|state=IN_PROGRESS|sha256=f78575c980bba488cbcc7f3ca18677676384923555761f8d29616a2d14757a00|sidecar_verified=1|wall_clock_credit=0|cross_process_gap_credit=0|uncheckpointed_credit=0|json=0
+CENTER|members=HBI,HBP,SHA,SH,HASH|traversal=HBI-%3EHBP-%3ESH-%3EHASH-%3ESHA|commitments_per_cell=5|domain_separated=1|json=0
+SHAPE|folders=3536|families=3|directions=3|final_cells=31824|checkpoints_target=19|ring_summaries_target=171|observation_limit=60|json=0
+NETWORK|pid=16476|tcp_listeners=0|tcp_connections=0|udp_endpoints=0|measured_after_launch=1|json=0
+BOUNDARY|complete=0|final_artifacts_present=0|credentials=0|private_paths=0|network_required=0|execution_authority=0|physical_energy=0|system_affirmed=0|json=0
+RESUME|remeasure_pid_and_sealed_journal=1|publish_final_only_after_checkpoint_seconds_86400=1|merge_after_final_gates=1|json=0
+LIRISFLOWEX9LAUNCHFTR|body_sha256=2aedff553a7a691b20a7938faae18dc3497cf94b02015300ccc0f5f431b6de4a|rows=15|json=0

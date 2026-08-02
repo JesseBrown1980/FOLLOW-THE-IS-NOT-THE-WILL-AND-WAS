@@ -51,9 +51,9 @@ coordinates.
   and NEST sequence plus its exact source ledger.
 - `matrix/` — the authenticated public-owner census, sealed HBI/HBP roots,
   exact Rust 1.81 integer QPRISM, plural-leaf 3-D color canopy, reversible
-  projection, completed timed GGUF monitor, additive public media-extension
-  commitments, four-by-three outward truth-wave view, and recursive public-folder
-  calming-OIL canopy.
+  projection, completed timed GGUF monitor, completed aggregate 86,400-second
+  parent witness, additive public media-extension commitments, four-by-three
+  outward truth-wave view, and recursive public-folder calming-OIL canopy.
 
 ## Public evidence boundary
 
@@ -79,6 +79,18 @@ The additive V2 snapshot measured 1,137 public image-extension entries and zero
 video-extension entries in the same 147-repository census. It stores counts,
 declared Git-object bytes, unknown-size counts, and commitments; paths and media
 bodies remain absent. Zero videos is scoped to that exact public capture.
+
+The completed one-day monitor in `matrix/timed-86400-parent-c8c3/` is a
+`VALID_PARENT_WITNESS` over the `c8c3a6ba...` media-position source: 19 monotonic
+checkpoints reached 86,400 seconds and its six final artifact/sidecar files match
+the deterministic rebuild. Its receipt fixes `full_x3_x3=0`. The distinct full
+folder goal (three calming-OIL families by three signed directions, 31,824 cells)
+also completed on Liris from public builder commit `cf4f760`; its compact journal
+and FINAL HBP/HBI witness are under `matrix/timed-86400-flowes-x3x3-final/`.
+
+```text
+COMPACT_FINAL_WITNESS_REQUIRED=1
+```
 
 ## Center and traversal
 
@@ -133,7 +145,8 @@ per-level reflection window rather than the number of possible levels.
 
 GitHub REST acquisition and held-out fixtures may use JSON as a cold compatibility
 boundary. The active public artifacts are LF-normalized HBI/HBP tuple text and every
-active row ends in `json=0`.
+active row ends in `json=0`. That literal terminal field means
+`JSON_PAYLOAD_PRESENT=0`: it is a zero-JSON/anti-JSON format sentinel, not JSON data.
 
 ## Verify
 

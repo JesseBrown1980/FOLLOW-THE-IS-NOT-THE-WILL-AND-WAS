@@ -53,16 +53,26 @@ jobs:
           cargo +1.81.0 fmt --manifest-path matrix/rust-qprism-181/Cargo.toml -- --check
           cargo +1.81.0 test --manifest-path matrix/rust-qprism-181/Cargo.toml --locked
           cargo +1.81.0 clippy --manifest-path matrix/rust-qprism-181/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
-          mkdir "${RUNNER_TEMP}/qprism"
-          cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin rust-qprism-181 --release --locked -- \
-            matrix/PUBLIC-OWNER-2D.hbp \
-            "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.hbp" \
-            "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg" \
-            --replace
-          cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.hbp" matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp
-          cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.hbp.sha256" matrix/PUBLIC-QPRISM-COLOR-LEAVES.hbp.sha256
-          cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg" matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg
-          cmp "${RUNNER_TEMP}/qprism/PUBLIC-QPRISM-COLOR-LEAVES.svg.sha256" matrix/PUBLIC-QPRISM-COLOR-LEAVES.svg.sha256
+          mkdir "${RUNNER_TEMP}/qprism-a"
+          mkdir "${RUNNER_TEMP}/qprism-b"
+          for output in \
+            "${RUNNER_TEMP}/qprism-a" \
+            "${RUNNER_TEMP}/qprism-b"
+          do
+            cargo +1.81.0 run --manifest-path matrix/rust-qprism-181/Cargo.toml --bin rust-qprism-181 --release --locked -- \
+              matrix/PUBLIC-OWNER-2D.hbp \
+              "${output}/PUBLIC-QPRISM-COLOR-LEAVES.hbp" \
+              "${output}/PUBLIC-QPRISM-COLOR-LEAVES.svg" \
+              --replace
+          done
+          for name in \
+            PUBLIC-QPRISM-COLOR-LEAVES.hbp \
+            PUBLIC-QPRISM-COLOR-LEAVES.hbp.sha256 \
+            PUBLIC-QPRISM-COLOR-LEAVES.svg \
+            PUBLIC-QPRISM-COLOR-LEAVES.svg.sha256
+          do
+            cmp "${RUNNER_TEMP}/qprism-a/${name}" "${RUNNER_TEMP}/qprism-b/${name}"
+          done
 
       - name: Verify the four-by-three outward truth waves
         run: |
@@ -108,8 +118,89 @@ jobs:
             PUBLIC-FOLDER-CALMING-OILS.gguf.sha256
           do
             cmp "${RUNNER_TEMP}/folder-calming-oils-a/${name}" "${RUNNER_TEMP}/folder-calming-oils-b/${name}"
-            cmp "${RUNNER_TEMP}/folder-calming-oils-a/${name}" "matrix/${name}"
           done
+          ASOLARIA_FLOWES_SOURCE_DIR="${RUNNER_TEMP}/folder-calming-oils-a" \
+            python matrix/test_build_timed_86400_flowes_x3x3.py
+
+      - name: Verify the optional compact final FLOWes witness
+        run: |
+          final_dir="matrix/timed-86400-flowes-x3x3-final"
+          final_required=0
+          final_enabled=0
+          final_disabled=0
+          for marker_file in \
+            README.md \
+            matrix/README.md \
+            matrix/3-D-GITHUB-OF-THRUTH.md
+          do
+            if [ ! -f "${marker_file}" ] || [ -L "${marker_file}" ]; then
+              printf '%s\n' "COMPACT_FINAL_ACTIVATION|state=MISSING_OR_SYMLINK|file=${marker_file}|json=0" >&2
+              exit 1
+            fi
+            enabled_count="$(grep -Fxc 'COMPACT_FINAL_WITNESS_REQUIRED=1' "${marker_file}" || true)"
+            disabled_count="$(grep -Fxc 'COMPACT_FINAL_WITNESS_REQUIRED=0' "${marker_file}" || true)"
+            if [ "$((enabled_count + disabled_count))" -ne 1 ]; then
+              printf '%s\n' "COMPACT_FINAL_ACTIVATION|state=MARKER_CONTRACT|file=${marker_file}|json=0" >&2
+              exit 1
+            fi
+            final_enabled="$((final_enabled + enabled_count))"
+            final_disabled="$((final_disabled + disabled_count))"
+          done
+          if [ "${final_enabled}" -eq 3 ] && [ "${final_disabled}" -eq 0 ]; then
+            final_required=1
+          elif [ "${final_enabled}" -ne 0 ] || [ "${final_disabled}" -ne 3 ]; then
+            printf '%s\n' "COMPACT_FINAL_ACTIVATION|state=MISMATCH|enabled=${final_enabled}|disabled=${final_disabled}|json=0" >&2
+            exit 1
+          fi
+          if [ -e "${final_dir}" ] || [ -L "${final_dir}" ]; then
+            test -d "${final_dir}"
+            test ! -L "${final_dir}"
+            python matrix/finalize_timed_86400_flowes_x3x3.py verify-public \
+              "${RUNNER_TEMP}/folder-calming-oils-a" \
+              "${final_dir}"
+          elif [ "${final_required}" -eq 1 ]; then
+            printf '%s\n' 'COMPACT_FINAL_OPTIONAL|state=REQUIRED_MISSING|json=0' >&2
+            exit 1
+          else
+            printf '%s\n' 'COMPACT_FINAL_OPTIONAL|state=ABSENT|json=0'
+          fi
+
+      - name: Verify the 86,400-second FLOWes x3 x3 builder
+        run: |
+          mkdir "${RUNNER_TEMP}/flowes-x3x3-a"
+          mkdir "${RUNNER_TEMP}/flowes-x3x3-b"
+          for output in \
+            "${RUNNER_TEMP}/flowes-x3x3-a" \
+            "${RUNNER_TEMP}/flowes-x3x3-b"
+          do
+            python matrix/build_timed_86400_flowes_x3x3.py \
+              "${RUNNER_TEMP}/folder-calming-oils-a" \
+              "${output}" \
+              --fake-clock-build
+            python matrix/build_timed_86400_flowes_x3x3.py \
+              "${RUNNER_TEMP}/folder-calming-oils-a" \
+              "${output}" \
+              --verify
+          done
+          for name in \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbp \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbp.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbi \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.hbi.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.svg \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.svg.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.gguf \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2.gguf.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-STDOUT.hbp \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-STDOUT.hbp.sha256 \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-JOURNAL.hbp \
+            TIMED-86400-FOLDER-CALMING-OILS-FLOWes-X3-X3-V2-JOURNAL.hbp.sha256
+          do
+            cmp "${RUNNER_TEMP}/flowes-x3x3-a/${name}" "${RUNNER_TEMP}/flowes-x3x3-b/${name}"
+          done
+
+      - name: Verify the compact final FLOWes witness tool
+        run: python matrix/test_finalize_timed_86400_flowes_x3x3.py
 
       - name: Run the fixed public tournament
         run: >-

@@ -56,6 +56,25 @@ The current sealed input contains 147 public repositories, 93 repository roots,
 emits 10,608 leaf rows plus static SVG and a descriptor-only GGUF with dimensions
 `[feature=64,family=3,folder=3536]`.
 
+## Semantic gradient measurement
+
+The byte carrier does not set the semantic state count. A clean Liris Ubuntu/WSL
+rebuild with exact Rust `1.81.0` measured all 10,608 leaves as three complete,
+independently identified families and found 10,586 distinct `RGB.RRGGBB` states,
+10,608 distinct integer 3-D positions, and 10,397 distinct signed 2-D projections.
+
+```text
+TRANSPORT = OCTETS
+SEMANTIC_BINARY = 0
+FINITE_CAPTURE = 1
+N_LEVEL_OPEN = 1
+LOGICAL_IDENTITY_CEILING = 0
+```
+
+The finite emitted population and the open-N address design are separate ledgers.
+The measurement is sealed in
+[`LIRIS-RUST-181-GRADIENT-SEMANTICS-2026-07-31.hbp`](../../receipts/LIRIS-RUST-181-GRADIENT-SEMANTICS-2026-07-31.hbp).
+
 The folder parser validates complete-tree and hierarchy semantics. Published rows
 contain opaque occurrence identities and commitments but no raw paths, direct path
 hashes, private repository identities, or repository bodies. Clean Windows GNU and

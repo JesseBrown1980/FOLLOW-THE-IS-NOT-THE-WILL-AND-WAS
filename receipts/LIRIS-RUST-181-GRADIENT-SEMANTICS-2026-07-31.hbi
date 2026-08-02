@@ -1,0 +1,6 @@
+GRADIENTAUDITIDX|schema=ASOLARIA-RUST-181-INTEGER-GRADIENT-SEMANTICS-V1|hbp_file=LIRIS-RUST-181-GRADIENT-SEMANTICS-2026-07-31.hbp|hbp_bytes=2165|hbp_sha256=707f73b6013f8152adc9e524e9131716f8ccaa881857fc990ef793167b302896|hbp_rows=18|format=HBI_TUPLE_TEXT|json=0
+MEASURE|rust=1.81.0|folders=3536|leaves=10608|families=3|unique_colors=10586|semantic_binary=0|integer_only=1|json=0
+OPENN|finite_capture=1|actual_infinite_capture=0|n_level_open=1|logical_identity_ceiling=0|json=0
+CENTER|members=HBI,HBP,SHA,SH,HASH|traversal=HBI-%3EHBP-%3ESH-%3EHASH-%3ESHA|all_five_distinct_per_leaf=1|json=0
+BOUNDARY|evidence=MEASURED_LIRIS_LOCAL|system_affirmed=0|physical_energy=0|credentials=0|execution=0|json=0
+GRADIENTAUDITIDXFTR|body_sha256=2d027e13fc53e510438ac3852753f9c16994da8d41816f0192b8ba54852c741f|rows=6|json=0

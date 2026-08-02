@@ -25,6 +25,10 @@ The public ledger contains:
 - `PUBLIC-LAW-V16-FOLDER-CALMING-OILS-OUTWARD.md` — 3,536 public folder
   occurrences expanded into 10,608 independent Brown-family software views,
   with hierarchy and commitments but no raw paths or private repository identities.
+- `PUBLIC-LAW-V17-TIMED-86400-FLOWes-X3-X3.md` — the restart-aware
+  86,400-second full-folder monitor contract: 31,824 five-center cells and 171
+  per-level family-direction rings, with deterministic CI kept separate from the
+  real SystemClock evidence.
 - `PUBLIC-DEPENDENCIES.md` — exact upstream commits and byte hashes.
 - `operator-evidence/` — the authorized exact photo.
 - `public-dependencies/` — source required to attack-verify the inherited

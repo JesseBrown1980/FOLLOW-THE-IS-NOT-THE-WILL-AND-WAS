@@ -1,0 +1,13 @@
+LIRIS24HDR|schema=LIRIS-TIMED-CHIRAL-ACTUAL-RUN-V1|evidence=MEASURED_LIRIS_LOCAL|status=COMPLETE|target_seconds=86400|json=0
+SOURCE|file=PUBLIC-OWNER-MEDIA-POSITION-2D.hbp|bytes=97491|sha256=c8c3a6ba428b393e52866224430f6748373054490fff4d6a530cc66848ff3310|sidecar_verified=1|json=0
+ARTIFACT|kind=HBP|file=TIMED-CHIRAL-MONITOR.hbp|bytes=4607|sha256=1d21681b15ca76b956236876ef0ca463dcab3ca190e8de0223bdea68bc914918|sidecar_verified=1|json=0
+ARTIFACT|kind=HBI|file=TIMED-CHIRAL-MONITOR.hbi|bytes=392|sha256=021706ed59574a4c8d6ce8b450fc170e79370279bf503c4239ad1b6960192ed4|sidecar_verified=1|json=0
+ARTIFACT|kind=GGUF|file=TIMED-CHIRAL-PUBLIC-COLOR-ORBITS.gguf|bytes=2200|sha256=6afb6229fd2fa23e2dc38c37a31ac9a035b9cddfea2b12bdae1470b03af4425a|sidecar_verified=1|descriptor_only=1|json=0
+RAWTRACE|surface=LIRIS_LOCAL_ACTUAL|bytes=2160|sha256=a9f6a85366d64c38fb6af12b0baed62c64f385ebf5b05ebc2ba852cccf613cc0|line_endings=CRLF|raw_bytes_published=0|json=0
+TRACE|file=TIMED-CHIRAL-CHECKPOINTS.hbp|bytes=2140|sha256=54a0fedf1b644a342ac64c2bff02419d47888eb453792176c2bafee5d5200527|rows=20|checkpoints=19|normalization=CRLF_TO_LF|json=0
+CLOCK|launch_pointer_utc=2026-07-30T17%3A07%3A07.0679510Z|final_artifact_filetime_utc=2026-07-31T17%3A07%3A07.0435710Z|elapsed_receipt_seconds=86400|clock=MONOTONIC|json=0
+PROCESS|historical_pid=14828|present_at_post_run_audit=0|restart_recovery=0|continuous_process_identity_now=UNVERIFIED|json=0
+PARITY|actual_final_group_files=6|deterministic_rebuild_files=6|byte_equal_files=6|byte_mismatch_files=0|json=0
+CENTER|members=HBI,HBP,SHA,SH,HASH|traversal=HBI-%3EHBP-%3ESH-%3EHASH-%3ESHA|identity_exchange=0|json=0
+BOUNDARY|full_x3_x3=0|role=VALID_PARENT_WITNESS|network=0|raw_repository_bytes=0|execution_authority=0|system_affirmed=0|json=0
+LIRIS24FTR|body_sha256=5a27099edd660ff695faa02958bc2eab6ad163e49e6b40ee3e3df7a08e3f5e4c|rows=13|json=0
