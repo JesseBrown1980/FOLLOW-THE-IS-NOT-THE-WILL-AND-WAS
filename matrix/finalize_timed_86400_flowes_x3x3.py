@@ -857,6 +857,15 @@ def _result_row(mode: str, hashes: dict[str, str]) -> str:
     )
 
 
+def _write_lf(stream: object, row: str) -> None:
+    text = row + "\n"
+    buffer = getattr(stream, "buffer", None)
+    if buffer is None:
+        stream.write(text)
+    else:
+        buffer.write(text.encode("utf-8"))
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     try:
@@ -870,7 +879,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.source_dir, args.public_evidence_dir
             )
             mode = "VERIFY_PUBLIC"
-        print(_result_row(mode, hashes))
+        _write_lf(sys.stdout, _result_row(mode, hashes))
         return 0
     except (
         flow.FlowesError, OSError, UnicodeError, ValueError, KeyError,
@@ -880,10 +889,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         if isinstance(exc, flow.FlowesError):
             code = str(exc).split(":", 1)[0]
         code = re.sub(r"[^A-Za-z0-9_-]", "_", code)[:80]
-        print(
-            flow.tuple_row("LIRISFLOWEX9FINAL", PASS=0, error=code, json=0),
-            file=sys.stderr,
+        error_row = flow.tuple_row(
+            "LIRISFLOWEX9FINAL", PASS=0, error=code, json=0
         )
+        _write_lf(sys.stderr, error_row)
         return 1
 
 

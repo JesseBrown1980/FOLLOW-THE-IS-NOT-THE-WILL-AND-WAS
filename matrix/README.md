@@ -117,8 +117,9 @@ expands all 3,536 folders through three families and three directions, creates
 watch is fixed to a SystemClock-owned 86,400 seconds; deterministic CI output is
 separately labeled and cannot claim measured timing. The real SystemClock watch
 launched from public commit `cf4f760f943087d312894cef5a683d99fc0119df`; its
-bounded pointer is `TIMED-86400-FLOWes-X3-X3-RUNNING.hbi`. `RUNNING_LOCAL` is
-not completion, and every resume must remeasure the PID and sealed journal.
+historical launch pointer is `TIMED-86400-FLOWes-X3-X3-RUNNING.hbi`. The watch
+reached all nineteen checkpoints and its compact verified witness is now under
+`timed-86400-flowes-x3x3-final/`.
 
 ```bash
 python matrix/build_timed_86400_flowes_x3x3.py matrix OUTPUT_DIR --watch
@@ -132,7 +133,7 @@ every artifact/sidecar pair, exits naturally, and releases its OS-held writer lo
 The current public-gate state is:
 
 ```text
-COMPACT_FINAL_WITNESS_REQUIRED=0
+COMPACT_FINAL_WITNESS_REQUIRED=1
 ```
 
 After that exit, use the exact launched-builder source and a separate absent or empty
@@ -143,7 +144,9 @@ The production finalizer accepts no duration or timing override:
 
 ```bash
 python -B matrix/build_timed_86400_flowes_x3x3.py matrix <completed-local-output-directory> --verify
-python -B matrix/finalize_timed_86400_flowes_x3x3.py mint matrix <completed-local-output-directory> matrix/timed-86400-flowes-x3x3-final
+python -B matrix/finalize_timed_86400_flowes_x3x3.py mint matrix <completed-local-output-directory> <separate-empty-staging-directory>
+python -B matrix/finalize_timed_86400_flowes_x3x3.py verify-public matrix <separate-empty-staging-directory>
+# Copy exactly the verified six-file staging set into matrix/timed-86400-flowes-x3x3-final, then verify it again:
 python -B matrix/finalize_timed_86400_flowes_x3x3.py verify-public matrix matrix/timed-86400-flowes-x3x3-final
 python -B matrix/test_build_timed_86400_flowes_x3x3.py
 python -B matrix/test_finalize_timed_86400_flowes_x3x3.py

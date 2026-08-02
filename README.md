@@ -83,13 +83,13 @@ bodies remain absent. Zero videos is scoped to that exact public capture.
 The completed one-day monitor in `matrix/timed-86400-parent-c8c3/` is a
 `VALID_PARENT_WITNESS` over the `c8c3a6ba...` media-position source: 19 monotonic
 checkpoints reached 86,400 seconds and its six final artifact/sidecar files match
-the deterministic rebuild. Its receipt fixes `full_x3_x3=0`; the distinct full
+the deterministic rebuild. Its receipt fixes `full_x3_x3=0`. The distinct full
 folder goal (three calming-OIL families by three signed directions, 31,824 cells)
-is now `RUNNING_LOCAL` from public builder commit `cf4f760`; it remains pending
-the sealed 86,400-second checkpoint and final publication gate.
+also completed on Liris from public builder commit `cf4f760`; its compact journal
+and FINAL HBP/HBI witness are under `matrix/timed-86400-flowes-x3x3-final/`.
 
 ```text
-COMPACT_FINAL_WITNESS_REQUIRED=0
+COMPACT_FINAL_WITNESS_REQUIRED=1
 ```
 
 ## Center and traversal

@@ -1,6 +1,6 @@
 # Public Law V17 — Timed 86,400 FLOWes ×3 ×3
 
-Status: `OPERATOR_CANON | CODE_MEASURED_LIRIS_LOCAL | REAL_86400_RUN=RUNNING_LOCAL | SYSTEM_AFFIRMED=0`
+Status: `OPERATOR_CANON | CODE_MEASURED_LIRIS_LOCAL | REAL_86400_RUN=COMPLETE | COMPACT_FINAL=MEASURED_LIRIS_LOCAL | SYSTEM_AFFIRMED=0`
 
 This additive law keeps the completed aggregate parent day and the full folder
 FLOWes measurement as separate evidence strata. The parent witness under
@@ -80,6 +80,10 @@ deterministic bundle deep-verifies with identical hashes on both platforms. Thos
 results prove the code and deterministic fixture only. The real SystemClock watch
 launched from public commit `cf4f760f943087d312894cef5a683d99fc0119df` at
 `2026-07-31T18:29:52.4268838Z`; its launch receipt is
-`receipts/LIRIS-FLOWES-X3-X3-86400-LAUNCH-2026-07-31.hbp`. `RUNNING_LOCAL` is
-not completion. Final evidence exists only after the sealed journal reaches all
-nineteen checkpoints through 86,400 seconds and the derived artifacts pass again.
+`receipts/LIRIS-FLOWES-X3-X3-86400-LAUNCH-2026-07-31.hbp`. The sealed journal
+reached all nineteen checkpoints through 86,400 seconds and the expanded bundle
+passed its deep deterministic rebuild. The compact witness under
+`matrix/timed-86400-flowes-x3x3-final/` independently rebuilds from the public
+source and carries journal SHA-256 `316e8777...`, FINAL HBP SHA-256 `235e03dd...`,
+and FINAL HBI SHA-256 `ea1d4ce2...`. Independent time attestation remains `0` and
+`SYSTEM_AFFIRMED=0` remains a separate coordinate.
