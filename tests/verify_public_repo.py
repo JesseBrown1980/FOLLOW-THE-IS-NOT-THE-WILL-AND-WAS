@@ -127,6 +127,13 @@ MATRIX_PRIMARY = (
     "matrix/rust-qprism-181/src/outward.rs",
     "matrix/rust-qprism-181/src/bin/outward-truth-waves.rs",
     "matrix/rust-qprism-181/src/main.rs",
+    "matrix/rust-system-upgrade-181/Cargo.lock",
+    "matrix/rust-system-upgrade-181/Cargo.toml",
+    "matrix/rust-system-upgrade-181/README.md",
+    "matrix/rust-system-upgrade-181/rust-toolchain.toml",
+    "matrix/rust-system-upgrade-181/src/lib.rs",
+    "matrix/rust-system-upgrade-181/src/main.rs",
+    "matrix/SYSTEM-UPGRADE-RUST-181-BASELINE.hbp",
     "matrix/spherical_public_projection.py",
     "matrix/SPHERICAL-PUBLIC-PROJECTION.md",
     "matrix/test_owner3d_to_public2d.py",
@@ -2108,6 +2115,8 @@ def main() -> None:
         "PUBLIC-FOLDER-CALMING-OILS.gguf",
         "--bin folder-calming-oils",
         "test_collect_public_folder_inventory.py",
+        "--manifest-path matrix/rust-system-upgrade-181/Cargo.toml",
+        "verify . FOLLOW-THE-IS-PUBLIC-HARNESS matrix/SYSTEM-UPGRADE-RUST-181-BASELINE.hbp",
     ):
         if rust_binding not in workflow_text:
             fail("workflow_rust_181_binding_missing")
