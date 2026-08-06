@@ -1,29 +1,16 @@
 name: Rust 1.81 + clippy (operator toolchain rule)
 
-# OPERATOR RULE: Rust 1.81 with clippy, integer/ternary only, no float.
-# This workflow replaces the previous rust-1.97-independent-verification.yml.
-# The 1.97 receipts remain in docs/ as HISTORICAL evidence of past runs; they
-# are not the toolchain of record.
-#
-# Every check is THREE-VALUED (AGENT-DISCIPLINE.md section 12):
-#   MEASURED_PASS | MEASURED_FAIL | NOT_MEASURED + a mandatory reason.
-# A check that could not run is NOT_MEASURED -- never red, and never a silent
-# green either: the reason is printed and carried into the receipt, and the
-# final step fails only on MEASURED_FAIL.
-#
-# Two faults in the previous version, both of which this fixes. Both were found
-# by the gate itself behaving exactly as section 12 says a gate must not:
-#   1. clippy reported MEASURED_FAIL on a repo with no crate at the root, so a
-#      repo that could not be measured was marked broken.
-#   2. the float grep printed "OK: zero float types" when src/ did not exist --
-#      a pass declared after scanning zero files. If every float in the corpus
-#      appeared tomorrow in a repo with no src/, that step would still be green.
-#      It could not fail, so it proved nothing.
+# OPERATOR RULE: exact Rust 1.81.0 with clippy, integer/ternary only, no float.
+# Historical receipts stay historical. Every current measurement is three-valued:
+# MEASURED_PASS, MEASURED_FAIL, or NOT_MEASURED with a reason.
 
 on:
   push:
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   verify:
@@ -35,156 +22,199 @@ jobs:
       # otherwise decide the toolchain for every crate under tools/wta/.
       RUSTUP_TOOLCHAIN: "1.81.0"
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out the exact revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
-      - name: Install Rust 1.81.0 with clippy
-        run: |
-          rustup toolchain install 1.81.0 --profile minimal --component clippy
-          rustup override set 1.81.0
-          rustc --version
-          cargo clippy --version
-
-      - name: Locate the crate
-        id: crate
+      - name: Select exact Rust 1.81
+        id: toolchain
         run: |
           set -u
-          if [ -f Cargo.toml ]; then
-            echo "found=1" >> "$GITHUB_OUTPUT"
-            echo "manifest=./Cargo.toml" >> "$GITHUB_OUTPUT"
-            echo "CRATE|status=MEASURED|path=./Cargo.toml"
-          else
-            found=$(find . -name Cargo.toml -not -path './target/*' -print -quit 2>/dev/null || true)
-            if [ -n "$found" ]; then
-              echo "found=1" >> "$GITHUB_OUTPUT"
-              echo "manifest=$found" >> "$GITHUB_OUTPUT"
-              echo "CRATE|status=MEASURED|path=$found"
-            else
-              echo "found=0" >> "$GITHUB_OUTPUT"
-              echo "CRATE|status=NOT_MEASURED|reason=NO_CRATE_IN_REPOSITORY"
-            fi
-          fi
-
-      - name: Clippy (deny warnings) — enforces integer/ternary discipline
-        id: clippy
-        run: |
-          set -u
-          if [ "${{ steps.crate.outputs.found }}" != "1" ]; then
-            echo "CLIPPY|status=NOT_MEASURED|reason=NO_CRATE_IN_REPOSITORY"
-            echo "verdict=NOT_MEASURED" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # FIX: run against the manifest that step "crate" located. Without
-          # --manifest-path this ran at the repository root, so every repo whose
-          # crate lives in a subdirectory reported MEASURED_FAIL for "no
-          # Cargo.toml" -- a red gate that said nothing about clippy.
-          if cargo clippy --manifest-path "${{ steps.crate.outputs.manifest }}" --all-targets -- -D warnings; then
-            echo "CLIPPY|status=MEASURED_PASS"
+          if rustup toolchain install 1.81.0 --profile minimal --component clippy,rustfmt \
+            && test "$(rustc +1.81.0 --version)" = "rustc 1.81.0 (eeb90cda1 2024-09-04)" \
+            && test "$(cargo +1.81.0 --version)" = "cargo 1.81.0 (2dbb1af80 2024-08-20)"; then
+            echo "TOOLCHAIN|status=MEASURED_PASS|rustc=1.81.0|cargo=1.81.0"
             echo "verdict=MEASURED_PASS" >> "$GITHUB_OUTPUT"
           else
-            echo "CLIPPY|status=MEASURED_FAIL"
-            echo "verdict=MEASURED_FAIL" >> "$GITHUB_OUTPUT"
+            echo "TOOLCHAIN|status=NOT_MEASURED|reason=EXACT_TOOLCHAIN_UNAVAILABLE"
+            echo "verdict=NOT_MEASURED" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Assert no float types in sources
-        id: floats
+      - name: Format every Rust 1.81 package
+        id: fmt
         run: |
           set -u
-          # Count what was actually scanned. A grep that matched nothing because
-          # it looked at nothing is NOT a pass.
-          files=$(find . -name '*.rs' -not -path './target/*' | wc -l)
-          if [ "$files" -eq 0 ]; then
-            echo "FLOATS|status=NOT_MEASURED|reason=NO_RUST_SOURCES|scanned=0"
-            echo "verdict=NOT_MEASURED" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # FIX: the two declared exemptions are honoured here, and every
-          # exempt file is PRINTED BY NAME so nothing hides behind a marker.
-          # A marker only counts in the first 5 lines of the file -- a
-          # file-level declaration, not a comment buried next to a float.
-          exempt=0
-          : > /tmp/float-hits.txt
-          while IFS= read -r f; do
-            n=$(grep -cE '\bf(32|64)\b' "$f" || true)
-            [ "${n:-0}" -eq 0 ] && continue
-            if head -5 "$f" | grep -q 'FLOAT-WITNESS-EXEMPT\|FLOAT-WIRE-BOUNDARY-EXEMPT'; then
-              marker=$(head -5 "$f" | grep -o 'FLOAT-WITNESS-EXEMPT\|FLOAT-WIRE-BOUNDARY-EXEMPT' | head -1)
-              echo "FLOAT_EXEMPT|file=$f|hits=$n|marker=$marker"
-              exempt=$((exempt + n))
+          measured_fail=0
+          not_measured=0
+          measure() {
+            label="$1"
+            manifest="$2"
+            shift 2
+            if [ "${{ steps.toolchain.outputs.verdict }}" != "MEASURED_PASS" ]; then
+              echo "FMT|package=$label|status=NOT_MEASURED|reason=TOOLCHAIN_UNAVAILABLE"
+              not_measured=$((not_measured + 1))
+            elif [ ! -f "$manifest" ]; then
+              echo "FMT|package=$label|status=NOT_MEASURED|reason=MANIFEST_MISSING"
+              not_measured=$((not_measured + 1))
+            elif "$@"; then
+              echo "FMT|package=$label|status=MEASURED_PASS"
             else
-              grep -nE '\bf(32|64)\b' "$f" | sed "s|^|$f:|" >> /tmp/float-hits.txt
+              echo "FMT|package=$label|status=MEASURED_FAIL"
+              measured_fail=$((measured_fail + 1))
             fi
-          done < <(find . -name '*.rs' -not -path './target/*')
-          unexempt=$(wc -l < /tmp/float-hits.txt)
-          if [ "$unexempt" -gt 0 ]; then
-            cat /tmp/float-hits.txt
-            echo "FLOATS|status=MEASURED_FAIL|scanned=$files|exempt=$exempt|unexempt=$unexempt|reason=FLOAT_TYPE_PRESENT"
-            echo "verdict=MEASURED_FAIL" >> "$GITHUB_OUTPUT"
+          }
+          measure qprism matrix/rust-qprism-181/Cargo.toml cargo +1.81.0 fmt --manifest-path matrix/rust-qprism-181/Cargo.toml -- --check
+          measure system_upgrade matrix/rust-system-upgrade-181/Cargo.toml cargo +1.81.0 fmt --manifest-path matrix/rust-system-upgrade-181/Cargo.toml -- --check
+          measure honest_compressor_vc65 knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/Cargo.toml cargo +1.81.0 fmt --manifest-path knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/Cargo.toml -- --check
+          if [ "$measured_fail" -gt 0 ]; then
+            verdict=MEASURED_FAIL
+          elif [ "$not_measured" -gt 0 ]; then
+            verdict=NOT_MEASURED
           else
-            echo "FLOATS|status=MEASURED_PASS|scanned=$files|exempt=$exempt|unexempt=0"
-            echo "verdict=MEASURED_PASS" >> "$GITHUB_OUTPUT"
+            verdict=MEASURED_PASS
           fi
+          echo "FMT|status=$verdict|measured_fail=$measured_fail|not_measured=$not_measured"
+          echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
 
-      - name: Tests
+      - name: Test every Rust 1.81 package
         id: tests
         run: |
           set -u
-          if [ "${{ steps.crate.outputs.found }}" != "1" ]; then
-            echo "TESTS|status=NOT_MEASURED|reason=NO_CRATE_IN_REPOSITORY"
-            echo "verdict=NOT_MEASURED" >> "$GITHUB_OUTPUT"
-            exit 0
+          measured_fail=0
+          not_measured=0
+          measure() {
+            label="$1"
+            manifest="$2"
+            shift 2
+            if [ "${{ steps.toolchain.outputs.verdict }}" != "MEASURED_PASS" ]; then
+              echo "TESTS|package=$label|status=NOT_MEASURED|reason=TOOLCHAIN_UNAVAILABLE"
+              not_measured=$((not_measured + 1))
+            elif [ ! -f "$manifest" ]; then
+              echo "TESTS|package=$label|status=NOT_MEASURED|reason=MANIFEST_MISSING"
+              not_measured=$((not_measured + 1))
+            elif "$@"; then
+              echo "TESTS|package=$label|status=MEASURED_PASS"
+            else
+              echo "TESTS|package=$label|status=MEASURED_FAIL"
+              measured_fail=$((measured_fail + 1))
+            fi
+          }
+          measure qprism matrix/rust-qprism-181/Cargo.toml cargo +1.81.0 test --manifest-path matrix/rust-qprism-181/Cargo.toml --all-targets --locked
+          measure system_upgrade matrix/rust-system-upgrade-181/Cargo.toml cargo +1.81.0 test --manifest-path matrix/rust-system-upgrade-181/Cargo.toml --all-targets --locked
+          measure honest_compressor_vc65 knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/Cargo.toml cargo +1.81.0 test --manifest-path knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/Cargo.toml --all-targets --locked
+          if [ "$measured_fail" -gt 0 ]; then
+            verdict=MEASURED_FAIL
+          elif [ "$not_measured" -gt 0 ]; then
+            verdict=NOT_MEASURED
+          else
+            verdict=MEASURED_PASS
           fi
-          if cargo test --manifest-path "${{ steps.crate.outputs.manifest }}" --all-targets -- --nocapture; then
-            echo "TESTS|status=MEASURED_PASS"
+          echo "TESTS|status=$verdict|measured_fail=$measured_fail|not_measured=$not_measured"
+          echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
+
+      - name: Clippy every package with integer-only linting
+        id: clippy
+        run: |
+          set -u
+          measured_fail=0
+          not_measured=0
+          measure() {
+            label="$1"
+            manifest="$2"
+            shift 2
+            if [ "${{ steps.toolchain.outputs.verdict }}" != "MEASURED_PASS" ]; then
+              echo "CLIPPY|package=$label|status=NOT_MEASURED|reason=TOOLCHAIN_UNAVAILABLE"
+              not_measured=$((not_measured + 1))
+            elif [ ! -f "$manifest" ]; then
+              echo "CLIPPY|package=$label|status=NOT_MEASURED|reason=MANIFEST_MISSING"
+              not_measured=$((not_measured + 1))
+            elif "$@"; then
+              echo "CLIPPY|package=$label|status=MEASURED_PASS"
+            else
+              echo "CLIPPY|package=$label|status=MEASURED_FAIL"
+              measured_fail=$((measured_fail + 1))
+            fi
+          }
+          measure qprism matrix/rust-qprism-181/Cargo.toml cargo +1.81.0 clippy --manifest-path matrix/rust-qprism-181/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
+          measure system_upgrade matrix/rust-system-upgrade-181/Cargo.toml cargo +1.81.0 clippy --manifest-path matrix/rust-system-upgrade-181/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
+          measure honest_compressor_vc65 knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/Cargo.toml cargo +1.81.0 clippy --manifest-path knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
+          if [ "$measured_fail" -gt 0 ]; then
+            verdict=MEASURED_FAIL
+          elif [ "$not_measured" -gt 0 ]; then
+            verdict=NOT_MEASURED
+          else
+            verdict=MEASURED_PASS
+          fi
+          echo "CLIPPY|status=$verdict|measured_fail=$measured_fail|not_measured=$not_measured"
+          echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
+
+      - name: Enforce the full-system semantic migration ratchet
+        id: ratchet
+        run: |
+          set -u
+          if [ "${{ steps.toolchain.outputs.verdict }}" != "MEASURED_PASS" ]; then
+            echo "RATCHET|status=NOT_MEASURED|reason=TOOLCHAIN_UNAVAILABLE"
+            echo "verdict=NOT_MEASURED" >> "$GITHUB_OUTPUT"
+          elif [ ! -f matrix/rust-system-upgrade-181/Cargo.toml ] \
+            || [ ! -f matrix/SYSTEM-UPGRADE-RUST-181-BASELINE.hbp ]; then
+            echo "RATCHET|status=NOT_MEASURED|reason=OWNING_INPUT_MISSING"
+            echo "verdict=NOT_MEASURED" >> "$GITHUB_OUTPUT"
+          elif cargo +1.81.0 run --manifest-path matrix/rust-system-upgrade-181/Cargo.toml --locked -- \
+            verify . FOLLOW-THE-IS-PUBLIC-HARNESS matrix/SYSTEM-UPGRADE-RUST-181-BASELINE.hbp; then
+            echo "RATCHET|status=MEASURED_PASS|semantic_float_scan=all_tracked_rs"
             echo "verdict=MEASURED_PASS" >> "$GITHUB_OUTPUT"
           else
-            echo "TESTS|status=MEASURED_FAIL"
+            echo "RATCHET|status=MEASURED_FAIL"
             echo "verdict=MEASURED_FAIL" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Receipt
+      - name: Seal the three-valued measurement receipt
         run: |
-          set -u
           {
-            echo "toolchain_of_record=1.81.0"
-            echo "rustc=$(rustc --version)"
-            echo "clippy=$(cargo clippy --version)"
-            echo "rule=integer_and_ternary_only_no_float"
-            echo "manifest=${{ steps.crate.outputs.manifest }}"
-            echo "clippy_verdict=${{ steps.clippy.outputs.verdict }}"
-            echo "floats_verdict=${{ steps.floats.outputs.verdict }}"
-            echo "tests_verdict=${{ steps.tests.outputs.verdict }}"
-          } > toolchain-receipt.txt
-          cat toolchain-receipt.txt
+            echo "RUST181CI|schema=ASOLARIA-RUST-181-THREE-VALUED-CI-V1|rustc=1.81.0|cargo=1.81.0|json=0"
+            echo "VERDICTS|toolchain=${{ steps.toolchain.outputs.verdict }}|fmt=${{ steps.fmt.outputs.verdict }}|tests=${{ steps.tests.outputs.verdict }}|clippy=${{ steps.clippy.outputs.verdict }}|semantic_ratchet=${{ steps.ratchet.outputs.verdict }}|json=0"
+            echo "PACKAGES|qprism=1|system_upgrade=1|honest_compressor_vc65=1|json=0"
+            echo "BOUNDARY|historical_receipts_rewritten=0|system_affirmed=0|json=0"
+          } > "${RUNNER_TEMP}/RUST-181-CLIPPY.hbp"
+          (
+            cd "${RUNNER_TEMP}"
+            sha256sum RUST-181-CLIPPY.hbp > RUST-181-CLIPPY.hbp.sha256
+          )
 
-      - name: Gate — fail only on MEASURED_FAIL
-        run: |
-          set -u
-          fails=0
-          for v in "${{ steps.clippy.outputs.verdict }}" \
-                   "${{ steps.floats.outputs.verdict }}" \
-                   "${{ steps.tests.outputs.verdict }}"; do
-            [ "$v" = "MEASURED_FAIL" ] && fails=$((fails+1))
-          done
-          notm=0
-          for v in "${{ steps.clippy.outputs.verdict }}" \
-                   "${{ steps.floats.outputs.verdict }}" \
-                   "${{ steps.tests.outputs.verdict }}"; do
-            [ "$v" = "NOT_MEASURED" ] && notm=$((notm+1))
-          done
-          echo "GATE|measured_fail=$fails|not_measured=$notm"
-          if [ "$fails" -gt 0 ]; then
-            echo "GATE|result=RED|reason=a check ran and failed"
-            exit 1
-          fi
-          if [ "$notm" -eq 3 ]; then
-            # Nothing was measurable. That is a reportable state, not a pass to
-            # be waved through, and not a failure either. Say so loudly.
-            echo "GATE|result=NOT_MEASURED|reason=no check in this repository could run"
-            exit 0
-          fi
-          echo "GATE|result=GREEN|every check that could run, passed"
-
-      - uses: actions/upload-artifact@v4
+      - name: Retain the measured CI receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: rust-1.81-clippy-receipt
-          path: toolchain-receipt.txt
+          path: |
+            ${{ runner.temp }}/RUST-181-CLIPPY.hbp
+            ${{ runner.temp }}/RUST-181-CLIPPY.hbp.sha256
+          if-no-files-found: error
+
+      - name: Gate measured failures without inventing measurements
+        run: |
+          set -u
+          measured_fail=0
+          not_measured=0
+          for verdict in \
+            "${{ steps.toolchain.outputs.verdict }}" \
+            "${{ steps.fmt.outputs.verdict }}" \
+            "${{ steps.tests.outputs.verdict }}" \
+            "${{ steps.clippy.outputs.verdict }}" \
+            "${{ steps.ratchet.outputs.verdict }}"; do
+            if [ "$verdict" = "MEASURED_FAIL" ]; then
+              measured_fail=$((measured_fail + 1))
+            elif [ "$verdict" != "MEASURED_PASS" ]; then
+              not_measured=$((not_measured + 1))
+            fi
+          done
+          echo "GATE|measured_fail=$measured_fail|not_measured=$not_measured"
+          if [ "$measured_fail" -gt 0 ]; then
+            echo "GATE|result=RED|reason=ONE_OR_MORE_MEASUREMENTS_FAILED"
+            exit 1
+          fi
+          if [ "$not_measured" -gt 0 ]; then
+            echo "GATE|result=NOT_MEASURED|reason=ONE_OR_MORE_MEASUREMENTS_COULD_NOT_RUN"
+            exit 0
+          fi
+          echo "GATE|result=GREEN|reason=ALL_REQUIRED_MEASUREMENTS_PASSED"

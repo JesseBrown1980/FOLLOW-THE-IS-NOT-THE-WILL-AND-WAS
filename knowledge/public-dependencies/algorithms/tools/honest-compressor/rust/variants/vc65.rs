@@ -39,7 +39,7 @@ impl Tables {
         Tables { squash, stretch }
     }
     #[inline] fn squash(&self, d: i32) -> i32 {
-        let d = if d < -2047 { -2047 } else if d > 2047 { 2047 } else { d };
+        let d = d.clamp(-2047, 2047);
         self.squash[(d + 2048) as usize]
     }
     #[inline] fn stretch(&self, p: i32) -> i32 { self.stretch[p as usize & 65535] }
@@ -73,12 +73,14 @@ struct Model {
 
 impl Model {
     fn new(v: usize, k: usize) -> Model {
-        let b = std::cmp::max(1, 64 - ((v as u64 - 1).leading_zeros())) as u32;
+        let b = std::cmp::max(1, 64 - ((v as u64 - 1).leading_zeros()));
         let nin = k + 4 + 1;  // + gated URL/path context (combined with sector mixer)
         let mut rate = [0i32; 256];
         // count-adaptive fixed-point rate ~ 65536/(n+1.5), matures to 1/32 (=2048) — a
         // pure-integer mirror of the float 1/(n+1.5) ramp (portable constants).
-        for n in 0..256 { rate[n] = if n < 30 { (65536i32 * 2) / (2 * n as i32 + 3) } else { 2048 }; }
+        for (n, item) in rate.iter_mut().enumerate() {
+            *item = if n < 30 { (65536i32 * 2) / (2 * n as i32 + 3) } else { 2048 };
+        }
         let mut apm = vec![0u16; 1024 * 33];
         let mut apm2 = vec![0u16; 1024 * 33];
         let tb = Tables::new();
@@ -99,8 +101,8 @@ impl Model {
             twn: (0..2).map(|_| vec![0u8; TSIZE]).collect(),
             tu: vec![32768u16; TSIZE], tun: vec![0u8; TSIZE], seg_pos: 0, last_delim: 0, uctx: 0, uidx: 0,
             rate,
-            w: vec![(0.3 * 65536.0) as i32; (b as usize * 256) * nin],
-            w2: vec![(0.3 * 65536.0) as i32; (b as usize * 65536) * nin],
+            w: vec![19_660i32; (b as usize * 256) * nin],
+            w2: vec![19_660i32; (b as usize * 65536) * nin],
             wrow2: 0, sector: 0, sector_b: 0, wrow2b: 0,
             apm, apm2,
             hist: Vec::new(), mpos: HashMap::new(),
@@ -134,20 +136,11 @@ impl Model {
             if let Some(&p) = self.mpos.get(&key) { if p < n { self.match_ptr = p as i64; self.match_len = MO; } }
         }
         self.pred_glyph = if self.match_ptr >= 0 && (self.match_ptr as usize) < n { self.hist[self.match_ptr as usize] as i32 } else { -1 };
-        self.bucket_base = if n > 0 { (self.hist[n - 1] & 0xFF) as usize } else { 0 };
+        self.bucket_base = if n > 0 { self.hist[n - 1] as usize } else { 0 };
         self.uctx = ((self.seg_pos as u64).wrapping_mul(0x9E3779B1) ^ (self.last_delim+1).wrapping_mul(0x85EBCA6B)) & 0xFFFFFFFF;
         let lb = if n>0 { self.hist[n-1] as i32 } else { 0 };
         let lb2 = if n>1 { self.hist[n-2] as i32 } else { 0 };
         let lb3 = if n>2 { self.hist[n-3] as i32 } else { 0 };
-        let lb4 = if n>3 { self.hist[n-4] as i32 } else { 0 };
-        let cls = |b: i32| -> usize { if (65..=90).contains(&b)||(97..=122).contains(&b) {0}
-            else if (48..=57).contains(&b) {1}
-            else if b==32||b==10||b==9 {2}
-            else if b==60||b==62||b==38||b==91||b==93||b==123||b==125||b==124||b==61||b==34 {3}
-            else if b>=128 {4} else {5} };
-        let b1 = cls(lb); let b2 = cls(lb2); let b3 = cls(lb3); let b4 = cls(lb4);
-        let run1 = if b2==b1 { if b3==b1 { if b4==b1 {3} else {2} } else {1} } else {0};
-        let run2 = if b3==b2 { if b4==b2 {2} else {1} } else {0};
         self.sector = ((lb & 0xFF) as usize)*256 + ((lb2 & 0xFF) as usize);
         self.sector_b = ((lb2 & 0xFF) as usize)*256 + ((lb3 & 0xFF) as usize);
         self.wctx1 = (self.wh ^ 0x8DA6B343) & 0xFFFFFFFF;
@@ -206,9 +199,7 @@ impl Model {
         let actx2 = (mlb * 256 + self.bucket_base) & 1023;
         let (pa2, s2) = Model::apm_apply(&self.tb, &self.apm2, actx2, p_s1);
         self.a2 = (s2.0, s2.1, p_s1);
-        let mut p = (pa2 + p_s1 * 3) >> 2;
-        if p < 1 { p = 1; } if p > 65534 { p = 65534; }
-        p
+        ((pa2 + p_s1 * 3) >> 2).clamp(1, 65534)
     }
 
     fn update_bit(&mut self, bit: i32) {
@@ -277,7 +268,8 @@ impl Enc {
     fn encode(&mut self, bit: i32, p: i32) {
         let range = (self.x2 - self.x1) as u64;
         let mut xmid = self.x1 + ((range * p as u64) >> 16) as u32;
-        if xmid < self.x1 { xmid = self.x1; } if xmid >= self.x2 { xmid = self.x2 - 1; }
+        if xmid < self.x1 { xmid = self.x1; }
+        if xmid >= self.x2 { xmid = self.x2 - 1; }
         if bit == 1 { self.x2 = xmid; } else { self.x1 = xmid + 1; }
         while (self.x1 ^ self.x2) & 0xFF000000 == 0 {
             self.out.push((self.x2 >> 24) as u8); self.x1 <<= 8; self.x2 = (self.x2 << 8) | 0xFF;
@@ -294,7 +286,8 @@ impl<'a> Dec<'a> {
     fn decode(&mut self, p: i32) -> i32 {
         let range = (self.x2 - self.x1) as u64;
         let mut xmid = self.x1 + ((range * p as u64) >> 16) as u32;
-        if xmid < self.x1 { xmid = self.x1; } if xmid >= self.x2 { xmid = self.x2 - 1; }
+        if xmid < self.x1 { xmid = self.x1; }
+        if xmid >= self.x2 { xmid = self.x2 - 1; }
         let bit = if self.x <= xmid { 1 } else { 0 };
         if bit == 1 { self.x2 = xmid; } else { self.x1 = xmid + 1; }
         while (self.x1 ^ self.x2) & 0xFF000000 == 0 {
@@ -353,8 +346,8 @@ fn main() {
     if args.len() < 3 { eprintln!("usage: cm3ti <file> <k> [--emit out.bin]"); std::process::exit(1); }
     let data = fs::read(&args[1]).unwrap(); let n = data.len(); let k: usize = args[2].parse().unwrap();
     let sha_in = sha256(&data);
-    let t0 = Instant::now(); let comp = compress(&data, k); let enc_s = t0.elapsed().as_secs_f64();
-    let t1 = Instant::now(); let body = decompress(&comp, n, k); let dec_s = t1.elapsed().as_secs_f64();
+    let t0 = Instant::now(); let comp = compress(&data, k); let enc_us = t0.elapsed().as_micros();
+    let t1 = Instant::now(); let body = decompress(&comp, n, k); let dec_us = t1.elapsed().as_micros();
     let ok = sha256(&body) == sha_in;
     let comp_sha = sha256(&comp);
     if args.len() >= 5 && args[3] == "--emit" { fs::write(&args[4], &comp).unwrap(); }
@@ -362,6 +355,7 @@ fn main() {
     let payload = comp.len() as u64; let total = payload + src_b;
     // bits-per-char in ten-thousandths, integer only (operator rule: no float)
     let bpc_e4: u128 = if n > 0 { (total as u128 * 8 * 10_000) / n as u128 } else { 0 };
-    println!("cm3ti-vc65-fullstack k={} N={} payload={} decoder_src={} total={} bpc_total={}.{:04} restore={} comp_sha={} enc={}s dec={}s",
-        k, n, payload, src_b, total, bpc_e4 / 10_000, bpc_e4 % 10_000, if ok {"OK"} else {"FAIL"}, &comp_sha[..16], enc_s, dec_s);
+    println!("cm3ti-vc65-fullstack k={} N={} payload={} decoder_src={} total={} bpc_total={}.{:04} restore={} comp_sha={} enc={}.{:06}s dec={}.{:06}s",
+        k, n, payload, src_b, total, bpc_e4 / 10_000, bpc_e4 % 10_000, if ok {"OK"} else {"FAIL"}, &comp_sha[..16],
+        enc_us / 1_000_000, enc_us % 1_000_000, dec_us / 1_000_000, dec_us % 1_000_000);
 }

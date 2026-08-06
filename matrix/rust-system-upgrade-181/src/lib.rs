@@ -261,6 +261,10 @@ pub fn scan_repository(root: &Path, scope: &str) -> Result<Audit> {
         }
         if lower.ends_with(".rs") {
             bump(&mut counts.rust_sources)?;
+            let bytes = read_relative(&root, relative, MAX_SOURCE_BYTES)?;
+            if contains_rust_float_code(&bytes)? {
+                bump(&mut counts.rust_float_code_files)?;
+            }
         }
         if file_name_is(relative, "Cargo.toml") {
             bump(&mut counts.cargo_manifests)?;
@@ -321,9 +325,6 @@ pub fn scan_repository(root: &Path, scope: &str) -> Result<Audit> {
         let float_code = is_rust && contains_rust_float_code(&bytes)?;
         if is_rust {
             bump(&mut counts.rust_artifact_sources)?;
-            if float_code {
-                bump(&mut counts.rust_float_code_files)?;
-            }
         } else {
             bump(&mut counts.non_rust_artifact_sources)?;
         }

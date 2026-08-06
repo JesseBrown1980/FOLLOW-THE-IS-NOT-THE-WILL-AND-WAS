@@ -26,7 +26,7 @@ EXPECTED = {
     "knowledge/public-dependencies/algorithms/tools/honest-compressor/sgram/sgram_chain.py":
         "01a9372c0bcb9297b18af78ed83aa0586b60130fb36299e6dc919e69ba977dcc",
     "knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/variants/vc65.rs":
-        "64ae366fd87b71a21dde64e9156b997eb44c6d1743e2b944a4a63c492b56f94b",
+        "4392ab92314563cbbd986d54cc16c01a77b46e9935c95483e26402551446b10e",
     "knowledge/operator-evidence/IS-photo-2026-07-27.jpeg":
         "a87ebb6c2bcde3f6e93c983d588a19afeb441af1fd4c40ef22c63955dc3528ca",
 }
@@ -77,6 +77,10 @@ WORKFLOW_ACTION_PINS = {
     "actions/setup-node": "49933ea5288caeca8642d1e84afbd3f7d6820020",
     "actions/upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02",
 }
+RUST_WORKFLOW_ACTION_PINS = {
+    "actions/checkout": "11d5960a326750d5838078e36cf38b85af677262",
+    "actions/upload-artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+}
 TIMED_PARENT_86400_HASHES = {
     "matrix/timed-86400-parent-c8c3/LIRIS-TIMED-86400-ACTUAL-RUN.hbp":
         "b46e042c3c00b01f38a0cf2d265330a6a77f7af0d3eb8d1b846ba6ef098e637b",
@@ -90,6 +94,12 @@ TIMED_PARENT_86400_HASHES = {
         "6afb6229fd2fa23e2dc38c37a31ac9a035b9cddfea2b12bdae1470b03af4425a",
 }
 MATRIX_PRIMARY = (
+    ".github/workflows/rust-1.81-clippy-verification.yml",
+    "rust-toolchain.toml",
+    "knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/Cargo.lock",
+    "knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/Cargo.toml",
+    "knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/src/main.rs",
+    "knowledge/public-dependencies/algorithms/tools/honest-compressor/rust/variants/vc65.rs",
     "matrix/3-D-GITHUB-OF-THRUTH.md",
     "matrix/build_3d_github_harness.py",
     "matrix/build_timed_86400_flowes_x3x3.py",
@@ -2120,6 +2130,76 @@ def main() -> None:
     ):
         if rust_binding not in workflow_text:
             fail("workflow_rust_181_binding_missing")
+
+    rust_workflow_path = (
+        ROOT / ".github" / "workflows" / "rust-1.81-clippy-verification.yml"
+    )
+    rust_workflow_text = rust_workflow_path.read_text(encoding="utf-8")
+    if "pull_request_target:" in rust_workflow_text:
+        fail("rust_workflow_uses_pull_request_target")
+    if "permissions:\n  contents: read\n" not in rust_workflow_text:
+        fail("rust_workflow_permissions_not_read_only")
+    if "persist-credentials: false" not in rust_workflow_text:
+        fail("rust_workflow_persists_checkout_credentials")
+    if re.search(r"(?i)\$\{\{\s*(?:secrets\.|github\.token)", rust_workflow_text):
+        fail("rust_workflow_secret_reference")
+    rust_action_uses = re.findall(
+        r"(?m)^\s*uses:\s*([^@\s]+)@([0-9a-f]{40})(?:\s|$)",
+        rust_workflow_text,
+    )
+    if len(rust_action_uses) != len(RUST_WORKFLOW_ACTION_PINS):
+        fail("rust_workflow_action_pin_count_mismatch")
+    if dict(rust_action_uses) != RUST_WORKFLOW_ACTION_PINS:
+        fail("rust_workflow_action_pin_mismatch")
+    rust_manifests = (
+        "matrix/rust-qprism-181/Cargo.toml",
+        "matrix/rust-system-upgrade-181/Cargo.toml",
+        (
+            "knowledge/public-dependencies/algorithms/tools/"
+            "honest-compressor/rust/Cargo.toml"
+        ),
+    )
+    rust_manifest_commands = (
+        ("fmt", "-- --check"),
+        ("test", "--all-targets --locked"),
+        (
+            "clippy",
+            "--all-targets --locked -- -D warnings -D clippy::float_arithmetic",
+        ),
+    )
+    for manifest in rust_manifests:
+        for subcommand, arguments in rust_manifest_commands:
+            command = (
+                f"cargo +1.81.0 {subcommand} --manifest-path {manifest} "
+                f"{arguments}"
+            )
+            if command not in rust_workflow_text:
+                fail(
+                    "rust_workflow_manifest_command_missing:"
+                    + subcommand
+                    + ":"
+                    + manifest
+                )
+    for three_valued_binding in (
+        "MEASURED_PASS",
+        "MEASURED_FAIL",
+        "NOT_MEASURED",
+        "reason=TOOLCHAIN_UNAVAILABLE",
+        "reason=MANIFEST_MISSING",
+        "semantic_float_scan=all_tracked_rs",
+        "GATE|result=NOT_MEASURED",
+        "ASOLARIA-RUST-181-THREE-VALUED-CI-V1",
+        'RUSTUP_TOOLCHAIN: "1.81.0"',
+    ):
+        if three_valued_binding not in rust_workflow_text:
+            fail("rust_workflow_three_valued_binding_missing")
+    if any(
+        marker in rust_workflow_text
+        for marker in ("FLOAT-WITNESS-EXEMPT", "FLOAT-WIRE-BOUNDARY-EXEMPT")
+    ):
+        fail("rust_workflow_float_exemption")
+    if "cargo clippy --all-targets -- -D warnings" in rust_workflow_text:
+        fail("rust_workflow_unbound_root_clippy")
     for compact_final_binding in (
         "matrix/timed-86400-flowes-x3x3-final",
         COMPACT_FINAL_ACTIVATION_MARKER,
@@ -2439,6 +2519,24 @@ def main() -> None:
     rust_without_strings = re.sub(r'"(?:\\.|[^"\\])*"', '""', rust_source)
     if re.search(r"(?<![A-Za-z0-9_])\d+\.\d", rust_without_strings):
         fail("qprism_rust_float_literal")
+
+    honest_root = (
+        ROOT
+        / "knowledge/public-dependencies/algorithms/tools/honest-compressor/rust"
+    )
+    honest_manifest = (honest_root / "Cargo.toml").read_text(encoding="utf-8")
+    honest_entry = (honest_root / "src/main.rs").read_text(encoding="utf-8")
+    honest_variant = (honest_root / "variants/vc65.rs").read_text(encoding="utf-8")
+    if (
+        'rust-version = "1.81"' not in honest_manifest
+        or "[profile.release]\noverflow-checks = true" not in honest_manifest
+    ):
+        fail("honest_compressor_manifest_contract")
+    if "#![forbid(unsafe_code)]" not in honest_entry:
+        fail("honest_compressor_unsafe_contract")
+    for forbidden in ("as_secs_f", "65536.0", "0.3 *"):
+        if forbidden in honest_variant:
+            fail("honest_compressor_float_contract:" + forbidden)
 
     matrix_path = str(ROOT / "matrix")
     if matrix_path not in sys.path:
@@ -3903,7 +4001,7 @@ def main() -> None:
         f"|pinned={len(EXPECTED)}"
         f"|receipts={len(receipts)}"
         f"|named_sidecars={len(named_sidecars)}"
-        f"|workflow_pins={len(WORKFLOW_ACTION_PINS)}"
+        f"|workflow_pins={len(WORKFLOW_ACTION_PINS) + len(RUST_WORKFLOW_ACTION_PINS)}"
         f"|compact_final_structural={int(compact_final_witness_present)}"
         f"|compact_final_required={int(compact_final_required)}"
         "|compact_final_independent_time_attestation=0"
