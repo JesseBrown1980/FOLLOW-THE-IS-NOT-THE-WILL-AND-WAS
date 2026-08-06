@@ -360,6 +360,8 @@ fn main() {
     if args.len() >= 5 && args[3] == "--emit" { fs::write(&args[4], &comp).unwrap(); }
     let src_b = fs::metadata("vc27.rs").map(|m| m.len()).unwrap_or(0);
     let payload = comp.len() as u64; let total = payload + src_b;
-    println!("cm3ti-vc65-fullstack k={} N={} payload={} decoder_src={} total={} bpc_total={:.4} restore={} comp_sha={} enc={:.0}s dec={:.0}s",
-        k, n, payload, src_b, total, (total as f64*8.0)/n as f64, if ok {"OK"} else {"FAIL"}, &comp_sha[..16], enc_s, dec_s);
+    // bits-per-char in ten-thousandths, integer only (operator rule: no float)
+    let bpc_e4: u128 = if n > 0 { (total as u128 * 8 * 10_000) / n as u128 } else { 0 };
+    println!("cm3ti-vc65-fullstack k={} N={} payload={} decoder_src={} total={} bpc_total={}.{:04} restore={} comp_sha={} enc={}s dec={}s",
+        k, n, payload, src_b, total, bpc_e4 / 10_000, bpc_e4 % 10_000, if ok {"OK"} else {"FAIL"}, &comp_sha[..16], enc_s, dec_s);
 }
