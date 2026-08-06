@@ -42,8 +42,10 @@ that provenance statement does not invent or substitute a third-party license.
   `463dc17f61741ddd04b7bf2599184f41f511da571e32f174bd9e3808130ce1d9`
 - SGRAM workflow SHA-256:
   `77f99386f95799b96940957ef9bb0d6430fbe83d1a3a36da22032e0911e6ea83`
-- vc65 SHA-256:
+- Historical upstream-intake vc65 SHA-256:
   `64ae366fd87b71a21dde64e9156b997eb44c6d1743e2b944a4a63c492b56f94b`
+- Active public Rust 1.81 integer-only vc65 SHA-256:
+  `4392ab92314563cbbd986d54cc16c01a77b46e9935c95483e26402551446b10e`
 - [Exact upstream SGRAM directory](https://github.com/JesseBrown1980/Algorithms-of-Asolaria/tree/a94abccd93b9bd42724840eaf26924a3db683d2a/tools/honest-compressor/sgram)
 - [Exact upstream public workflow](https://github.com/JesseBrown1980/Algorithms-of-Asolaria/blob/a94abccd93b9bd42724840eaf26924a3db683d2a/.github/workflows/sgram-public.yml)
 

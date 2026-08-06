@@ -34,8 +34,10 @@ receipt is runtime evidence only when the verifier actually runs.
 - Source branch at intake: `liris/rime-omega-rebuild-20260723`
 - SGRAM SHA-256:
   `01a9372c0bcb9297b18af78ed83aa0586b60130fb36299e6dc919e69ba977dcc`
-- vc65 SHA-256:
+- Historical upstream-intake vc65 SHA-256:
   `64ae366fd87b71a21dde64e9156b997eb44c6d1743e2b944a4a63c492b56f94b`
+- Active public Rust 1.81 integer-only vc65 SHA-256:
+  `4392ab92314563cbbd986d54cc16c01a77b46e9935c95483e26402551446b10e`
 - Upstream MIT license SHA-256:
   `e994f1997f8afa963389779b6c51a2cc3ac01edbc78a90915b6c43097ec68809`
 
