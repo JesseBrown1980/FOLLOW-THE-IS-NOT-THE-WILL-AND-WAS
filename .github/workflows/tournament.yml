@@ -74,6 +74,14 @@ jobs:
             cmp "${RUNNER_TEMP}/qprism-a/${name}" "${RUNNER_TEMP}/qprism-b/${name}"
           done
 
+      - name: Enforce the Rust 1.81 full-system migration ratchet
+        run: |
+          cargo +1.81.0 fmt --manifest-path matrix/rust-system-upgrade-181/Cargo.toml -- --check
+          cargo +1.81.0 test --manifest-path matrix/rust-system-upgrade-181/Cargo.toml --locked
+          cargo +1.81.0 clippy --manifest-path matrix/rust-system-upgrade-181/Cargo.toml --all-targets --locked -- -D warnings -D clippy::float_arithmetic
+          cargo +1.81.0 run --manifest-path matrix/rust-system-upgrade-181/Cargo.toml --locked -- \
+            verify . FOLLOW-THE-IS-PUBLIC-HARNESS matrix/SYSTEM-UPGRADE-RUST-181-BASELINE.hbp
+
       - name: Verify the four-by-three outward truth waves
         run: |
           mkdir "${RUNNER_TEMP}/outward"

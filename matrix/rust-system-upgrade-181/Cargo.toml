@@ -1,0 +1,13 @@
+[package]
+name = "asolaria-system-upgrade-audit"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.81"
+publish = false
+
+[dependencies]
+
+[profile.release]
+overflow-checks = true
+lto = true
+codegen-units = 1
