@@ -1,0 +1,17 @@
+NNHDR|schema=NULLNET-81-OVER-27-V1|owner=OP-JESSE|rust=1.81.0|int_only=1|float_used=0|lattice=3x3x3|closed_mod_3=1|json=0
+ZERO|z=0|addr=---|value=-13|cost=0|free=1|json=0
+ZERO|z=1|addr=--0|value=-12|cost=0|free=1|json=0
+ZERO|z=2|addr=--+|value=-11|cost=0|free=1|json=0
+ZERO|z=26|addr=+++|value=13|cost=0|free=1|json=0
+ZEROS|count=27|expected=3^3=27|all_free=true|total_cost=0|json=0
+NET|links=81|expected=27*6/2=81|every_degree_6=true|carrier=HTTP|cost_per_link=0|total_link_cost=0|the_zeros_are_free_because_the_pipe_is=1|json=0
+LINE|axis=0|members=0,1,2|addrs=---,--0,--+|values=-13,-12,-11|centroid=-12|arms=-1,0,1|sum=0|trits=-0+|json=0
+LINE|axis=0|members=3,4,5|addrs=-0-,-00,-0+|values=-10,-9,-8|centroid=-9|arms=-1,0,1|sum=0|trits=-0+|json=0
+LINE|axis=0|members=6,7,8|addrs=-+-,-+0,-++|values=-7,-6,-5|centroid=-6|arms=-1,0,1|sum=0|trits=-0+|json=0
+LINE|axis=0|members=9,10,11|addrs=0--,0-0,0-+|values=-4,-3,-2|centroid=-3|arms=-1,0,1|sum=0|trits=-0+|json=0
+LINES|count=27|expected=27/3*3=27|all_closed_to_zero=true|json=0
+SEATS|count=81|expected=27*3=81|81_around_27=true|json=0
+NULLSPHERE|minus=27|zero=27|plus=27|total=81|each_exactly_a_third=true|residue=0|json=0
+GLOBAL|sum_of_all_27_values=0|the_net_itself_closes=true|json=0
+LAW|k=three_body_by_construction|three_arms_circle_a_free_zero=1|they_sum_to_zero_exactly=1|holds_at_every_one_of_27_lines=1|no_integration=0|no_float=1|the_81_are_the_net_the_27_are_the_zeros|json=0
+NNFTR|rows=17|zeros=27|links=81|lines=27|seats=81|hot_path=1|jsn_emitted=0|json=0
