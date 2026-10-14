@@ -1,0 +1,19 @@
+{
+  "schema": "ASOLARIA-CROSSCHAT-B-CHALLENGES-V1",
+  "generated_utc": "2026-10-14T15:52:24.996Z",
+  "producer": "Node.js Host B (physical host separation UNATTESTED)",
+  "t": "10000000000000",
+  "baseline_root": "8f4aa66cee354aa9479173d780eafcaac875954e9137544d4a053eca62dfed28",
+  "seat_witnesses_sha256": "29b7fffd0042ffbe3de73a5ed5dce9e0f17de85ff8f8a0094b9bcf93f610121d",
+  "challenge_derivation": "SHA256(ASOLARIA-PORTAL-CHALLENGE-V1\\0 || seed_32_bytes || uint32BE(seq))",
+  "seed_hex": "403861a6c05c683e828975212a498a8a4780a49cb519a7b6b6b50b380eb9d0f3",
+  "waves": 9,
+  "seats": 81,
+  "result": {
+    "n": 729,
+    "waves": 9,
+    "seats": 81,
+    "seed_nonce_bits": 256,
+    "initial_baseline_unchanged": true
+  }
+}
